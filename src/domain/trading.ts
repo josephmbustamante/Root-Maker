@@ -103,6 +103,7 @@ export function initState(rootCurrencyName: string, rootCurrencyStartingAmount: 
 }
 
 export function runCurrencyFluctuations(state: DomainState, eventEmitter: Phaser.Events.EventEmitter) {
+  console.log('fluctuating');
   state.tradeCurrencies.forEach(currency => {
     currency.exchangeRate += randomDecimalBetween(-0.5, 0.5);
   });

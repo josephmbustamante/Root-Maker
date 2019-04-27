@@ -1,17 +1,13 @@
+import * as Domain from '../domain/trading';
+
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
   visible: false,
   key: 'Game',
 };
 
-interface Currency {
-  name: string;
-  currentValue: number;
-  amountOwned: number;
-}
-
 export class GameScene extends Phaser.Scene {
-  currencies: Currency[];
+  domainState: Domain.DomainState;
   currencyDisplay: Array<{ currencyName: string, valueText: Phaser.GameObjects.Text }>;
 
   buyHeaderStyle = { fontSize: '32px', color: '#44FF44' };
@@ -23,42 +19,45 @@ export class GameScene extends Phaser.Scene {
 
   headerColumnY = 200;
 
+  domainTickTime = 2000; // milliseconds
+  timeSinceLastTick = 0;
+
   constructor() {
     super(sceneConfig);
   }
 
   public create() {
-    this.currencies = [
-      { name: 'Dullers', currentValue: 43, amountOwned: 7 },
-      { name: 'When', currentValue: 11, amountOwned: 992 },
-      { name: 'Prawns', currentValue: 52, amountOwned: 0 },
-      { name: 'Pestos', currentValue: 24, amountOwned: 83 },
+    const currencyNames = [
+      'Dullers',
+      'When',
+      'Prawns',
+      'Pestos',
     ];
+
+    this.domainState = Domain.initState('root', 100, currencyNames);
 
     this.currencyDisplay = [];
 
     this.createExchangeInterface(this);
   }
 
-  public update() {
-    // randomly change currency values to test
-    this.currencies.forEach((currency) => {
-      const amount = Math.random() *  11;
-      const shouldBeNegative = Math.random() < 0.4;
+  public update(time, delta) {
+    // this.updateCurrencyDisplay();
 
-      const amountToChange = Math.floor(shouldBeNegative ? -amount : amount);
+    this.timeSinceLastTick += delta;
 
-      currency.currentValue += amountToChange;
-    });
-
-    this.updateCurrencyDisplay();
+    if (this.timeSinceLastTick >= this.domainTickTime) {
+      console.log('tick!');
+      this.timeSinceLastTick = 0;
+      Domain.runCurrencyFluctuations(this.domainState, this.events);
+    }
   }
 
   private updateCurrencyDisplay() {
     if (this.currencyDisplay.length > 0) {
       this.currencyDisplay.forEach((display, index) => {
-        const correspondingCurrency = this.currencies[index]; // TODO - make this better
-        display.valueText.setText(`${correspondingCurrency.currentValue}`);
+        const correspondingCurrency = this.domainState.tradeCurrencies[index]; // TODO - make this better
+        display.valueText.setText(`${correspondingCurrency.exchangeRate}`);
       });
     }
   }
@@ -76,9 +75,15 @@ export class GameScene extends Phaser.Scene {
     this.add.text(this.nameColumnX, this.headerColumnY, 'NAME', this.columnHeaderStyle);
     this.add.text(this.currentValueColumnX, this.headerColumnY, 'VALUE', this.columnHeaderStyle);
 
-    this.currencies.forEach((currency, index) => {
+    this.domainState.tradeCurrencies.forEach((currency, index) => {
       this.add.text(this.nameColumnX, 250 + (50 * index), currency.name, this.currencyStyle);
-      const valueText = this.add.text(this.currentValueColumnX, 250 + (50 * index), `${currency.currentValue}`, this.currencyStyle);
+
+      const valueText = this.add.text(this.currentValueColumnX, 250 + (50 * index), `${currency.exchangeRate}`, this.currencyStyle);
+      this.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
+        console.log(`Updating text for ${currency.name} --- text element: ${valueText}`);
+        valueText.setText(`${currency.exchangeRate}`)
+      });
+
       this.add.text(this.buyColumnX, 250 + (50 * index), '+', this.currencyStyle);
 
       this.currencyDisplay.push({ currencyName: currency.name, valueText });
