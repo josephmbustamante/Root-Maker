@@ -44,7 +44,7 @@ export class GameScene extends Phaser.Scene {
     this.createExchangeInterface();
 
     // this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'sample');
-    this.createNewsTicker(0, window.innerHeight - 50);
+    this.createNewsTicker(50, this.game.scale.height - 50);
   }
 
   public update(time, delta) {
