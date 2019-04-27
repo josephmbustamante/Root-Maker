@@ -2,10 +2,10 @@
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
   visible: false,
-  key: 'Game',
+  key: 'Exchange',
 };
 
-export class GameScene extends Phaser.Scene {
+export class ExchangeScene extends Phaser.Scene {
   constructor() {
     super(sceneConfig);
   }
