@@ -10,7 +10,7 @@ const sceneConfig: Phaser.Scenes.Settings.Config = {
 
 export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
-  currencyDisplay: ExchangeInterface.CurrencyDisplayRow;
+  currencyDisplay: ExchangeInterface.CurrencyDisplay;
 
   domainTickTime = 2000; // milliseconds
   timeSinceLastTick = 0;
