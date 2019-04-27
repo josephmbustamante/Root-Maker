@@ -1,10 +1,10 @@
-import * as Domain from '../../domain';
-import * as Shared from '../../shared';
+import * as Domain from 'src/domain';
+import * as Shared from 'src/shared';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
   currency: Phaser.GameObjects.Text;
-  trend: Phaser.GameObjects.Text;
+  trend: Phaser.GameObjects.Image | undefined;
   amountOwned: Phaser.GameObjects.Text;
   exchangeRate: Phaser.GameObjects.Text;
 };
@@ -36,6 +36,8 @@ const selectedStyle = { fontSize: '14px', color: '#FF4444' };
 
 const countryX = 50;
 const currencyX = 200;
+const trendX = 300;
+const trendBaseY = 257;
 const exchangeRateX = 350;
 const amountOwnedX = 500;
 
@@ -43,6 +45,14 @@ const rootInfoX = 50;
 
 const sectionHeaderY = 100;
 const headerColumnY = 200;
+
+function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down') {
+  if (trend === 'up') {
+    return scene.add.image(trendX, trendBaseY + offsetY, 'trend-up')
+  } else if (trend === 'down') {
+    return scene.add.image(trendX, trendBaseY + offsetY, 'trend-down')
+  }
+}
 
 const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDisplay, domainState: Domain.DomainState) => {
   const x = countryX;
@@ -58,7 +68,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
 
     const country = scene.add.text(countryX, 250 + (50 * index), nation.name, currencyStyle);
     const currency = scene.add.text(currencyX, 250 + (50 * index), nation.currency.name, currencyStyle);
-    const trend = scene.add.text(currencyX + currency.width + 5, 250 + (50 * index), nation.currency.trend || '', currencyStyle);
+    let trend: Phaser.GameObjects.Image | undefined = createTrend(scene, 50 * index, nation.currency.trend);
     const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), account.balance.toFixed(2), currencyStyle);
     const exchangeRate = scene.add.text(exchangeRateX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
 
@@ -70,7 +80,10 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
       console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
-      trend.setText(nation.currency.trend || '');
+      if (trend) {
+        trend.destroy();
+      }
+      trend = createTrend(scene, 50 * index, nation.currency.trend);
     });
 
     const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
