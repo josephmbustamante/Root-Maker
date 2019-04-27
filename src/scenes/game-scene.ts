@@ -11,10 +11,23 @@ export class GameScene extends Phaser.Scene {
   }
 
   public create() {
-    this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'sample');
+    createExchangeInterface(this);
   }
 
   public update() {
     // TODO
   }
 }
+
+const createExchangeInterface = (scene: Phaser.Scene) => {
+  createBuyInterface(scene);
+  createSellInterface(scene);
+};
+
+const createBuyInterface = (scene: Phaser.Scene) => {
+  scene.add.text(100, 50, 'Buy');
+};
+
+const createSellInterface = (scene: Phaser.Scene) => {
+  scene.add.text(400, 50, 'Sell');
+};
