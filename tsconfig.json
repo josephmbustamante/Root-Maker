@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "target": "es5",
     "lib": [
       "dom",
@@ -17,9 +18,17 @@
         "alwaysShowRuleFailuresAsWarnings": false,
         "ignoreDefinitionFiles": false,
       }
-    ]
+    ],
+    "paths": {
+      "src/*": [
+        "src/*"
+      ],
+    }
   },
   "include": [
     "**/*.ts"
   ],
+  "exclude": [
+    "node_modules",
+  ]
 }
