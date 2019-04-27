@@ -2,7 +2,7 @@ import * as Phaser from 'phaser';
 import Scenes from './scenes';
 
 const gameConfig: GameConfig = {
-  title: 'Sample',
+  title: 'Currency Trader',
 
   type: Phaser.AUTO,
 
