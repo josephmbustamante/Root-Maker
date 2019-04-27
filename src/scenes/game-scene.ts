@@ -2,16 +2,16 @@
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
   visible: false,
-  key: 'Exchange',
+  key: 'Game',
 };
 
-export class ExchangeScene extends Phaser.Scene {
+export class GameScene extends Phaser.Scene {
   constructor() {
     super(sceneConfig);
   }
 
   public create() {
-    this.add.image(0, 0, 'sample');
+    this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'sample');
   }
 
   public update() {
