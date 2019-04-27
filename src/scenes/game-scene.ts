@@ -1,4 +1,4 @@
-import * as Domain from '../domain';
+import * as Domain from 'src/domain';
 import * as _ from 'lodash';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
