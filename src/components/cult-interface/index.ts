@@ -66,16 +66,24 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
 
 const cultHappinessX = 550;
 
-const cultHappinessTextY = 500;
-const cultHappinessMeterY = 550;
+const cultHappinessTextY = 450;
+const cultHappinessMeterY = 500;
 
 const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
   container.add([
-    scene.add.text(cultHappinessX, cultHappinessTextY, 'Follower Happiness', optionsTextStyle),
+    scene.add.text(cultHappinessX, cultHappinessTextY, 'Follower Happiness'),
     scene.add.rectangle(cultHappinessX, cultHappinessMeterY, 400, 50, 0x888888).setOrigin(0, 0),
   ]);
 };
 
-const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+const donationInputTextX = 550;
+const donationInputButtonX = 850;
 
+const donationInputY = 650;
+
+const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+  container.add([
+    scene.add.text(donationInputTextX, donationInputY, 'Suggested Weekly Donation'),
+    scene.add.text(donationInputButtonX, donationInputY, 'R 2,000'),
+  ]);
 };
