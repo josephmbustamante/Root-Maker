@@ -31,6 +31,7 @@ export type Transaction = {
   transactionType: "Credit" | "Debit"
 }
 export type Account = {
+  kind: "trading" | "root",
   name: string,
   currency: Currency,
   balance: number,
@@ -56,12 +57,13 @@ export type DomainState = {
   events: Phaser.Events.EventEmitter,
 }
 
-export function createAccount(name: string, startingBalance: number, currency: Currency): Account {
-  let newAccount =  {
+export function createAccount(name: string, startingBalance: number, currency: Currency, isRoot: boolean): Account {
+  let newAccount: Account =  {
+    kind: isRoot ? "root" : "trading",
     name: name,
     currency: currency,
     balance: startingBalance,
-    ledger: []
+    ledger: [],
   }
   if (startingBalance > 0) {
     newAccount.ledger.push({amount: startingBalance, transactionType: "Credit" });
@@ -96,7 +98,7 @@ export function recordTrade(source: Account, destination: Account, sourceAmount:
 const MIN_STARTING_EXCHANGE_RATE = 0.25;
 const MAX_STARTING_EXCHANGE_RATE = 4;
 const MIN_CURRENCY_EXCHANGE_RATE = 0.001;
-const MAX_CURRENCY_EXCHANGE_RATE = 99999;
+const MAX_CURRENCY_EXCHANGE_RATE = 999;
 
 function randomDecimalBetween(min: number, max: number): number {
   return Math.random() * (max - min) + min;
@@ -119,7 +121,7 @@ export function initState(initData: TradingInitData): DomainState {
   });
   let currencies = nations.map(n => n.currency);
   let accounts: Account[] = currencies.map(c => {
-    return createAccount(c.name, 0, c);
+    return createAccount(c.name, 0, c, false);
   });
   let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1 };
 
@@ -129,19 +131,21 @@ export function initState(initData: TradingInitData): DomainState {
     tradeAccounts: accounts,
     tradeLedger: { trades: [] },
     rootCurrency: rootCurrency,
-    rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency),
+    rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
     events: new Phaser.Events.EventEmitter(),
   }
 }
 
 export function runCurrencyFluctuations(state: DomainState) {
-  console.log('fluctuating');
-  state.tradeCurrencies.forEach(currency => {
-    currency.exchangeRate = currency.exchangeRate * randomDecimalBetween(0.85, 1.15);
+  state.nations.forEach(nation => {
+    let currency = nation.currency;
+    let fluxMultiplier = nation.activeEvents.reduce((i, event) => i * event.fluxMultiplier, 1);
+    let baseMultiplier = nation.activeEvents.reduce((i, event) => i * event.baseMultiplier, 1);
+    currency.exchangeRate = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier;
     if (currency.exchangeRate < MIN_CURRENCY_EXCHANGE_RATE) {
       currency.exchangeRate = MIN_CURRENCY_EXCHANGE_RATE;
     }
-    else if (currency.exchangeRate < MAX_CURRENCY_EXCHANGE_RATE) {
+    else if (currency.exchangeRate > MAX_CURRENCY_EXCHANGE_RATE) {
       currency.exchangeRate = MAX_CURRENCY_EXCHANGE_RATE;
     }
   });
