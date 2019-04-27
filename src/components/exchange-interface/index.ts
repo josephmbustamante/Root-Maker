@@ -34,8 +34,8 @@ const currencyStyle = { fontSize: '14px', color: '#888888' };
 
 const countryX = 50;
 const currencyX = 200;
-const amountOwnedX = 350;
-const exchangeRateX = 500;
+const exchangeRateX = 350;
+const amountOwnedX = 500;
 
 const rootInfoX = 50;
 
