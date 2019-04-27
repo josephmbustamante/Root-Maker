@@ -1,5 +1,5 @@
-import * as Domain from '../../domain';
-import * as Shared from '../../shared';
+import * as Domain from 'src/domain';
+import * as Shared from 'src/shared';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -46,6 +46,8 @@ const rootInfoX = 50;
 
 const sectionHeaderY = 100;
 const headerColumnY = 200;
+const currencyRowStartY = 250;
+const currencyRowHeight = 50;
 
 const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: Domain.DomainState) => {
   const currencyDisplay: CurrencyDisplay = [];
@@ -62,10 +64,10 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
 
-    const country = scene.add.text(countryX, 250 + (50 * index), nation.name, currencyStyle);
-    const currency = scene.add.text(currencyX, 250 + (50 * index), nation.currency.name, currencyStyle);
-    const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), account.balance.toFixed(2), currencyStyle);
-    const exchangeRate = scene.add.text(exchangeRateX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
+    const country = scene.add.text(countryX, currencyRowStartY + (currencyRowHeight * index), nation.name, currencyStyle);
+    const currency = scene.add.text(currencyX, currencyRowStartY + (currencyRowHeight * index), nation.currency.name, currencyStyle);
+    const amountOwned = scene.add.text(amountOwnedX, currencyRowStartY + (currencyRowHeight * index), account.balance.toFixed(2), currencyStyle);
+    const exchangeRate = scene.add.text(exchangeRateX, currencyRowStartY + (currencyRowHeight * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
 
     container.add([country, currency, amountOwned, exchangeRate]);
 
@@ -78,7 +80,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
     });
 
-    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
+    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, currencyRowStartY + (currencyRowHeight * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
     const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', currencyStyle).setInteractive({ cursor: 'pointer' });
 
     container.add([buyButton, sellButton]);
