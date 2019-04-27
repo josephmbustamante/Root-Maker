@@ -1,6 +1,7 @@
 import * as Domain from 'src/domain';
 import * as _ from 'lodash';
 import * as ExchangeInterface from '../components/exchange-interface';
+import * as CultInterface from '../components/cult-interface';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -10,7 +11,6 @@ const sceneConfig: Phaser.Scenes.Settings.Config = {
 
 export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
-  currencyDisplay: ExchangeInterface.CurrencyDisplay;
 
   domainTickTime = 5000; // milliseconds
   timeSinceLastTick = 0;
@@ -31,9 +31,18 @@ export class GameScene extends Phaser.Scene {
       ],
     });
 
-    this.currencyDisplay = [];
+    this.add.text(50, 50, 'EXCHANGE').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      cultContainer.setVisible(false);
+      exchangeContainer.setVisible(true);
+    });
 
-    ExchangeInterface.createExchangeInterface(this, this.currencyDisplay, this.domainState);
+    this.add.text(200, 50, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      exchangeContainer.setVisible(false);
+      cultContainer.setVisible(true);
+    });
+
+    const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState);
+    const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
 
     this.createNewsTicker(50, this.game.scale.height - 50);
   }
