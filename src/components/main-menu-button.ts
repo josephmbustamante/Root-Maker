@@ -10,7 +10,7 @@ const buttonActiveStyle = {
   fill: '#000000',
 };
 
-export class MenuButton extends Phaser.GameObjects.Text {
+export class MainMenuButton extends Phaser.GameObjects.Text {
   constructor(scene: Phaser.Scene, x: number, y: number, text: string, onClick?: () => void) {
     super(scene, x, y, text, buttonRestStyle);
     scene.add.existing(this);
