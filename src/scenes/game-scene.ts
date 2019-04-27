@@ -31,8 +31,18 @@ export class GameScene extends Phaser.Scene {
       ],
     });
 
+    this.add.text(50, 50, 'EXCHANGE').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      cultContainer.setVisible(false);
+      exchangeContainer.setVisible(true);
+    });
+
+    this.add.text(200, 50, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      exchangeContainer.setVisible(false);
+      cultContainer.setVisible(true);
+    });
+
     const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState);
-    const cultContainer = CultInterface.createCultInterface(this);
+    const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
 
     this.createNewsTicker(50, this.game.scale.height - 50);
   }
