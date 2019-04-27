@@ -55,6 +55,8 @@ export function createAccount(name: string, startingBalance: number, currency: C
 }
 
 export function recordTrade(source: Account, destination: Account, sourceAmount: number, sourceToDestinationExchangeRate: number, tradeLedger: TradeLedger, eventEmitter: Phaser.Events.EventEmitter) {
+  console.log(arguments);
+
   if (source.balance >= sourceAmount) {
     source.ledger.push({amount: sourceAmount, transactionType: "Debit"});
     source.balance -= sourceAmount;
@@ -71,8 +73,7 @@ export function recordTrade(source: Account, destination: Account, sourceAmount:
     tradeLedger.trades.push(newTrade);
 
     eventEmitter.emit(DomainEvents.tradeCompleted, newTrade);
-    eventEmitter.emit(DomainEvents.accountBalanceChanged, source);
-    eventEmitter.emit(DomainEvents.accountBalanceChanged, destination);
+    eventEmitter.emit(DomainEvents.accountBalanceChanged, { source, destination });
   } else {
     eventEmitter.emit(DomainEvents.tradeFailed, DomainErrors.tradeFailed_InsufficientFunds);
   }

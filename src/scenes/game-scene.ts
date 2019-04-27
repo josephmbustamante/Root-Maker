@@ -1,4 +1,4 @@
-import * as Domain from '../domain/trading';
+import * as Domain from '../domain';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -38,7 +38,7 @@ export class GameScene extends Phaser.Scene {
 
     this.currencyDisplay = [];
 
-    this.createExchangeInterface(this);
+    this.createExchangeInterface();
 
     // this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'sample');
     this.createNewsTicker(0, 0);
@@ -53,26 +53,32 @@ export class GameScene extends Phaser.Scene {
       console.log('tick!');
       this.timeSinceLastTick = 0;
       Domain.runCurrencyFluctuations(this.domainState, this.events);
+
+      const testAccount = this.domainState.tradeAccounts[0];
+      Domain.recordTrade(this.domainState.rootAccount, testAccount, 1, testAccount.currency.exchangeRate, this.domainState.tradeLedger, this.events);
+      // TODO
+      this.addStory(`Story ${this.counter}`);
+      this.counter++;
+      this.updateStories();
     }
 
-    // TODO
-    this.addStory(`Story ${this.counter}`);
-    this.counter++;
-    this.updateStories();
   }
 
-  private updateCurrencyDisplay() {
-    if (this.currencyDisplay.length > 0) {
-      this.currencyDisplay.forEach((display, index) => {
-        const correspondingCurrency = this.domainState.tradeCurrencies[index]; // TODO - make this better
-        display.valueText.setText(`${correspondingCurrency.exchangeRate}`);
-      });
-    }
-  }
-
-  private createExchangeInterface = (scene: Phaser.Scene) => {
+  private createExchangeInterface = () => {
     this.createBuyInterface();
     this.createSellInterface();
+
+    this.createInfoInterface();
+  }
+
+  private createInfoInterface() {
+    const rootInfoText = this.add.text(this.nameColumnX, 800, 'Root:', this.columnHeaderStyle);
+    const rootValueText = this.add.text(rootInfoText.x + rootInfoText.width + 20, 800, `${this.domainState.rootAccount.balance}`, this.columnHeaderStyle);
+
+    this.events.on(Domain.DomainEvents.accountBalanceChanged, ({ source, destination }: { source: Domain.Account, destination: Domain.Account }) => {
+      console.log('updating root', source.name, source.balance, destination.name, destination.balance)
+      rootValueText.setText(this.domainState.rootAccount.balance.toFixed(2));
+    });
   }
 
   private createBuyInterface = () => {
@@ -86,10 +92,10 @@ export class GameScene extends Phaser.Scene {
     this.domainState.tradeCurrencies.forEach((currency, index) => {
       this.add.text(this.nameColumnX, 250 + (50 * index), currency.name, this.currencyStyle);
 
-      const valueText = this.add.text(this.currentValueColumnX, 250 + (50 * index), `${currency.exchangeRate}`, this.currencyStyle);
+      const valueText = this.add.text(this.currentValueColumnX, 250 + (50 * index), currency.exchangeRate.toFixed(2), this.currencyStyle);
       this.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
         console.log(`Updating text for ${currency.name} --- text element: ${valueText}`);
-        valueText.setText(`${currency.exchangeRate}`)
+        valueText.setText(currency.exchangeRate.toFixed(2));
       });
 
       this.add.text(this.buyColumnX, 250 + (50 * index), '+', this.currencyStyle);
