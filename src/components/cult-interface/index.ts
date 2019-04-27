@@ -20,7 +20,7 @@ const cult = {
 const infoRowStyle = { fontSize: '16px', color: '#888888' };
 
 const infoRowTextX = 50;
-const infoRowValueX = 500;
+const infoRowValueX = 450;
 
 const infoRowStartY = 100;
 const infoRowHeight = 50;
@@ -41,6 +41,22 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
   ]);
 };
 
-const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+const optionsTextStyle = { fontSize: '16px', color: '#FFFFFF' };
 
+const optionsRowTextX = 550;
+const optionsRowButtonX = 850;
+
+const optionsRowStartY = 100;
+
+const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+  container.add([
+    scene.add.text(optionsRowTextX, optionsRowStartY, 'Build Promotional Website', optionsTextStyle),
+    scene.add.text(optionsRowButtonX, optionsRowStartY, 'R 1,000,000', optionsTextStyle),
+
+    scene.add.text(optionsRowTextX, optionsRowStartY + infoRowHeight * 1, 'Construct Church', optionsTextStyle),
+    scene.add.text(optionsRowButtonX, optionsRowStartY + infoRowHeight * 1, 'R 3,000,000', optionsTextStyle),
+
+    scene.add.text(optionsRowTextX, optionsRowStartY + infoRowHeight * 2, 'Build Complex', optionsTextStyle),
+    scene.add.text(optionsRowButtonX, optionsRowStartY + infoRowHeight * 2, 'R 15,000,000', optionsTextStyle),
+  ]);
 };
