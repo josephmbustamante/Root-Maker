@@ -44,7 +44,6 @@ export class GameScene extends Phaser.Scene {
 
     this.createExchangeInterface();
 
-    // this.add.image(window.innerWidth / 2, window.innerHeight / 2, 'sample');
     this.createNewsTicker(50, this.game.scale.height - 50);
   }
 
@@ -112,14 +111,11 @@ export class GameScene extends Phaser.Scene {
       const sellButton = this.add.text(buyButton.x + 20, buyButton.y, '-', this.currencyStyle).setInteractive({ cursor: 'pointer' });
 
       buyButton.on('pointerdown', (pointer) => {
-        console.log('buy buy buy!!!', this.domainState.rootAccount)
         Domain.recordTrade(this.domainState.rootAccount, account, this.domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, this.domainState);
       });
       sellButton.on('pointerdown', (pointer) => {
         const exchangeRate = this.domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-        console.log('sellllllllllll!!!', this.domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, exchangeRate)
         Domain.recordTrade(account, this.domainState.rootAccount, 1, exchangeRate, this.domainState);
-        // Domain.recordTrade(this.domainState.rootAccount, account, -1, account.currency.exchangeRate, this.domainState);
       });
 
       this.currencyDisplay.push({ currencyName: currency.name, valueText });
