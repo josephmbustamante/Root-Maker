@@ -11,7 +11,7 @@ export class TickerScene extends Phaser.Scene {
   }
 
   public create() {
-    this.add.image(0, 0, 'sample');
+    this.add.image(window.innerWidth, window.innerHeight, 'sample');
   }
 
   public update() {
