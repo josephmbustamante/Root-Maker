@@ -58,9 +58,10 @@ export class GameScene extends Phaser.Scene {
       const testAccount = this.domainState.tradeAccounts[0];
       Domain.recordTrade(this.domainState.rootAccount, testAccount, 1, testAccount.currency.exchangeRate, this.domainState);
 
+      Domain.runRandomNationEvents(this.domainState);
+      Domain.checkForExpiringNationEvents(this.domainState);
     }
 
-    Domain.runRandomNationEvents(this.domainState);
     this.updateStories();
   }
 
@@ -122,8 +123,11 @@ export class GameScene extends Phaser.Scene {
     this.tickerX = x;
     this.tickerY = y;
     this.add.text(x, y, 'BREAKING NEWS');
-    this.domainState.events.on(Domain.DomainEvents.nationEventOccurred, (nation, event) => {
-      this.addStory(`${nation.name} ${event.headline}`);
+    this.domainState.events.on(Domain.DomainEvents.nationEventOccurred, (nation, headline) => {
+      this.addStory(`${nation.name} ${headline}`);
+    });
+    this.domainState.events.on(Domain.DomainEvents.nationEventEnded, (nation, headline) => {
+      this.addStory(`${nation.name} ${headline}`);
     });
     this.updateStories();
   }
