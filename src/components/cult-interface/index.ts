@@ -6,6 +6,8 @@ export const createCultInterface = (scene: Phaser.Scene) => {
 
   createCultInfo(scene, cultContainer);
   createCultOptions(scene, cultContainer);
+  createCultHappinessMeter(scene, cultContainer);
+  createCultSuggestedDonationInput(scene, cultContainer);
 
   return cultContainer;
 };
@@ -59,4 +61,21 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
     scene.add.text(optionsRowTextX, optionsRowStartY + infoRowHeight * 2, 'Build Complex', optionsTextStyle),
     scene.add.text(optionsRowButtonX, optionsRowStartY + infoRowHeight * 2, 'R 15,000,000', optionsTextStyle),
   ]);
+
+};
+
+const cultHappinessX = 550;
+
+const cultHappinessTextY = 500;
+const cultHappinessMeterY = 550;
+
+const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+  container.add([
+    scene.add.text(cultHappinessX, cultHappinessTextY, 'Follower Happiness', optionsTextStyle),
+    scene.add.rectangle(cultHappinessX, cultHappinessMeterY, 400, 50, 0x888888).setOrigin(0, 0),
+  ]);
+};
+
+const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+
 };
