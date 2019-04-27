@@ -37,22 +37,31 @@ const createExchangeInterface = (scene: Phaser.Scene) => {
 };
 
 const createBuyInterface = (scene: Phaser.Scene) => {
-  scene.add.text(150, 100, 'BUY');
+  const buyHeaderStyle = { fontSize: '32px', color: '#44FF44' };
+  const columnHeaderStyle = { fontSize: '24px', color: '#FFFFFF' };
+  const currencyStyle = { fontSize: '20px', color: '#888888' };
+
+  scene.add.text(150, 100, 'BUY', buyHeaderStyle);
 
   const nameColumnX = 100;
   const currentValueColumnX = 300;
+  const buyColumnX = 450;
+
   const headerColumnY = 200;
 
-  scene.add.text(nameColumnX, headerColumnY, 'Name');
-  const currentValueText = scene.add.text(currentValueColumnX, headerColumnY, 'Current Value');
+  scene.add.text(nameColumnX, headerColumnY, 'NAME', columnHeaderStyle);
+  const currentValueText = scene.add.text(currentValueColumnX, headerColumnY, 'VALUE', columnHeaderStyle);
   const valueX = currentValueText.width / 2;
 
   currencies.forEach((currency, index) => {
-    scene.add.text(nameColumnX, 300 + (50 * index), currency.name);
-    scene.add.text(currentValueColumnX + valueX, 300 + (50 * index), `${currency.currentValue}`);
+    scene.add.text(nameColumnX, 250 + (50 * index), currency.name, currencyStyle);
+    scene.add.text(currentValueColumnX + valueX, 250 + (50 * index), `${currency.currentValue}`, currencyStyle);
+    scene.add.text(buyColumnX, 250 + (50 * index), '+', currencyStyle);
   });
 };
 
 const createSellInterface = (scene: Phaser.Scene) => {
-  scene.add.text(750, 100, 'SELL');
+  const sellHeaderStyle = { fontSize: '32px', color: '#FF4444' };
+
+  scene.add.text(750, 100, 'SELL', sellHeaderStyle);
 };
