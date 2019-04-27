@@ -18,11 +18,11 @@ export const createExchangeInterface = (scene: Phaser.Scene, currencyDisplay: Cu
 };
 
 const getInfoColumnWidth = (scene: Phaser.Scene) => {
-  return Shared.getGameWidth(scene) * 0.8;
+  return Shared.getGameWidth(scene) * 0.7;
 };
 
 const getBuyColumnWidth = (scene: Phaser.Scene) => {
-  return Shared.getGameWidth(scene) * 0.1;
+  return Shared.getGameWidth(scene) * 0.075;
 };
 
 const infoHeaderStyle = { fontSize: '32px', color: '#4444FF' };
@@ -52,14 +52,33 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
   scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle);
 
   domainState.nations.forEach((nation, index) => {
+    const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
+
     const country = scene.add.text(countryX, 250 + (50 * index), nation.name, currencyStyle);
     const currency = scene.add.text(currencyX, 250 + (50 * index), nation.currency.name, currencyStyle);
-    const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
+    const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), account.balance.toFixed(2), currencyStyle);
     const exchangeRate = scene.add.text(exchangeRateX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
+
+
+    domainState.events.on(Domain.DomainEvents.accountBalanceChanged, () => {
+      amountOwned.setText(account.balance.toFixed(2));
+    });
 
     domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
       console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
+    });
+
+    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
+    const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', currencyStyle).setInteractive({ cursor: 'pointer' });
+
+    buyButton.on('pointerdown', (pointer) => {
+      Domain.recordTrade(domainState.rootAccount, account, domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, domainState);
+    });
+
+    sellButton.on('pointerdown', (pointer) => {
+      const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
+      Domain.recordTrade(account, domainState.rootAccount, 1, exchangeRate, domainState);
     });
 
     currencyDisplay.push({ country, currency, amountOwned, exchangeRate });
