@@ -31,6 +31,7 @@ const sellHeaderStyle = { fontSize: '32px', color: '#FF4444' };
 
 const columnHeaderStyle = { fontSize: '16px', color: '#FFFFFF' };
 const currencyStyle = { fontSize: '14px', color: '#888888' };
+const selectedStyle = { fontSize: '14px', color: '#FF4444' };
 
 const countryX = 50;
 const currencyX = 200;
@@ -72,17 +73,32 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
     const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', currencyStyle).setInteractive({ cursor: 'pointer' });
 
-    buyButton.on('pointerdown', (pointer) => {
-      Domain.recordTrade(domainState.rootAccount, account, domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, domainState);
+    buyButton.on('pointerdown', () => {
+      Domain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
     });
 
-    sellButton.on('pointerdown', (pointer) => {
+    sellButton.on('pointerdown', () => {
       const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-      Domain.recordTrade(account, domainState.rootAccount, 1, exchangeRate, domainState);
+      Domain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
     });
 
     currencyDisplay.push({ country, currency, amountOwned, exchangeRate });
   });
+
+  const y = (domainState.nations.length * 50) + 300;
+
+  let button = scene.add.text(x, y, `1`, currencyStyle).setInteractive({ cursor: 'pointer' });
+  button.on('pointerdown', () => {
+    Domain.setTradeAmount(domainState, 1);
+  });
+
+  [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
+    button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), currencyStyle).setInteractive({ cursor: 'pointer' });
+    button.on('pointerdown', () => {
+      Domain.setTradeAmount(domainState, amount);
+    });
+  });
+
 };
 
 const createBuyInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {

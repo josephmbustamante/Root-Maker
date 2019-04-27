@@ -59,6 +59,7 @@ export type DomainState = {
   rootCurrency: Currency,
   rootAccount: Account,
   events: Phaser.Events.EventEmitter,
+  tradeAmount: number;
 }
 
 export function createAccount(name: string, startingBalance: number, currency: Currency, isRoot: boolean): Account {
@@ -130,6 +131,7 @@ export function initState(initData: TradingInitData): DomainState {
   let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1 };
 
   return {
+    tradeAmount: 1,
     nations: nations,
     tradeCurrencies: currencies,
     tradeAccounts: accounts,
@@ -246,4 +248,8 @@ export function runRandomNationEvents(state: DomainState) {
       setActiveEventOnNation(event, chosenNation, state);
     }
   }
+}
+
+export function setTradeAmount(state: DomainState, tradeAmount: number) {
+  state.tradeAmount = tradeAmount;
 }
