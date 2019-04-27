@@ -12,7 +12,7 @@ export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
   currencyDisplay: ExchangeInterface.CurrencyDisplay;
 
-  domainTickTime = 2000; // milliseconds
+  domainTickTime = 5000; // milliseconds
   timeSinceLastTick = 0;
 
   constructor() {
