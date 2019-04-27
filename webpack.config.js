@@ -22,9 +22,9 @@ module.exports = {
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
-    modules: [path.resolve(__dirname, '../modules'), 'node_modules'],
+    modules: [path.resolve(__dirname, 'modules'), 'node_modules'],
     alias: {
-      src: path.resolve(__dirname, '../src'),
+      src: path.resolve(__dirname, 'src'),
     },
   },
 
