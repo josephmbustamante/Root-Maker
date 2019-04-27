@@ -16,7 +16,8 @@ export class GameScene extends Phaser.Scene {
   currencyStyle = { fontSize: '20px', color: '#888888' };
   nameColumnX = 100;
   currentValueColumnX = 300;
-  buyColumnX = 450;
+  currentOwnedColumnX = 450;
+  buyColumnX = 600;
 
   headerColumnY = 200;
 
@@ -88,11 +89,20 @@ export class GameScene extends Phaser.Scene {
 
     this.add.text(this.nameColumnX, this.headerColumnY, 'NAME', this.columnHeaderStyle);
     this.add.text(this.currentValueColumnX, this.headerColumnY, 'VALUE', this.columnHeaderStyle);
+    this.add.text(this.currentOwnedColumnX, this.headerColumnY, 'OWNED', this.columnHeaderStyle);
 
     this.domainState.tradeCurrencies.forEach((currency, index) => {
       this.add.text(this.nameColumnX, 250 + (50 * index), currency.name, this.currencyStyle);
 
+      const account = this.domainState.tradeAccounts.find((account) => account.currency.name === currency.name);
+
       const valueText = this.add.text(this.currentValueColumnX, 250 + (50 * index), currency.exchangeRate.toFixed(2), this.currencyStyle);
+      const ownedText = this.add.text(this.currentOwnedColumnX, 250 + (50 * index),  account.balance.toFixed(2), this.currencyStyle);
+
+      this.domainState.events.on(Domain.DomainEvents.accountBalanceChanged, () => {
+        ownedText.setText(account.balance.toFixed(2));
+      });
+
       this.domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
         console.log(`Updating text for ${currency.name} --- text element: ${valueText}`);
         valueText.setText(currency.exchangeRate.toFixed(2));
@@ -100,15 +110,16 @@ export class GameScene extends Phaser.Scene {
 
       const buyButton = this.add.text(this.buyColumnX, 250 + (50 * index), '+', this.currencyStyle).setInteractive({ cursor: 'pointer' });
       const sellButton = this.add.text(buyButton.x + 20, buyButton.y, '-', this.currencyStyle).setInteractive({ cursor: 'pointer' });
-      const account = this.domainState.tradeAccounts.find((account) => account.currency.name === currency.name);
 
       buyButton.on('pointerdown', (pointer) => {
-        console.log('buy buy buy!!!')
-        Domain.recordTrade(this.domainState.rootAccount, account, 1, account.currency.exchangeRate, this.domainState);
+        console.log('buy buy buy!!!', this.domainState.rootAccount)
+        Domain.recordTrade(this.domainState.rootAccount, account, this.domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, this.domainState);
       });
       sellButton.on('pointerdown', (pointer) => {
-        console.log('sellllllllllll!!!')
-        Domain.recordTrade(account, this.domainState.rootAccount, 1, account.currency.exchangeRate, this.domainState);
+        const exchangeRate = this.domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
+        console.log('sellllllllllll!!!', this.domainState.rootAccount.currency.exchangeRate, account.currency.exchangeRate, exchangeRate)
+        Domain.recordTrade(account, this.domainState.rootAccount, 1, exchangeRate, this.domainState);
+        // Domain.recordTrade(this.domainState.rootAccount, account, -1, account.currency.exchangeRate, this.domainState);
       });
 
       this.currencyDisplay.push({ currencyName: currency.name, valueText });
