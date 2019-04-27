@@ -11,6 +11,8 @@
     "dev": "webpack-dev-server"
   },
   "dependencies": {
+    "@types/lodash": "^4.14.123",
+    "lodash": "^4.17.11",
     "phaser": "^3.16.1"
   },
   "devDependencies": {
