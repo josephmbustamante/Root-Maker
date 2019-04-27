@@ -20,15 +20,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   public create() {
-    this.domainState = Domain.initState({
-      rootCurrencyName: 'root',
-      rootCurrencyStartingAmount: 100,
-      nations: [
-        { currency: 'Duller', nation: 'Andromeda' },
-        { currency: 'When', nation: 'Corennia' },
-        { currency: 'Prawn', nation: 'Great Burton' },
-        { currency: 'Pesto', nation: 'Median' },
-      ],
+    this.domainState = Domain.initDomainState({
+      trading: {
+        rootCurrencyName: 'root',
+        rootCurrencyStartingAmount: 100,
+        nations: [
+          { currency: 'Duller', nation: 'Andromeda' },
+          { currency: 'When', nation: 'Corennia' },
+          { currency: 'Prawn', nation: 'Great Burton' },
+          { currency: 'Pesto', nation: 'Median' },
+        ],
+      },
     });
 
     this.add.text(50, 50, 'EXCHANGE').setInteractive({ useHandCursor: true }).on('pointerup', () => {
@@ -53,11 +55,6 @@ export class GameScene extends Phaser.Scene {
     if (this.timeSinceLastTick >= this.domainTickTime) {
       console.log('tick!');
       this.timeSinceLastTick = 0;
-      Domain.runCurrencyFluctuations(this.domainState);
-
-
-      Domain.runRandomNationEvents(this.domainState);
-      Domain.checkForExpiringNationEvents(this.domainState);
     }
 
     this.updateStories();

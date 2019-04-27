@@ -115,7 +115,7 @@ export type TradingInitData = {
   rootCurrencyStartingAmount: number,
   nations: TradingInitNationalCurrency[]
 }
-export function initState(initData: TradingInitData): DomainState {
+export function initTradingDomainState(initData: TradingInitData): DomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
