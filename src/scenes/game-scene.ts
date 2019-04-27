@@ -55,8 +55,6 @@ export class GameScene extends Phaser.Scene {
       this.timeSinceLastTick = 0;
       Domain.runCurrencyFluctuations(this.domainState);
 
-      const testAccount = this.domainState.tradeAccounts[0];
-      Domain.recordTrade(this.domainState.rootAccount, testAccount, 1, testAccount.currency.exchangeRate, this.domainState);
 
     }
 
@@ -100,7 +98,18 @@ export class GameScene extends Phaser.Scene {
         valueText.setText(currency.exchangeRate.toFixed(2));
       });
 
-      this.add.text(this.buyColumnX, 250 + (50 * index), '+', this.currencyStyle);
+      const buyButton = this.add.text(this.buyColumnX, 250 + (50 * index), '+', this.currencyStyle).setInteractive({ cursor: 'pointer' });
+      const sellButton = this.add.text(buyButton.x + 20, buyButton.y, '-', this.currencyStyle).setInteractive({ cursor: 'pointer' });
+      const account = this.domainState.tradeAccounts.find((account) => account.currency.name === currency.name);
+
+      buyButton.on('pointerdown', (pointer) => {
+        console.log('buy buy buy!!!')
+        Domain.recordTrade(this.domainState.rootAccount, account, 1, account.currency.exchangeRate, this.domainState);
+      });
+      sellButton.on('pointerdown', (pointer) => {
+        console.log('sellllllllllll!!!')
+        Domain.recordTrade(account, this.domainState.rootAccount, 1, account.currency.exchangeRate, this.domainState);
+      });
 
       this.currencyDisplay.push({ currencyName: currency.name, valueText });
     });
