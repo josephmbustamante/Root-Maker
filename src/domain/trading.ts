@@ -136,7 +136,7 @@ export function initState(initData: TradingInitData): DomainState {
   }
 }
 
-export function runCurrencyFluctuations(state: DomainState, eventEmitter: Phaser.Events.EventEmitter) {
+export function runCurrencyFluctuations(state: DomainState) {
   state.nations.forEach(nation => {
     let currency = nation.currency;
     let fluxMultiplier = nation.activeEvents.reduce((i, event) => i * event.fluxMultiplier, 1);
@@ -149,7 +149,7 @@ export function runCurrencyFluctuations(state: DomainState, eventEmitter: Phaser
       currency.exchangeRate = MAX_CURRENCY_EXCHANGE_RATE;
     }
   });
-  eventEmitter.emit(DomainEvents.exchangeRatesChanged);
+  state.events.emit(DomainEvents.exchangeRatesChanged);
 }
 
 type NationEventType = {
