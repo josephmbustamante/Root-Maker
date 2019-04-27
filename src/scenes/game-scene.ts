@@ -72,7 +72,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createInfoInterface() {
-    const rootInfoText = this.add.text(this.nameColumnX, 800, 'Root:', this.columnHeaderStyle);
+    const rootInfoText = this.add.text(this.nameColumnX, this.game.scale.height - 150, 'Root:', this.columnHeaderStyle);
     const rootValueText = this.add.text(rootInfoText.x + rootInfoText.width + 20, 800, `${this.domainState.rootAccount.balance}`, this.columnHeaderStyle);
 
     this.domainState.events.on(Domain.DomainEvents.accountBalanceChanged, (account: Domain.Account) => {
