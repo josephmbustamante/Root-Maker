@@ -14,6 +14,7 @@ export enum DomainErrors {
 export type Currency = {
   name: string,
   exchangeRate: number,
+  trend: "up" | "down" | undefined,
 }
 export type Nation = {
   name: string,
@@ -119,7 +120,7 @@ export function initState(initData: TradingInitData): DomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
-      currency: {name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE) },
+      currency: {name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE), trend: undefined },
       activeEvents: [],
       historicalEvents: [],
     }
@@ -128,7 +129,7 @@ export function initState(initData: TradingInitData): DomainState {
   let accounts: Account[] = currencies.map(c => {
     return createAccount(c.name, 0, c, false);
   });
-  let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1 };
+  let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: undefined };
 
   return {
     tradeAmount: 1,
@@ -149,6 +150,7 @@ export function runCurrencyFluctuations(state: DomainState) {
     let baseMultiplier = nation.activeEvents.reduce((i, event) => i * event.baseMultiplier, 1);
     let change = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier - currency.exchangeRate;
     let scaledChange = (-3*(Math.log(currency.exchangeRate) * Math.LOG10E) + 6)/2 * (Math.abs(change)/change);
+    currency.trend = change > 0 ? "up" : "down";
     console.log("Changing fx", currency, change, scaledChange);
     currency.exchangeRate += scaledChange;
     if (currency.exchangeRate < MIN_CURRENCY_EXCHANGE_RATE) {

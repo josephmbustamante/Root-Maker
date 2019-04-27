@@ -4,6 +4,7 @@ import * as Shared from '../../shared';
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
   currency: Phaser.GameObjects.Text;
+  trend: Phaser.GameObjects.Text;
   amountOwned: Phaser.GameObjects.Text;
   exchangeRate: Phaser.GameObjects.Text;
 };
@@ -57,6 +58,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
 
     const country = scene.add.text(countryX, 250 + (50 * index), nation.name, currencyStyle);
     const currency = scene.add.text(currencyX, 250 + (50 * index), nation.currency.name, currencyStyle);
+    const trend = scene.add.text(currencyX + currency.width + 5, 250 + (50 * index), nation.currency.trend || '', currencyStyle);
     const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), account.balance.toFixed(2), currencyStyle);
     const exchangeRate = scene.add.text(exchangeRateX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
 
@@ -68,6 +70,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
       console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
+      trend.setText(nation.currency.trend || '');
     });
 
     const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
@@ -82,7 +85,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
       Domain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
     });
 
-    currencyDisplay.push({ country, currency, amountOwned, exchangeRate });
+    currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
   });
 
   const y = (domainState.nations.length * 50) + 300;
