@@ -22,5 +22,6 @@ export const handleTick = (domainState: DomainState) => {
   TradingDomain.checkForExpiringNationEvents(domainState);
 
   // Cult Domain Events
-  // TODO
+  CultDomain.addFollowersToCult(domainState);
+  CultDomain.generateRevenueFromCult(domainState);
 };
