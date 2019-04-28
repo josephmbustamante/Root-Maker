@@ -7,7 +7,7 @@ export enum DomainErrors {
 export type Currency = {
   name: string,
   exchangeRate: number,
-  trend: "up" | "down" | undefined,
+  trend: "up" | "down",
 }
 export type Nation = {
   name: string,
@@ -113,7 +113,7 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
-      currency: {name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE), trend: undefined },
+      currency: { name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE), trend: "up" } as Currency,
       activeEvents: [],
       historicalEvents: [],
     }
@@ -122,7 +122,7 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
   let accounts: Account[] = currencies.map(c => {
     return createAccount(c.name, 0, c, false);
   });
-  let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: undefined };
+  let rootCurrency: Currency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: "up" };
 
   return {
     tradeAmount: 1,
@@ -130,7 +130,7 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
     tradeCurrencies: currencies,
     tradeAccounts: accounts,
     tradeLedger: { trades: [] },
-    rootCurrency: rootCurrency,
+    rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
     events: new Phaser.Events.EventEmitter(),
   }

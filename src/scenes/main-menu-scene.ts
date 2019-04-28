@@ -1,6 +1,6 @@
 import * as Styles from 'src/shared/styles';
 import * as Shared from 'src/shared';
-import { MainMenuButton } from 'src/components/main-menu-button';
+import { createButton } from 'src/components/main-menu-button';
 import { createInputBox } from 'src/components/input-box';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
@@ -31,8 +31,9 @@ export class MainMenuScene extends Phaser.Scene {
     this.add.text(usernameTextX, usernameY + 5, 'Username:');
     createInputBox(this, usernameFieldX, usernameY, (text: string) => this.username = text, 12);
 
-    new MainMenuButton(this, loginX, loginY, 'LOGIN', () => {
+    const onClick = () => {
       this.scene.start('Game', { username: this.username });
-    });
+    };
+    createButton(this, loginX, loginY, 'LOGIN', onClick)
   }
 }

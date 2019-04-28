@@ -44,14 +44,19 @@ export class GameScene extends Phaser.Scene {
       },
     });
 
-    const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE');
+    const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
     exchangeTab.on('pointerup', () => {
+      cultTab.setStyle(Styles.unselectedTab);
+      exchangeTab.setStyle(Styles.selectedTab);
       cultContainer.setVisible(false);
       exchangeContainer.setVisible(true);
     });
 
-    this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    const cultTab = this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT', Styles.unselectedTab);
+    cultTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      exchangeTab.setStyle(Styles.unselectedTab);
+      cultTab.setStyle(Styles.selectedTab);
       exchangeContainer.setVisible(false);
       cultContainer.setVisible(true);
     });
@@ -61,20 +66,12 @@ export class GameScene extends Phaser.Scene {
     const logo = this.add.image(Styles.offset * 2, Styles.offset, 'logo-png').setOrigin(0, 0);
     // logo.setScale(0.3, 0.3); // necessary for the svg style
     addHorizontalScreenLine(this, 50);
-    const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
+    const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.listItemStyle);
     addRectangle(this, usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
     this.add.text(usernameText.x + usernameText.width + (Styles.offset * 3), 60 + Styles.offset / 2, this.username, { color: Styles.textColor });
 
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
-
-    addRectangle(this,
-      Styles.tradePage.currencyList.x,
-      Styles.tradePage.currencyList.y,
-      Styles.tradePage.currencyList.width,
-      Styles.tradePage.currencyList.height,
-      Styles.foregroundColorHex,
-    );
 
     const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState.trading);
     const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
