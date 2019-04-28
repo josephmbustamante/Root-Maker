@@ -157,6 +157,22 @@ const createRootInterface = (scene: GameScene, container: Phaser.GameObjects.Con
   });
 };
 
+
+function getBuyAmountText (scene: GameScene) {
+  const currencyAmount = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate);
+  const currencyType = scene.selectedAccount.currency.name;
+  const rootAmount = Shared.formatNumberForDisplay(scene.tradeAmount);
+  return `BUY ${currencyAmount} ${currencyType} FOR ${rootAmount} ROOT`
+};
+
+
+function getSellAmountText (scene: GameScene) {
+  const currencyAmount = Shared.formatNumberForDisplay(scene.tradeAmount);
+  const currencyType = scene.selectedAccount.currency.name;
+  const rootAmount = Shared.formatNumberForDisplay(scene.tradeAmount / scene.selectedAccount.currency.exchangeRate);
+  return `SELL ${currencyAmount} ${currencyType} FOR ${rootAmount} ROOT`
+};
+
 const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
@@ -185,25 +201,28 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
       scene.events.emit(GameEvents.tradeAmountChanged, amount);
     }
   }, undefined, true);
+  const buyAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getBuyAmountText(scene), Styles.tradeAmountText);
+
   buyContainer.add([
     spendAmountText,
     ...buyInputBox,
+    buyAmountText,
   ]);
-  const currencyText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, `CURRENCY: ${scene.selectedAccount.currency.name}`, Styles.listItemStyle);
 
-  const returnAmount = scene.tradeAmount * scene.selectedAccount.currency.exchangeRate;
-  const returnAmountText = scene.add.text(currencyText.x + currencyText.width + Styles.offset, 260, Shared.formatNumberForDisplay(returnAmount), Styles.listItemStyle);
-
-  const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
+  const sellAmountLabel = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
   const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
     const amount = Number.parseFloat(text);
     if (!Number.isNaN(amount)) {
       scene.events.emit(GameEvents.tradeAmountChanged, amount);
     }
   }, undefined, true);
+
+  const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getSellAmountText(scene), Styles.tradeAmountText);
+
   sellContainer.add([
-    sellAmountText,
+    sellAmountLabel,
     ...sellInputBox,
+    sellAmountText,
   ]);
 
   const buy = () => {
@@ -219,16 +238,18 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   }
 
   scene.events.on(GameEvents.selectedAccountChanged, (event) => {
-    currencyText.text = `CURRENCY: ${event.account.currency.name}`;
-    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
+    buyAmountText.text = getBuyAmountText(scene);
+    sellAmountText.text = getSellAmountText(scene);
   });
 
   scene.events.on(GameEvents.tradeAmountChanged, (event) => {
-    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
+    buyAmountText.text = getBuyAmountText(scene);
+    sellAmountText.text = getSellAmountText(scene);
   });
 
   domainState.events.on(DomainEvents.exchangeRatesChanged, (event) => {
-    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
+    buyAmountText.text = getBuyAmountText(scene);
+    sellAmountText.text = getSellAmountText(scene);
   });
 
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
