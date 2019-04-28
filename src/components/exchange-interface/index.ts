@@ -41,7 +41,7 @@ const exchangeRateX = 320;
 const trendX = 370;
 const trendBaseY = 207;
 const amountOwnedX = 450;
-const rootValue = 610;
+const rootValueX = 610;
 
 const rootInfoX = 50;
 
@@ -58,6 +58,10 @@ function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down')
   }
 }
 
+const getCurrentRootValueText = (account: Domain.Account, nation: Domain.Nation) => {
+  return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
+};
+
 const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDisplay, domainState: Domain.DomainState) => {
   const x = countryX;
   // scene.add.text(x, sectionHeaderY, 'INFO', infoHeaderStyle).setOrigin(0, 0);
@@ -66,7 +70,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
   scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle);
   scene.add.text(amountOwnedX, headerColumnY, 'AMT. OWNED', columnHeaderStyle);
   scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle);
-  scene.add.text(rootValue, headerColumnY, 'ROOT VALUE', columnHeaderStyle);
+  scene.add.text(rootValueX, headerColumnY, 'ROOT VALUE', columnHeaderStyle);
 
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
@@ -76,15 +80,18 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     let trend: Phaser.GameObjects.Image | undefined = createTrend(scene, lineItemHeight * index, nation.currency.trend);
     const amountOwned = scene.add.text(amountOwnedX, firstLineItemY + (lineItemHeight * index), account.balance.toFixed(2), currencyStyle);
     const exchangeRate = scene.add.text(exchangeRateX, firstLineItemY + (lineItemHeight * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
+    const rootValue = scene.add.text(rootValueX, firstLineItemY + (lineItemHeight * index), getCurrentRootValueText(account, nation), currencyStyle);
 
 
     domainState.events.on(Domain.DomainEvents.accountBalanceChanged, () => {
       amountOwned.setText(account.balance.toFixed(2));
+      rootValue.setText(getCurrentRootValueText(account, nation));
     });
 
     domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
       console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
+      rootValue.setText(getCurrentRootValueText(account, nation));
       if (trend) {
         trend.destroy();
       }
