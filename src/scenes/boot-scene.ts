@@ -69,5 +69,8 @@ export class BootScene extends Phaser.Scene {
 
     // Source: https://en.wikipedia.org/wiki/Lake_Michigan#/media/File:Lake_Michigan_from_Big_Sable_Point_lighthouse.jpg
     this.load.image('sample', 'assets/sample.jpg');
+    this.load.image('trend-up', 'assets/trend-up.svg');
+    this.load.image('trend-down', 'assets/trend-down.svg');
+    this.load.image('logo', 'assets/logo.png');
   }
 }

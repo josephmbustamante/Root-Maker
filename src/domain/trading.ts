@@ -1,19 +1,13 @@
 import * as Phaser from 'phaser';
+import { DomainEvents } from './events';
 
-export enum DomainEvents {
-  tradeCompleted = "domain.tradeCompleted",
-  tradeFailed = "domain.tradeFailed",
-  accountBalanceChanged = "domain.accountBalanceChanged",
-  exchangeRatesChanged = "domain.exchangeRatesChanged",
-  nationEventOccurred = "domain.nationEventOccurred",
-  nationEventEnded = "domain.nationEventEnded",
-}
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
 }
 export type Currency = {
   name: string,
   exchangeRate: number,
+  trend: "up" | "down" | undefined,
 }
 export type Nation = {
   name: string,
@@ -102,7 +96,7 @@ export function recordTrade(source: Account, destination: Account, sourceAmount:
 
 const MIN_STARTING_EXCHANGE_RATE = 0.25;
 const MAX_STARTING_EXCHANGE_RATE = 4;
-const MIN_CURRENCY_EXCHANGE_RATE = 0.001;
+const MIN_CURRENCY_EXCHANGE_RATE = 0.1;
 const MAX_CURRENCY_EXCHANGE_RATE = 999;
 
 function randomDecimalBetween(min: number, max: number): number {
@@ -115,11 +109,11 @@ export type TradingInitData = {
   rootCurrencyStartingAmount: number,
   nations: TradingInitNationalCurrency[]
 }
-export function initState(initData: TradingInitData): DomainState {
+export function initTradingDomainState(initData: TradingInitData): DomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
-      currency: {name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE) },
+      currency: {name: n.currency, exchangeRate: randomDecimalBetween(MIN_STARTING_EXCHANGE_RATE, MAX_STARTING_EXCHANGE_RATE), trend: undefined },
       activeEvents: [],
       historicalEvents: [],
     }
@@ -128,7 +122,7 @@ export function initState(initData: TradingInitData): DomainState {
   let accounts: Account[] = currencies.map(c => {
     return createAccount(c.name, 0, c, false);
   });
-  let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1 };
+  let rootCurrency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: undefined };
 
   return {
     tradeAmount: 1,
@@ -147,7 +141,11 @@ export function runCurrencyFluctuations(state: DomainState) {
     let currency = nation.currency;
     let fluxMultiplier = nation.activeEvents.reduce((i, event) => i * event.fluxMultiplier, 1);
     let baseMultiplier = nation.activeEvents.reduce((i, event) => i * event.baseMultiplier, 1);
-    currency.exchangeRate = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier;
+    let change = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier - currency.exchangeRate;
+    let scaledChange = (-3*(Math.log(currency.exchangeRate) * Math.LOG10E) + 6)/2 * (Math.abs(change)/change);
+    currency.trend = change > 0 ? "up" : "down";
+    console.log("Changing fx", currency, change, scaledChange);
+    currency.exchangeRate += scaledChange;
     if (currency.exchangeRate < MIN_CURRENCY_EXCHANGE_RATE) {
       currency.exchangeRate = MIN_CURRENCY_EXCHANGE_RATE;
     }
@@ -172,33 +170,33 @@ const nationEventTypes: NationEventType[] = [
     name: "War",
     eventStartHeadline: "has gone to war!",
     eventEndHeadline: "is no longer at war",
-    baseMultiplier: {min: 0.8, max: 0.9},
-    fluxMultiplier: {min: 1.2, max: 1.5},
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 1.0, max: 1.1},
     duration: {min: 30, max: 300}
   },
   {
     name: "Famine",
     eventStartHeadline: "is experiencing a famine",
     eventEndHeadline: "has sufficient food and water",
-    baseMultiplier: {min: 0.8, max: 0.9},
-    fluxMultiplier: {min: 0.8, max: 1.5},
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 1.0, max: 1.1},
     duration: {min: 30, max: 300}
   },
   {
     name: "Good day",
-    eventStartHeadline: "is having a particularly good day",
+    eventStartHeadline: "is having a particularly good time",
     eventEndHeadline: "is feeling average",
-    baseMultiplier: {min: 1.01, max: 1.1},
-    fluxMultiplier: {min: 1.1, max: 1.2},
-    duration: {min: 5, max: 10}
+    baseMultiplier: {min: 0.9, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 30, max: 300}
   },
   {
     name: "Great month",
     eventStartHeadline: "is enjoying success this month",
     eventEndHeadline: "seems fine",
-    baseMultiplier: {min: 1.01, max: 1.1},
-    fluxMultiplier: {min: 1.1, max: 1.2},
-    duration: {min: 30, max: 30}
+    baseMultiplier: {min: 0.9, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 30, max: 300}
   },
 ]
 const RANDOM_EVENT_THRESHOLD = 0.8;
