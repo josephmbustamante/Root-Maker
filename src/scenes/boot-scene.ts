@@ -71,5 +71,6 @@ export class BootScene extends Phaser.Scene {
     this.load.image('sample', 'assets/sample.jpg');
     this.load.image('trend-up', 'assets/trend-up.svg');
     this.load.image('trend-down', 'assets/trend-down.svg');
+    this.load.image('logo', 'assets/logo.png');
   }
 }

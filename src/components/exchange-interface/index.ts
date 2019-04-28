@@ -57,7 +57,7 @@ function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down')
 
 const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDisplay, domainState: Domain.DomainState) => {
   const x = countryX;
-  scene.add.text(x, sectionHeaderY, 'INFO', infoHeaderStyle).setOrigin(0, 0);
+  // scene.add.text(x, sectionHeaderY, 'INFO', infoHeaderStyle).setOrigin(0, 0);
 
   scene.add.text(countryX, headerColumnY, 'COUNTRY', columnHeaderStyle);
   scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle);
@@ -119,13 +119,13 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
 };
 
 const createBuyInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {
-  const x = getInfoColumnWidth(scene);
-  scene.add.text(x, sectionHeaderY, 'BUY', buyHeaderStyle).setOrigin(0, 0);
+  // const x = getInfoColumnWidth(scene);
+  // scene.add.text(x, sectionHeaderY, 'BUY', buyHeaderStyle).setOrigin(0, 0);
 };
 
 const createSellInterface = (scene: Phaser.Scene) => {
-  const x = getInfoColumnWidth(scene) + getBuyColumnWidth(scene);
-  scene.add.text(x, sectionHeaderY, 'SELL', sellHeaderStyle).setOrigin(0, 0);
+  // const x = getInfoColumnWidth(scene) + getBuyColumnWidth(scene);
+  // scene.add.text(x, sectionHeaderY, 'SELL', sellHeaderStyle).setOrigin(0, 0);
 };
 
 const createRootInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {

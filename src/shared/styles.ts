@@ -10,6 +10,8 @@ export const textColorHex = 0xCDCBC2;
 export const detailDarkColorHex = 0x817C6A;
 export const detailLightColorHex = 0xF2E9CC;
 
+export const textStyle = { fontSize: '14px', color: foregroundColor};
+
 export const offset = 10;
 
 export const width = 1024;
@@ -29,6 +31,8 @@ export const tradePage = {
     listItemY: 195,
   },
   transactionWidth: 287,
+  usernameWidth: 254,
+  usernameHeight: 30,
   inputWidth: 143,
   inputHeight: 39,
 }

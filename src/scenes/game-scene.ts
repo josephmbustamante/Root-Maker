@@ -38,7 +38,15 @@ export class GameScene extends Phaser.Scene {
 
     this.createNewsTicker(50, this.game.scale.height - 50);
 
+    const logo = this.add.image(Styles.offset * 2, Styles.offset, 'logo').setOrigin(0, 0);
+    // logo.setScale(0.3, 0.3); // necessary for the svg style
     addHorizontalScreenLine(this, 50);
+    const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
+    this.add.rectangle(usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex).setOrigin(0,0);
+
+    const box = this.add.rectangle(Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex).setOrigin(0,0);
+    const availableRootText = this.add.text(625, 70, 'AVAILABLE ROOT', Styles.textStyle);
+
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
 
