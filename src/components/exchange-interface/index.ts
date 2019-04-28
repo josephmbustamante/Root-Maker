@@ -3,7 +3,7 @@ import { DomainEvents } from 'src/domain';
 import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
-import { createButton } from '../main-menu-button';
+import { createButton } from '../button';
 import { createInputBox } from '../input-box';
 
 interface CurrencyDisplayRow {

@@ -1,6 +1,6 @@
 import * as Styles from 'src/shared/styles';
 import * as Shared from 'src/shared';
-import { createButton } from 'src/components/main-menu-button';
+import { createButton } from 'src/components/button';
 import { createInputBox } from 'src/components/input-box';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
