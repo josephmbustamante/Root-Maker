@@ -1,7 +1,8 @@
 import * as Styles from 'src/shared/styles';
-import * as Domain from 'src/domain';
+import { DomainEvents } from 'src/domain';
 import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
+import * as TradingDomain from 'src/domain/trading';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -13,11 +14,15 @@ interface CurrencyDisplayRow {
 
 export type CurrencyDisplay = CurrencyDisplayRow[];
 
-export const createExchangeInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDisplay, domainState: Domain.DomainState) => {
-  createInfoInterface(scene, currencyDisplay, domainState);
-  createBuyInterface(scene, domainState);
-  createSellInterface(scene);
-  createRootInterface(scene, domainState);
+export const createExchangeInterface = (scene: Phaser.Scene, domainState: TradingDomain.DomainState) => {
+  const exchangeContainer = scene.add.container(0, 0);
+
+  createInfoInterface(scene, exchangeContainer, domainState);
+  createBuyInterface(scene, exchangeContainer, domainState);
+  createSellInterface(scene, exchangeContainer);
+  createRootInterface(scene, exchangeContainer, domainState);
+
+  return exchangeContainer
 };
 
 const getInfoColumnWidth = (scene: Phaser.Scene) => {
@@ -59,19 +64,20 @@ function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down')
   }
 }
 
-const getCurrentRootValueText = (account: Domain.Account, nation: Domain.Nation) => {
+const getCurrentRootValueText = (account: TradingDomain.Account, nation: TradingDomain.Nation) => {
   return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
 };
 
-const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDisplay, domainState: Domain.DomainState) => {
+const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const x = countryX;
-  // scene.add.text(x, sectionHeaderY, 'INFO', infoHeaderStyle).setOrigin(0, 0);
+  const currencyDisplay: CurrencyDisplay = [];
 
-  scene.add.text(countryX, headerColumnY, 'COUNTRY', columnHeaderStyle);
-  scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle);
-  scene.add.text(amountOwnedX, headerColumnY, 'AMT. OWNED', columnHeaderStyle);
-  scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle);
-  scene.add.text(rootValueX, headerColumnY, 'ROOT VALUE', columnHeaderStyle);
+  container.add([
+    scene.add.text(countryX, headerColumnY, 'COUNTRY', columnHeaderStyle),
+    scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle),
+    scene.add.text(amountOwnedX, headerColumnY, 'AMT. OWNED', columnHeaderStyle),
+    scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle),
+  ]);
 
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
@@ -83,13 +89,14 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     const exchangeRate = scene.add.text(exchangeRateX, firstLineItemY + (lineItemHeight * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
     const rootValue = scene.add.text(rootValueX, firstLineItemY + (lineItemHeight * index), getCurrentRootValueText(account, nation), currencyStyle);
 
+    container.add([country, currency, amountOwned, exchangeRate]);
 
-    domainState.events.on(Domain.DomainEvents.accountBalanceChanged, () => {
+    domainState.events.on(DomainEvents.accountBalanceChanged, () => {
       amountOwned.setText(account.balance.toFixed(2));
       rootValue.setText(getCurrentRootValueText(account, nation));
     });
 
-    domainState.events.on(Domain.DomainEvents.exchangeRatesChanged, () => {
+    domainState.events.on(DomainEvents.exchangeRatesChanged, () => {
       console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
       rootValue.setText(getCurrentRootValueText(account, nation));
@@ -102,13 +109,15 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (lineItemHeight * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
     const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', currencyStyle).setInteractive({ cursor: 'pointer' });
 
+    container.add([buyButton, sellButton]);
+
     buyButton.on('pointerdown', () => {
-      Domain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
+      TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
     });
 
     sellButton.on('pointerdown', () => {
       const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-      Domain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+      TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
     });
 
     currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
@@ -118,36 +127,43 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
 
   let button = scene.add.text(x, y, `1`, currencyStyle).setInteractive({ cursor: 'pointer' });
   button.on('pointerdown', () => {
-    Domain.setTradeAmount(domainState, 1);
+    TradingDomain.setTradeAmount(domainState, 1);
   });
+  container.add([button]);
 
   [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
     button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), currencyStyle).setInteractive({ cursor: 'pointer' });
     button.on('pointerdown', () => {
-      Domain.setTradeAmount(domainState, amount);
+      TradingDomain.setTradeAmount(domainState, amount);
     });
+    container.add([button]);
   });
 
 };
 
-const createBuyInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {
-  // const x = getInfoColumnWidth(scene);
-  // scene.add.text(x, sectionHeaderY, 'BUY', buyHeaderStyle).setOrigin(0, 0);
+const createBuyInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+  const x = getInfoColumnWidth(scene);
+  container.add([
+    scene.add.text(x, sectionHeaderY, 'BUY', buyHeaderStyle).setOrigin(0, 0),
+  ]);
 };
 
-const createSellInterface = (scene: Phaser.Scene) => {
-  // const x = getInfoColumnWidth(scene) + getBuyColumnWidth(scene);
-  // scene.add.text(x, sectionHeaderY, 'SELL', sellHeaderStyle).setOrigin(0, 0);
+const createSellInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+  const x = getInfoColumnWidth(scene) + getBuyColumnWidth(scene);
+  container.add([
+    scene.add.text(x, sectionHeaderY, 'SELL', sellHeaderStyle).setOrigin(0, 0),
+  ]);
 };
 
-const createRootInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {
-
+const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.textStyle);
   const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
+  // // const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
   // const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
+  // const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 20, scene.game.scale.height - 150, domainState.rootAccount.balance.toFixed(2), columnHeaderStyle);
 
-  domainState.events.on(Domain.DomainEvents.accountBalanceChanged, (account: Domain.Account) => {
+  domainState.events.on(DomainEvents.accountBalanceChanged, (account: TradingDomain.Account) => {
     if (account.name === domainState.rootAccount.name) {
       console.log('updating root', account.name, account.balance)
       rootValueText.setText(domainState.rootAccount.balance.toFixed(2));

@@ -7,7 +7,7 @@ const buttonHoverStyle = {
 };
 
 const buttonActiveStyle = {
-  fill: '#000000',
+  fill: '#888888',
 };
 
 export class MainMenuButton extends Phaser.GameObjects.Text {

@@ -1,13 +1,6 @@
 import * as Phaser from 'phaser';
+import { DomainEvents } from './events';
 
-export enum DomainEvents {
-  tradeCompleted = "domain.tradeCompleted",
-  tradeFailed = "domain.tradeFailed",
-  accountBalanceChanged = "domain.accountBalanceChanged",
-  exchangeRatesChanged = "domain.exchangeRatesChanged",
-  nationEventOccurred = "domain.nationEventOccurred",
-  nationEventEnded = "domain.nationEventEnded",
-}
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
 }
@@ -116,7 +109,7 @@ export type TradingInitData = {
   rootCurrencyStartingAmount: number,
   nations: TradingInitNationalCurrency[]
 }
-export function initState(initData: TradingInitData): DomainState {
+export function initTradingDomainState(initData: TradingInitData): DomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,

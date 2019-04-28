@@ -1,4 +1,4 @@
-import { MainMenuButton } from "src/components/main-menu-button";
+import { MainMenuButton } from 'src/components/main-menu-button';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -15,7 +15,7 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   public create() {
-    this.add.text(100, 50, 'Sample', { fill: '#FFFFFF' }).setFontSize(24);
+    this.add.text(100, 50, 'Currency Trader', { fill: '#FFFFFF' }).setFontSize(24);
     new MainMenuButton(this, 100, 150, 'Start Game', () => {
       this.scene.start('Game');
     });

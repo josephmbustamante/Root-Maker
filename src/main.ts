@@ -3,7 +3,7 @@ import Scenes from './scenes';
 import * as Styles from 'src/shared/styles';
 
 const gameConfig: GameConfig = {
-  title: 'Sample',
+  title: 'Currency Trader',
 
   type: Phaser.AUTO,
 
