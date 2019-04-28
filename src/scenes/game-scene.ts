@@ -38,12 +38,14 @@ export class GameScene extends Phaser.Scene {
       },
     });
 
-    this.add.text(50, 50, 'EXCHANGE').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE');
+    exchangeTab.setInteractive({ useHandCursor: true });
+    exchangeTab.on('pointerup', () => {
       cultContainer.setVisible(false);
       exchangeContainer.setVisible(true);
     });
 
-    this.add.text(200, 50, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
       exchangeContainer.setVisible(false);
       cultContainer.setVisible(true);
     });

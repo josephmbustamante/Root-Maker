@@ -18,8 +18,6 @@ export const createExchangeInterface = (scene: Phaser.Scene, domainState: Tradin
   const exchangeContainer = scene.add.container(0, 0);
 
   createInfoInterface(scene, exchangeContainer, domainState);
-  createBuyInterface(scene, exchangeContainer, domainState);
-  createSellInterface(scene, exchangeContainer);
   createRootInterface(scene, exchangeContainer, domainState);
 
   return exchangeContainer
@@ -139,20 +137,6 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     container.add([button]);
   });
 
-};
-
-const createBuyInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
-  const x = getInfoColumnWidth(scene);
-  container.add([
-    scene.add.text(x, sectionHeaderY, 'BUY', buyHeaderStyle).setOrigin(0, 0),
-  ]);
-};
-
-const createSellInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
-  const x = getInfoColumnWidth(scene) + getBuyColumnWidth(scene);
-  container.add([
-    scene.add.text(x, sectionHeaderY, 'SELL', sellHeaderStyle).setOrigin(0, 0),
-  ]);
 };
 
 const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {

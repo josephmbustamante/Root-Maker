@@ -37,6 +37,7 @@ export const tradePage = {
   inputWidth: 143,
   inputHeight: 39,
 }
+export const tabY = 110;
 
 export const tickerWidth = 1004;
 export const tickerHeight = 50;
