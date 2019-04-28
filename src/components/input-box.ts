@@ -50,4 +50,9 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
 
     console.log(event);
   });
+  return [
+    ...rectangleElements,
+    cursor,
+    textField,
+  ];
 };

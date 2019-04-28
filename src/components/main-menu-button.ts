@@ -61,33 +61,23 @@ export const createButton = (scene: Phaser.Scene, x: number, y: number, text: st
 
   const mouseHandlerBox = scene.add.rectangle(x, y, width, height, Styles.backgroundColorHex, 0).setOrigin(0, 0).setInteractive({ useHandCursor: true });
   mouseHandlerBox.on('pointerover', () => {
-    // Enter Menu Button Hover State
-    // console.log('pointerover')
     textElement.setStyle(buttonTextHoverStyle)
     box.setFillStyle(Styles.backgroundColorHex)
-  }, scene);
+  });
   mouseHandlerBox.on('pointerout', () => {
-    // Enter Menu Button Rest State
-    // console.log('pointerout')
     textElement.setStyle(buttonTextRestStyle)
   });
   mouseHandlerBox.on('pointerdown', () => {
-    // Enter Menu Button Active State
-    // console.log('pointerdown')
     textElement.setStyle(buttonTextHoverStyle)
     box.setFillStyle(Styles.detailDarkColorHex)
 
   });
   mouseHandlerBox.on('pointerupoutside', () => {
-    // console.log('pointerup')
-    // Enter Menu Button Hover State)
     textElement.setStyle(buttonTextHoverStyle);
     box.setFillStyle(Styles.backgroundColorHex)
 
   });
   mouseHandlerBox.on('pointerup', () => {
-    // console.log('pointerup')
-    // Enter Menu Button Hover State)
     textElement.setStyle(buttonTextHoverStyle);
     box.setFillStyle(Styles.backgroundColorHex)
 

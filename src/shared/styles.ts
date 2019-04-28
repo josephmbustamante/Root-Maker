@@ -37,8 +37,9 @@ export const tradePage = {
     listItemY: 195,
   },
   tradeInterface: {
-    exchangeTabX: 707 + 2 * offset,
+    x: 707 + 2 * offset,
     exchangeTabY: 150,
+    inputBoxX: 870,
   },
   transactionWidth: 287,
   usernameWidth: 254,

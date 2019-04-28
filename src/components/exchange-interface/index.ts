@@ -4,6 +4,7 @@ import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
 import { createButton } from '../main-menu-button';
+import { createInputBox } from '../input-box';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -107,19 +108,12 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
         handler.alpha = basicallyHidden;
       });
       domainState.selectedAccount = account;
-      console.log('pointerdown', domainState.selectedAccount)
       rowClickHandler.alpha = 0.5
     });
     rowClickHandler.on('pointerdownoutside', () => {
       domainState.selectedAccount = null;
-      console.log('pointerdown', domainState.selectedAccount)
       rowClickHandler.alpha = basicallyHidden;
     });
-    // rowClickHandler.on('pointerup', () => {
-    //   domainState.selectedAccount = null;
-    //   console.log('pointer', domainState.selectedAccount)
-    //   rowClickHandler.setAlpha(0);
-    // });
 
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
 
@@ -129,7 +123,6 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     });
 
     domainState.events.on(DomainEvents.exchangeRatesChanged, () => {
-      console.log(`Updating text for ${nation.name}`);
       exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
       rootValue.setText(getCurrentRootValueText(account, nation));
       if (trend) {
@@ -138,7 +131,6 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
       container.add(trend);
     });
-
     //   const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
     //   const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
 
@@ -194,7 +186,7 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
 
-  const buyTab = scene.add.text(Styles.tradePage.tradeInterface.exchangeTabX, Styles.tradePage.tradeInterface.exchangeTabY, 'BUY', Styles.selectedTab);
+  const buyTab = scene.add.text(Styles.tradePage.tradeInterface.x, Styles.tradePage.tradeInterface.exchangeTabY, 'BUY', Styles.selectedTab);
   buyTab.setInteractive({ useHandCursor: true });
   buyTab.on('pointerup', () => {
     sellTab.setStyle(Styles.unselectedTab);
@@ -210,6 +202,18 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     buyContainer.setVisible(false);
     sellContainer.setVisible(true);
   });
+
+  const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'TRADE AMOUNT', Styles.listItemStyle);
+  const inputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+    const amount = Number.parseInt(text);
+    if (Number.isInteger(amount)) {
+      TradingDomain.setTradeAmount(domainState, amount);
+    }
+  });
+  buyContainer.add([
+    // spendAmountText,
+    // inputBox,
+  ]);
 
   const buy = () => {
     console.log('buy', domainState.selectedAccount)
