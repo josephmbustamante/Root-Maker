@@ -38,6 +38,14 @@ export const createNewsTicker = (scene: Phaser.Scene, domainState: DomainState) 
     tickerState.storyQueue.push(`${nation.name} ${headline}`);
   });
 
+  // Use this to make sure the mask doesn't cover the border of the ticker
+  const maskFuzz = 1;
+  const leftMask = scene.add.rectangle(0, tickerY, Styles.offset - maskFuzz, tickerHeight, Styles.backgroundColorHex).setOrigin(0, 0);
+  const rightMask = scene.add.rectangle(gameWidth - Styles.offset + maskFuzz, tickerY, Styles.offset, tickerHeight, Styles.backgroundColorHex).setOrigin(0, 0);
+  // These masks are used to make sure that a ticker story isn't visible until it actuall enters the ticker field
+  leftMask.setDepth(10);
+  rightMask.setDepth(10);
+
   updateStories(scene, tickerState);
 
   return tickerState;
@@ -59,6 +67,7 @@ export const updateStories = (scene: Phaser.Scene, tickerState: TickerState) => 
     story.textObject.destroy();
     story.posX -= 2;
     story.textObject = scene.add.text(story.posX, tickerStoryY, story.text);
+    // story.textObject.setde
   });
 
   tickerState.storyDisplays = tickerState.storyDisplays.filter((story) => {
