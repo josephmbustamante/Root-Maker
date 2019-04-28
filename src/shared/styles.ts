@@ -3,18 +3,20 @@ export const foregroundColor = '#2B261C';
 export const textColor = '#CDCBC2';
 export const detailDarkColor = '#817C6A';
 export const detailLightColor = '#F2E9CC';
+export const buttonTextColor = '#4E4626';
 
 export const backgroundColorHex = 0xA29771;
 export const foregroundColorHex = 0x2B261C;
 export const textColorHex = 0xCDCBC2;
 export const detailDarkColorHex = 0x817C6A;
 export const detailLightColorHex = 0xF2E9CC;
+export const buttonTextColorHex = 0x4E4626;
 
 export const listItemStyle = { fontSize: '14px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
 
-export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: foregroundColor };
-export const unselectedTab = { fontSize: '16px', color: foregroundColor, backgroundColor: backgroundColor };
+export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: buttonTextColorHex };
+export const unselectedTab = { fontSize: '16px', color: buttonTextColorHex, backgroundColor: backgroundColor };
 
 export const offset = 10;
 

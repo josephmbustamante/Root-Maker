@@ -54,10 +54,10 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
 
 const optionsTextStyle = { fontSize: '16px', color: '#FFFFFF' };
 
-const optionsRowTextX = 550;
+const optionsRowTextX = Styles.cultPage.followerList.width + Styles.offset * 2;
 const optionsRowButtonX = 850;
 
-const optionsRowStartY = 100;
+const optionsRowStartY = Styles.cultPage.followerList.y + Styles.offset;
 
 const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
   container.add([
