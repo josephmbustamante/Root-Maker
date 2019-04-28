@@ -21,6 +21,7 @@ export class MainMenuScene extends Phaser.Scene {
     });
     new Button(this, 100, 200, 'Settings', () => console.log('settings button clicked'));
     new Button(this, 100, 250, 'Help', () => console.log('help button clicked'));
-    createButton(this, 100, 300, 50, 30, 'Test', () => console.log('click'));
+    const [x, y, width, height, text, onClick] = [100, 300, 50, 30, 'Test', () => console.log('click')];
+    createButton(this, x, y, width, height, text, onClick)
   }
 }

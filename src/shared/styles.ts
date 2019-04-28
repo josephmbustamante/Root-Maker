@@ -15,8 +15,8 @@ export const buttonTextColorHex = 0x4E4626;
 export const listItemStyle = { fontSize: '14px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
 
-export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: buttonTextColorHex };
-export const unselectedTab = { fontSize: '16px', color: buttonTextColorHex, backgroundColor: backgroundColor };
+export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: buttonTextColor };
+export const unselectedTab = { fontSize: '16px', color: buttonTextColor, backgroundColor: backgroundColor };
 
 export const offset = 10;
 
