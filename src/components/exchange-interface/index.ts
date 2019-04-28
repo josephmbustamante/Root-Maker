@@ -5,6 +5,7 @@ import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
 import { createButton } from '../main-menu-button';
 import { createInputBox } from '../input-box';
+import { GameEvents } from 'src/shared/events';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -107,7 +108,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     rowClickHandlers.push(rowClickHandler);
 
     rowClickHandler.on('pointerup', () => {
-      domainState.events.emit(DomainEvents.selectedAccountChanged, { account, rowClickHandler })
+      scene.events.emit(GameEvents.selectedAccountChanged, { account, rowClickHandler })
     });
 
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
@@ -128,7 +129,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     });
   });
 
-  domainState.events.on(DomainEvents.selectedAccountChanged, (event) => {
+  scene.events.on(GameEvents.selectedAccountChanged, (event) => {
     console.log('selectedAccountChanged', event)
 
     rowClickHandlers.forEach((handler) => {
@@ -214,7 +215,7 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     }
   }
 
-  domainState.events.on(DomainEvents.selectedAccountChanged, (event) => {
+  scene.events.on(GameEvents.selectedAccountChanged, (event) => {
     console.log('selectedAccountChanged', event)
     currencyText.text = `CURRENCY: ${event.account.currency.name}`;
   });
