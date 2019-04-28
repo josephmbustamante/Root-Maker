@@ -1,13 +1,6 @@
 import * as Phaser from 'phaser';
+import { DomainEvents } from './events';
 
-export enum DomainEvents {
-  tradeCompleted = "domain.tradeCompleted",
-  tradeFailed = "domain.tradeFailed",
-  accountBalanceChanged = "domain.accountBalanceChanged",
-  exchangeRatesChanged = "domain.exchangeRatesChanged",
-  nationEventOccurred = "domain.nationEventOccurred",
-  nationEventEnded = "domain.nationEventEnded",
-}
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
 }

@@ -43,7 +43,7 @@ export class GameScene extends Phaser.Scene {
       cultContainer.setVisible(true);
     });
 
-    const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState);
+    const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState.trading);
     const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
 
     this.createNewsTicker(50, this.game.scale.height - 50);
@@ -55,6 +55,8 @@ export class GameScene extends Phaser.Scene {
     if (this.timeSinceLastTick >= this.domainTickTime) {
       console.log('tick!');
       this.timeSinceLastTick = 0;
+
+      Domain.handleTick(this.domainState);
     }
 
     this.updateStories();
@@ -69,10 +71,10 @@ export class GameScene extends Phaser.Scene {
     this.tickerX = x;
     this.tickerY = y;
     this.add.text(x, y, 'BREAKING NEWS');
-    this.domainState.events.on(Domain.DomainEvents.nationEventOccurred, (nation, headline) => {
+    this.domainState.trading.events.on(Domain.DomainEvents.nationEventOccurred, (nation, headline) => {
       this.addStory(`${nation.name} ${headline}`);
     });
-    this.domainState.events.on(Domain.DomainEvents.nationEventEnded, (nation, headline) => {
+    this.domainState.trading.events.on(Domain.DomainEvents.nationEventEnded, (nation, headline) => {
       this.addStory(`${nation.name} ${headline}`);
     });
     this.updateStories();

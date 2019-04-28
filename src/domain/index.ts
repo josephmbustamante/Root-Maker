@@ -1,5 +1,7 @@
 import * as TradingDomain from './trading';
 
+export { DomainEvents } from './events';
+
 export type DomainState = {
   trading: TradingDomain.DomainState;
 };
@@ -7,6 +9,7 @@ export type DomainState = {
 interface InitDomainInput {
   trading: TradingDomain.TradingInitData;
 };
+
 
 export const initDomainState = (input: InitDomainInput): DomainState => {
   return {
