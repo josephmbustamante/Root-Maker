@@ -55,14 +55,16 @@ export const createButton = (scene: Phaser.Scene, x: number, y: number, text: st
   const bottomLine = scene.add.line(0, 0, x + 1, y + height, x + width, y + height, Styles.detailDarkColorHex).setOrigin(0, 0);
 
   textElement.setDepth(1);
-  textElement.setX(x + Styles.offset);
-  textElement.setY(y + Styles.offset);
+
+  textElement.setX(((box.width - textElement.width) / 2) + box.x);
+  textElement.setY(((box.height - textElement.height) / 2) + box.y);
+
   const mouseHandlerBox = scene.add.rectangle(x, y, width, height, Styles.backgroundColorHex, 0).setOrigin(0, 0).setInteractive({ useHandCursor: true });
   mouseHandlerBox.on('pointerover', () => {
     // Enter Menu Button Hover State
     console.log('pointerover')
     textElement.setStyle(buttonTextHoverStyle)
-
+    box.setFillStyle(Styles.backgroundColorHex)
   }, scene);
   mouseHandlerBox.on('pointerout', () => {
     // Enter Menu Button Rest State

@@ -20,11 +20,12 @@ export class MainMenuScene extends Phaser.Scene {
     const logoX = 300;
     const usernameTextX = 375;
     const usernameFieldX = 475;
-    const loginX = 450;
+    const loginButtonWidth = 100;
+    const loginX = (Styles.width / 2) - loginButtonWidth / 2;
+    const loginY = 500;
 
     const logoY = 200;
     const usernameY = 400;
-    const loginY = 500;
 
     this.add.image(logoX, logoY, 'logo-svg').setOrigin(0, 0);
 
@@ -34,6 +35,6 @@ export class MainMenuScene extends Phaser.Scene {
     const onClick = () => {
       this.scene.start('Game', { username: this.username });
     };
-    createButton(this, loginX, loginY, 'LOGIN', onClick)
+    createButton(this, loginX, loginY, 'LOGIN', onClick, loginButtonWidth)
   }
 }
