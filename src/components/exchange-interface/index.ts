@@ -169,16 +169,28 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     sellContainer.setVisible(true);
   });
 
-  const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'TRADE AMOUNT', Styles.listItemStyle);
-  const inputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
-    const amount = Number.parseInt(text);
-    if (Number.isInteger(amount)) {
+  const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BUY AMOUNT', Styles.listItemStyle);
+  const buyInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+    const amount = Number.parseFloat(text);
+    if (!Number.isNaN(amount)) {
       TradingDomain.setTradeAmount(domainState, amount);
     }
-  });
+  }, undefined, true);
   buyContainer.add([
     spendAmountText,
-    ...inputBox,
+    ...buyInputBox,
+  ]);
+
+  const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
+  const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+    const amount = Number.parseFloat(text);
+    if (!Number.isNaN(amount)) {
+      TradingDomain.setTradeAmount(domainState, amount);
+    }
+  }, undefined, true);
+  sellContainer.add([
+    sellAmountText,
+    ...sellInputBox,
   ]);
 
   const buy = () => {

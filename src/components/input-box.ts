@@ -2,7 +2,7 @@ import { addRectangle } from './rectangle';
 import * as Styles from 'src/shared/styles';
 import * as _ from 'lodash';
 
-export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callback: (text: string) => void, maxLength?: number) => {
+export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callback: (text: string) => void, maxLength?: number, numbersOnly: boolean = false) => {
   const textFieldState = {
     isEditable: false,
   };
@@ -31,9 +31,17 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
   // keySpace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   // keyBackspace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKSPACE);
   scene.input.keyboard.on('keydown', (event) => {
+    console.log(event.key, event.keyCode);
     if (!textFieldState.isEditable) {
       return;
     }
+
+    const isNumber = event.keyCode === 190 || (event.keyCode >= 48 && event.keyCode <= 57);
+    const isString = event.keyCode === 32 || (event.keyCode >= 65 && event.keyCode <= 90);
+
+    const validKey = numbersOnly
+      ? isNumber
+      : isNumber || isString;
 
     if (event.keyCode === 8 && textField.text.length > 0)
     {
@@ -41,14 +49,13 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
       cursor.setX(textField.x + textField.width + 3);
       callback(textField.text);
     }
-    else if (textField.text.length < maxCharacterLength && (event.keyCode === 32 || (event.keyCode >= 48 && event.keyCode < 90)))
+    else if (textField.text.length < maxCharacterLength && validKey)
     {
       textField.text += event.key;
       cursor.setX(textField.x + textField.width + 3);
       callback(textField.text);
     }
 
-    console.log(event);
   });
   return [
     ...rectangleElements,
