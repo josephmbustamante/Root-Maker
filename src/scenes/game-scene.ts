@@ -61,14 +61,6 @@ export class GameScene extends Phaser.Scene {
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
 
-    addRectangle(this,
-      Styles.tradePage.currencyList.x,
-      Styles.tradePage.currencyList.y,
-      Styles.tradePage.currencyList.width,
-      Styles.tradePage.currencyList.height,
-      Styles.foregroundColorHex,
-    );
-
     const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState.trading);
     const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
 

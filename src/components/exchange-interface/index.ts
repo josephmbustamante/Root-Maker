@@ -67,6 +67,14 @@ const getCurrentRootValueText = (account: TradingDomain.Account, nation: Trading
 };
 
 const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+  container.add(addRectangle(scene,
+    Styles.tradePage.currencyList.x,
+    Styles.tradePage.currencyList.y,
+    Styles.tradePage.currencyList.width,
+    Styles.tradePage.currencyList.height,
+    Styles.foregroundColorHex,
+  ));
+
   const x = countryX;
   const currencyDisplay: CurrencyDisplay = [];
 
@@ -75,6 +83,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle),
     scene.add.text(amountOwnedX, headerColumnY, 'AMT. OWNED', columnHeaderStyle),
     scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle),
+    scene.add.text(rootValueX, headerColumnY, 'ROOT VALUE', columnHeaderStyle),
   ]);
 
   domainState.nations.forEach((nation, index) => {
@@ -82,12 +91,12 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
 
     const country = scene.add.text(countryX, firstLineItemY + (lineItemHeight * index), nation.name, currencyStyle);
     const currency = scene.add.text(currencyX, firstLineItemY + (lineItemHeight * index), nation.currency.name, currencyStyle);
-    let trend: Phaser.GameObjects.Image | undefined = createTrend(scene, lineItemHeight * index, nation.currency.trend);
+    let trend = createTrend(scene, lineItemHeight * index, nation.currency.trend);
     const amountOwned = scene.add.text(amountOwnedX, firstLineItemY + (lineItemHeight * index), account.balance.toFixed(2), currencyStyle);
     const exchangeRate = scene.add.text(exchangeRateX, firstLineItemY + (lineItemHeight * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
     const rootValue = scene.add.text(rootValueX, firstLineItemY + (lineItemHeight * index), getCurrentRootValueText(account, nation), currencyStyle);
 
-    container.add([country, currency, amountOwned, exchangeRate]);
+    container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
 
     domainState.events.on(DomainEvents.accountBalanceChanged, () => {
       amountOwned.setText(account.balance.toFixed(2));
@@ -102,6 +111,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
         trend.destroy();
       }
       trend = createTrend(scene, lineItemHeight * index, nation.currency.trend);
+      container.add(trend);
     });
 
     const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (lineItemHeight * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
