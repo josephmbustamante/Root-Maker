@@ -13,6 +13,9 @@ export const detailLightColorHex = 0xF2E9CC;
 export const listItemStyle = { fontSize: '14px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
 
+export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: foregroundColor };
+export const unselectedTab = { fontSize: '16px', color: foregroundColor, backgroundColor: backgroundColor };
+
 export const offset = 10;
 
 export const width = 1024;
@@ -51,7 +54,7 @@ export const cultPage = {
     listItemY: 195,
   },
 }
-export const tabY = 110;
+export const tabY = 117;
 export const lineItemHeight = 30;
 
 export const tickerWidth = 1004;

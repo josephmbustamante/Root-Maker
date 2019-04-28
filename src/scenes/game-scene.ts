@@ -38,14 +38,19 @@ export class GameScene extends Phaser.Scene {
       },
     });
 
-    const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE');
+    const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
     exchangeTab.on('pointerup', () => {
+      cultTab.setStyle(Styles.unselectedTab);
+      exchangeTab.setStyle(Styles.selectedTab);
       cultContainer.setVisible(false);
       exchangeContainer.setVisible(true);
     });
 
-    this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT').setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    const cultTab = this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT', Styles.unselectedTab);
+    cultTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+      exchangeTab.setStyle(Styles.unselectedTab);
+      cultTab.setStyle(Styles.selectedTab);
       exchangeContainer.setVisible(false);
       cultContainer.setVisible(true);
     });
