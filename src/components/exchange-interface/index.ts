@@ -35,17 +35,20 @@ const columnHeaderStyle = { fontSize: '16px', color: Styles.tradePage.currencyLi
 const currencyStyle = { fontSize: '14px', color: Styles.tradePage.currencyList.itemColor };
 const selectedStyle = { fontSize: '14px', color: '#FF4444' };
 
-const countryX = 50;
+const countryX = 20;
 const currencyX = 200;
-const trendX = 300;
-const trendBaseY = 257;
-const exchangeRateX = 350;
-const amountOwnedX = 500;
+const exchangeRateX = 320;
+const trendX = 370;
+const trendBaseY = 207;
+const amountOwnedX = 450;
+const rootValue = 610;
 
 const rootInfoX = 50;
 
 const sectionHeaderY = 100;
-const headerColumnY = 200;
+const headerColumnY = 160;
+const firstLineItemY = 200;
+const lineItemHeight = 30;
 
 function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down') {
   if (trend === 'up') {
@@ -63,15 +66,16 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
   scene.add.text(currencyX, headerColumnY, 'CURRENCY', columnHeaderStyle);
   scene.add.text(amountOwnedX, headerColumnY, 'AMT. OWNED', columnHeaderStyle);
   scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle);
+  scene.add.text(rootValue, headerColumnY, 'ROOT VALUE', columnHeaderStyle);
 
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
 
-    const country = scene.add.text(countryX, 250 + (50 * index), nation.name, currencyStyle);
-    const currency = scene.add.text(currencyX, 250 + (50 * index), nation.currency.name, currencyStyle);
-    let trend: Phaser.GameObjects.Image | undefined = createTrend(scene, 50 * index, nation.currency.trend);
-    const amountOwned = scene.add.text(amountOwnedX, 250 + (50 * index), account.balance.toFixed(2), currencyStyle);
-    const exchangeRate = scene.add.text(exchangeRateX, 250 + (50 * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
+    const country = scene.add.text(countryX, firstLineItemY + (lineItemHeight * index), nation.name, currencyStyle);
+    const currency = scene.add.text(currencyX, firstLineItemY + (lineItemHeight * index), nation.currency.name, currencyStyle);
+    let trend: Phaser.GameObjects.Image | undefined = createTrend(scene, lineItemHeight * index, nation.currency.trend);
+    const amountOwned = scene.add.text(amountOwnedX, firstLineItemY + (lineItemHeight * index), account.balance.toFixed(2), currencyStyle);
+    const exchangeRate = scene.add.text(exchangeRateX, firstLineItemY + (lineItemHeight * index), nation.currency.exchangeRate.toFixed(2), currencyStyle);
 
 
     domainState.events.on(Domain.DomainEvents.accountBalanceChanged, () => {
@@ -84,10 +88,10 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
       if (trend) {
         trend.destroy();
       }
-      trend = createTrend(scene, 50 * index, nation.currency.trend);
+      trend = createTrend(scene, lineItemHeight * index, nation.currency.trend);
     });
 
-    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, 250 + (50 * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
+    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (lineItemHeight * index), '+', currencyStyle).setInteractive({ cursor: 'pointer' });
     const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', currencyStyle).setInteractive({ cursor: 'pointer' });
 
     buyButton.on('pointerdown', () => {
@@ -102,7 +106,7 @@ const createInfoInterface = (scene: Phaser.Scene, currencyDisplay: CurrencyDispl
     currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
   });
 
-  const y = (domainState.nations.length * 50) + 300;
+  const y = (domainState.nations.length * lineItemHeight) + 300;
 
   let button = scene.add.text(x, y, `1`, currencyStyle).setInteractive({ cursor: 'pointer' });
   button.on('pointerdown', () => {
