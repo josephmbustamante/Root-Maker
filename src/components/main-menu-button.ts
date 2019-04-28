@@ -66,6 +66,7 @@ export const createButton = (scene: Phaser.Scene, x: number, y: number, text: st
   });
   mouseHandlerBox.on('pointerout', () => {
     textElement.setStyle(buttonTextRestStyle)
+    box.setFillStyle(Styles.backgroundColorHex)
   });
   mouseHandlerBox.on('pointerdown', () => {
     textElement.setStyle(buttonTextHoverStyle)

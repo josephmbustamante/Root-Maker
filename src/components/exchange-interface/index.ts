@@ -177,8 +177,8 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     }
   });
   buyContainer.add([
-    // spendAmountText,
-    // inputBox,
+    spendAmountText,
+    ...inputBox,
   ]);
 
   const buy = () => {
