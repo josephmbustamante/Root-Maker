@@ -1,26 +1,18 @@
-import * as Domain from 'src/domain';
+import * as CultDomain from 'src/domain/cult';
 import * as Styles from 'src/shared/styles';
-import * as Shared from 'src/shared';
-import { addRectangle } from '../rectangle';
-import { createButton } from '../button';
+import { addRectangle } from 'src/components/rectangle';
+import { createButton } from 'src/components/button';
 
-export const createCultInterface = (scene: Phaser.Scene) => {
+export const createCultInterface = (scene: Phaser.Scene, domainState: CultDomain.CultDomainState) => {
   const cultContainer = scene.add.container(0, 0);
 
-  createCultInfo(scene, cultContainer);
+  createCultInfo(scene, cultContainer, domainState);
   createCultOptions(scene, cultContainer);
-  createCultHappinessMeter(scene, cultContainer);
+  createCultHappinessMeter(scene, cultContainer, domainState);
   createCultSuggestedDonationInput(scene, cultContainer);
 
   return cultContainer;
 };
-
-const cult = {
-  followers: 134,
-  capacity: 5482,
-  followersPerSecond: 3,
-  donationsPerSecond: 74,
-}
 
 const infoRowStyle = Styles.listItemStyle;
 
@@ -29,7 +21,7 @@ const infoRowValueX = 450;
 
 const infoRowStartY = Styles.cultPage.followerList.y + Styles.offset;
 
-const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   container.add(addRectangle(scene,
     Styles.cultPage.followerList.x,
     Styles.cultPage.followerList.y,
@@ -40,16 +32,16 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
 
   container.add([
     scene.add.text(infoRowTextX, infoRowStartY, 'Followers', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY, `${cult.followers}`, infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY, `${domainState.followers}`, infoRowStyle),
 
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 1), 'Capacity', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${cult.capacity}`, infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle),
 
-    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Followers per Second', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${cult.followersPerSecond}`, infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Followers per Tick', infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${domainState.followersPerTick}`, infoRowStyle),
 
-    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Second', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${cult.donationsPerSecond}`, infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Tick', infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${domainState.followers * domainState.suggestedDonation}`, infoRowStyle),
   ]);
 };
 
@@ -73,7 +65,7 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
 
 };
 
-const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   container.add([
     scene.add.text(Styles.cultPage.happiness.x, Styles.cultPage.happiness.labelY, 'Follower Happiness', Styles.cultPage.options.labelStyle),
     ...addRectangle(scene, Styles.cultPage.happiness.x, Styles.cultPage.happiness.meterY, Styles.cultPage.happiness.meterWidth, Styles.cultPage.happiness.meterHeight, Styles.foregroundColorHex),

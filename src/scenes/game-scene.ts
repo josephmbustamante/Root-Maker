@@ -72,7 +72,7 @@ export class GameScene extends Phaser.Scene {
     addHorizontalScreenLine(this, 700);
 
     const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState);
-    const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
+    const cultContainer = CultInterface.createCultInterface(this, this.domainState).setVisible(false);
 
     this.tickerState = Ticker.createNewsTicker(this, this.domainState);
   }
