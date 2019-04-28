@@ -116,7 +116,7 @@ const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Con
       scene.events.emit(GameEvents.selectedAccountChanged, { account, rowClickHandler })
     });
 
-    container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
+    container.add([country, currency, trend, amountOwned, exchangeRate, rootValue, rowClickHandler]);
 
     domainState.events.on(DomainEvents.accountBalanceChanged, () => {
       amountOwned.setText(account.balance.toFixed(2));
