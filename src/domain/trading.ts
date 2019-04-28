@@ -54,6 +54,7 @@ export type DomainState = {
   rootAccount: Account,
   events: Phaser.Events.EventEmitter,
   tradeAmount: number;
+  selectedAccount: Account | null,
 }
 
 export function createAccount(name: string, startingBalance: number, currency: Currency, isRoot: boolean): Account {
@@ -133,6 +134,7 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
     rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
     events: new Phaser.Events.EventEmitter(),
+    selectedAccount: null,
   }
 }
 

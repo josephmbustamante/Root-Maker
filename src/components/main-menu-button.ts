@@ -101,5 +101,6 @@ export const createButton = (scene: Phaser.Scene, x: number, y: number, text: st
     leftLine,
     rightLine,
     bottomLine,
+    mouseHandlerBox,
   ];
 };

@@ -3,6 +3,7 @@ import { DomainEvents } from 'src/domain';
 import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
+import { createButton } from '../main-menu-button';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -18,6 +19,7 @@ export const createExchangeInterface = (scene: Phaser.Scene, domainState: Tradin
   const exchangeContainer = scene.add.container(0, 0);
 
   createInfoInterface(scene, exchangeContainer, domainState);
+  createTradeInterface(scene, exchangeContainer, domainState);
   createRootInterface(scene, exchangeContainer, domainState);
 
   return exchangeContainer;
@@ -112,37 +114,37 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       container.add(trend);
     });
 
-    const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-    const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+  //   const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+  //   const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
 
-    container.add([buyButton, sellButton]);
+  //   container.add([buyButton, sellButton]);
 
-    buyButton.on('pointerdown', () => {
-      TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
-    });
+  //   buyButton.on('pointerdown', () => {
+  //     TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
+  //   });
 
-    sellButton.on('pointerdown', () => {
-      const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-      TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
-    });
+  //   sellButton.on('pointerdown', () => {
+  //     const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
+  //     TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+  //   });
 
-    currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
-  });
+  //   currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
+  // });
 
-  const y = (domainState.nations.length * Styles.lineItemHeight) + 300;
+  // const y = (domainState.nations.length * Styles.lineItemHeight) + 300;
 
-  let button = scene.add.text(x, y, `1`, Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-  button.on('pointerdown', () => {
-    TradingDomain.setTradeAmount(domainState, 1);
-  });
-  container.add([button]);
+  // let button = scene.add.text(x, y, `1`, Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+  // button.on('pointerdown', () => {
+  //   TradingDomain.setTradeAmount(domainState, 1);
+  // });
+  // container.add([button]);
 
-  [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
-    button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-    button.on('pointerdown', () => {
-      TradingDomain.setTradeAmount(domainState, amount);
-    });
-    container.add([button]);
+  // [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
+  //   button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+  //   button.on('pointerdown', () => {
+  //     TradingDomain.setTradeAmount(domainState, amount);
+  //   });
+  //   container.add([button]);
   });
 
 };
@@ -161,4 +163,39 @@ const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       rootValueText.setText(domainState.rootAccount.balance.toFixed(2));
     }
   });
+};
+
+const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+  const buyContainer = scene.add.container(0, 0);
+  const sellContainer = scene.add.container(0, 0);
+
+  const buyTab = scene.add.text(Styles.tradePage.tradeInterface.exchangeTabX, Styles.tradePage.tradeInterface.exchangeTabY, 'BUY', Styles.selectedTab);
+  buyTab.setInteractive({ useHandCursor: true });
+  buyTab.on('pointerup', () => {
+    sellTab.setStyle(Styles.unselectedTab);
+    buyTab.setStyle(Styles.selectedTab);
+    sellContainer.setVisible(false);
+    buyContainer.setVisible(true);
+  });
+
+  const sellTab = scene.add.text(buyTab.x + buyTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'SELL', Styles.unselectedTab);
+  sellTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    buyTab.setStyle(Styles.unselectedTab);
+    sellTab.setStyle(Styles.selectedTab);
+    buyContainer.setVisible(false);
+    sellContainer.setVisible(true);
+  });
+
+
+  container.add(buyContainer);
+  container.add(buyTab);
+  container.add(sellContainer);
+  container.add(sellTab);
+  const buy = () => TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState);
+  const sell = () => {
+    const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
+    TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+  }
+  buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy));
+  sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell));
 };
