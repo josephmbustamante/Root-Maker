@@ -1,3 +1,5 @@
+import { DomainEvents } from './events';
+
 export type CultInitData = {
 }
 
@@ -26,7 +28,8 @@ export const changeSuggestedDonation = (newDonationAmount: number, domainState: 
 };
 
 export const generateRevenueFromCult = (domainState: CultDomainState) => {
-  return domainState.followers * domainState.suggestedDonation;
+  const revenue = domainState.followers * domainState.suggestedDonation;
+  domainState.events.emit(DomainEvents.cultRevenueGenerated, revenue);
 };
 
 export const addFollowersToCult = (domainState: CultDomainState) => {

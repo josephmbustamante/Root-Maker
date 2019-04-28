@@ -253,3 +253,8 @@ export function runRandomNationEvents(state: TradingDomainState) {
 export function setTradeAmount(state: TradingDomainState, tradeAmount: number) {
   state.tradeAmount = tradeAmount;
 }
+
+export const addRevenueToRootAcount = (state: TradingDomainState, revenueAmount: number) => {
+  state.rootAccount.balance += revenueAmount;
+  state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
+};
