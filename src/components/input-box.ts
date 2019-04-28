@@ -7,7 +7,7 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
     isEditable: false,
   };
 
-  const rectangleElements = addRectangle(scene, x, y, 150, 30, Styles.foregroundColorHex);
+  const rectangleElements = addRectangle(scene, x, y, Styles.inputBoxWidth, 30, Styles.foregroundColorHex);
   const cursor = scene.add.rectangle(x + 8, y + 5, 10, 20, Styles.textColorHex).setOrigin(0,0);
   cursor.setVisible(false);
   const inputBox = rectangleElements[0];

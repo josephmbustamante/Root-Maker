@@ -131,37 +131,6 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
       container.add(trend);
     });
-    //   const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-    //   const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-
-    //   container.add([buyButton, sellButton]);
-
-    //   buyButton.on('pointerdown', () => {
-    //     TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
-    //   });
-
-    //   sellButton.on('pointerdown', () => {
-    //     const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-    //     TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
-    //   });
-
-    //   currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
-    // });
-
-    // const y = (domainState.nations.length * Styles.lineItemHeight) + 300;
-
-    // let button = scene.add.text(x, y, `1`, Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-    // button.on('pointerdown', () => {
-    //   TradingDomain.setTradeAmount(domainState, 1);
-    // });
-    // container.add([button]);
-
-    // [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
-    //   button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-    //   button.on('pointerdown', () => {
-    //     TradingDomain.setTradeAmount(domainState, amount);
-    //   });
-    //   container.add([button]);
   });
 
 };
@@ -170,9 +139,6 @@ const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.listItemStyle);
   const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
-  // // const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
-  // const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
-  // const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 20, scene.game.scale.height - 150, domainState.rootAccount.balance.toFixed(2), columnHeaderStyle);
 
   domainState.events.on(DomainEvents.accountBalanceChanged, (account: TradingDomain.Account) => {
     if (account.name === domainState.rootAccount.name) {

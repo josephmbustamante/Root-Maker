@@ -22,6 +22,7 @@ export const offset = 10;
 
 export const width = 1024;
 export const height = 768;
+export const inputBoxWidth = 150;
 
 export const tradePage = {
   currencyList: {
@@ -39,7 +40,7 @@ export const tradePage = {
   tradeInterface: {
     x: 707 + 2 * offset,
     exchangeTabY: 150,
-    inputBoxX: 870,
+    inputBoxX: width - offset - inputBoxWidth,
   },
   transactionWidth: 287,
   usernameWidth: 254,
