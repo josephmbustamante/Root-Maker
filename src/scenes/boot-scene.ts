@@ -65,12 +65,9 @@ export class BootScene extends Phaser.Scene {
    * is currently active, so they can be accessed anywhere.
    */
   private loadAssets() {
-    // Load sample assets
-
-    // Source: https://en.wikipedia.org/wiki/Lake_Michigan#/media/File:Lake_Michigan_from_Big_Sable_Point_lighthouse.jpg
-    this.load.image('sample', 'assets/sample.jpg');
     this.load.image('trend-up', 'assets/trend-up.svg');
     this.load.image('trend-down', 'assets/trend-down.svg');
-    this.load.image('logo', 'assets/logo.png');
+    this.load.image('logo-png', 'assets/logo.png');
+    this.load.image('logo-svg', 'assets/logo.svg');
   }
 }
