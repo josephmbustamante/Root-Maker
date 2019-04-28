@@ -88,13 +88,26 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
 
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
+    const y = firstLineItemY + (Styles.lineItemHeight * index);
 
-    const country = scene.add.text(countryX, firstLineItemY + (Styles.lineItemHeight * index), nation.name, Styles.listItemStyle);
-    const currency = scene.add.text(currencyX, firstLineItemY + (Styles.lineItemHeight * index), nation.currency.name, Styles.listItemStyle);
+    const country = scene.add.text(countryX, y, nation.name, Styles.listItemStyle);
+    const currency = scene.add.text(currencyX, y, nation.currency.name, Styles.listItemStyle);
     let trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
-    const amountOwned = scene.add.text(amountOwnedX, firstLineItemY + (Styles.lineItemHeight * index), account.balance.toFixed(2), Styles.listItemStyle);
-    const exchangeRate = scene.add.text(exchangeRateX, firstLineItemY + (Styles.lineItemHeight * index), nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
-    const rootValue = scene.add.text(rootValueX, firstLineItemY + (Styles.lineItemHeight * index), getCurrentRootValueText(account, nation), Styles.listItemStyle);
+    const amountOwned = scene.add.text(amountOwnedX, y, account.balance.toFixed(2), Styles.listItemStyle);
+    const exchangeRate = scene.add.text(exchangeRateX, y, nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
+    const rootValue = scene.add.text(rootValueX, y, getCurrentRootValueText(account, nation), Styles.listItemStyle);
+    const rowClickHandler = scene.add.rectangle(Styles.offset, y, Styles.tradePage.currencyList.width, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 0).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
+
+    rowClickHandler.on('pointerdown', () => {
+      console.log('pointerdown', account)
+      rowClickHandler.setAlpha(0.5);
+      domainState.selectedAccount = account;
+    });
+    rowClickHandler.on('pointerup', () => {
+      console.log('pointerdown', account)
+      rowClickHandler.setAlpha(0);
+      domainState.selectedAccount = null;
+    });
 
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
 
@@ -114,37 +127,37 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       container.add(trend);
     });
 
-  //   const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-  //   const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+    //   const buyButton = scene.add.text(getInfoColumnWidth(scene) + 20, firstLineItemY + (Styles.lineItemHeight * index), '+', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+    //   const sellButton = scene.add.text(getInfoColumnWidth(scene) + getBuyColumnWidth(scene), buyButton.y, '-', Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
 
-  //   container.add([buyButton, sellButton]);
+    //   container.add([buyButton, sellButton]);
 
-  //   buyButton.on('pointerdown', () => {
-  //     TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
-  //   });
+    //   buyButton.on('pointerdown', () => {
+    //     TradingDomain.recordTrade(domainState.rootAccount, account, domainState.tradeAmount, account.currency.exchangeRate, domainState);
+    //   });
 
-  //   sellButton.on('pointerdown', () => {
-  //     const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
-  //     TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
-  //   });
+    //   sellButton.on('pointerdown', () => {
+    //     const exchangeRate = domainState.rootAccount.currency.exchangeRate / account.currency.exchangeRate;
+    //     TradingDomain.recordTrade(account, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+    //   });
 
-  //   currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
-  // });
+    //   currencyDisplay.push({ country, currency, trend, amountOwned, exchangeRate });
+    // });
 
-  // const y = (domainState.nations.length * Styles.lineItemHeight) + 300;
+    // const y = (domainState.nations.length * Styles.lineItemHeight) + 300;
 
-  // let button = scene.add.text(x, y, `1`, Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-  // button.on('pointerdown', () => {
-  //   TradingDomain.setTradeAmount(domainState, 1);
-  // });
-  // container.add([button]);
+    // let button = scene.add.text(x, y, `1`, Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+    // button.on('pointerdown', () => {
+    //   TradingDomain.setTradeAmount(domainState, 1);
+    // });
+    // container.add([button]);
 
-  // [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
-  //   button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
-  //   button.on('pointerdown', () => {
-  //     TradingDomain.setTradeAmount(domainState, amount);
-  //   });
-  //   container.add([button]);
+    // [10, 100, 1000, 10000, 100000, 1000000].forEach((amount, i) => {
+    //   button = scene.add.text(button.x + button.width + 10, y, amount.toLocaleString(), Styles.listItemStyle).setInteractive({ cursor: 'pointer' });
+    //   button.on('pointerdown', () => {
+    //     TradingDomain.setTradeAmount(domainState, amount);
+    //   });
+    //   container.add([button]);
   });
 
 };
@@ -186,16 +199,25 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     sellContainer.setVisible(true);
   });
 
+  const buy = () => {
+    if (domainState.selectedAccount) {
+      TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState)
+    }
+  };
+  const sell = () => {
+    if (domainState.selectedAccount) {
+      const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
+      TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+    }
+  }
+
+  buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
+  sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
+
+  sellContainer.setVisible(false);
 
   container.add(buyContainer);
   container.add(buyTab);
   container.add(sellContainer);
   container.add(sellTab);
-  const buy = () => TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState);
-  const sell = () => {
-    const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
-    TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
-  }
-  buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy));
-  sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell));
 };

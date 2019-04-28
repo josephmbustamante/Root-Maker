@@ -45,6 +45,7 @@ export const tradePage = {
   usernameHeight: 30,
   inputWidth: 143,
   inputHeight: 39,
+  selectedLineItemHex: 0x3E3E3D,
 }
 
 export const cultPage = {
