@@ -158,7 +158,7 @@ export function runCurrencyFluctuations(state: DomainState) {
   state.events.emit(DomainEvents.exchangeRatesChanged);
 }
 
-type NationEventTypeNames = "War" | "Good day" | "Great month" | "Famine";
+type NationEventTypeNames = "War" | "Forging friendships" | "Good day" | "Bad day" | "Great month" | "Terrible month" | "Famine" | "High productivity";
 type NationEventType = {
   name: NationEventTypeNames,
   eventStartHeadline: string,
@@ -174,7 +174,15 @@ const nationEventTypes: NationEventType[] = [
     eventEndHeadline: "is no longer at war",
     baseMultiplier: {min: 1.01, max: 1.1},
     fluxMultiplier: {min: 1.0, max: 1.1},
-    duration: {min: 30, max: 300}
+    duration: {min: 60, max: 120}
+  },
+  {
+    name: "Forging friendships",
+    eventStartHeadline: "is forging strong friendships",
+    eventEndHeadline: "appears normal",
+    baseMultiplier: {min: 0.90, max: 0.99},
+    fluxMultiplier: {min: 0.2, max: 0.4},
+    duration: {min: 60, max: 120}
   },
   {
     name: "Famine",
@@ -182,7 +190,15 @@ const nationEventTypes: NationEventType[] = [
     eventEndHeadline: "has sufficient food and water",
     baseMultiplier: {min: 1.01, max: 1.1},
     fluxMultiplier: {min: 1.0, max: 1.1},
-    duration: {min: 30, max: 300}
+    duration: {min: 30, max: 60}
+  },
+  {
+    name: "High productivity",
+    eventStartHeadline: "is hugely productive right now",
+    eventEndHeadline: "is resting from their productivity push",
+    baseMultiplier: {min: 0.99, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 1.2},
+    duration: {min: 30, max: 60}
   },
   {
     name: "Good day",
@@ -190,7 +206,15 @@ const nationEventTypes: NationEventType[] = [
     eventEndHeadline: "is feeling average",
     baseMultiplier: {min: 0.9, max: 0.99},
     fluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 30, max: 300}
+    duration: {min: 10, max: 20}
+  },
+  {
+    name: "Bad day",
+    eventStartHeadline: "sure looks like they're having a bad day",
+    eventEndHeadline: "is ok",
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 10, max: 20}
   },
   {
     name: "Great month",
@@ -198,7 +222,15 @@ const nationEventTypes: NationEventType[] = [
     eventEndHeadline: "seems fine",
     baseMultiplier: {min: 0.9, max: 0.99},
     fluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 30, max: 300}
+    duration: {min: 20, max: 40}
+  },
+  {
+    name: "Terrible month",
+    eventStartHeadline: "looks like they're struggling this month",
+    eventEndHeadline: "looks like they're doing better",
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 20, max: 40}
   },
 ]
 const RANDOM_EVENT_THRESHOLD = 0.8;
@@ -235,7 +267,7 @@ export function runRandomNationEvents(state: DomainState) {
     console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
     let chosenNation = state.nations[randomIntegerBetween(0, state.nations.length)];
-    if (chosenNation.activeEvents.length == 0) {
+    if (chosenNation.activeEvents.length <= 1) {
       let event: NationEvent = {
         baseMultiplier: randomDecimalBetween(eventType.baseMultiplier.min, eventType.baseMultiplier.max),
         fluxMultiplier: randomDecimalBetween(eventType.fluxMultiplier.min, eventType.fluxMultiplier.max),
