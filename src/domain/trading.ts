@@ -53,8 +53,6 @@ export type DomainState = {
   rootCurrency: Currency,
   rootAccount: Account,
   events: Phaser.Events.EventEmitter,
-  tradeAmount: number;
-  selectedAccount: Account,
 }
 
 export function createAccount(name: string, startingBalance: number, currency: Currency, isRoot: boolean): Account {
@@ -126,7 +124,6 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
   let rootCurrency: Currency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: "up" };
 
   return {
-    tradeAmount: 1,
     nations: nations,
     tradeCurrencies: currencies,
     tradeAccounts: accounts,
@@ -134,7 +131,6 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
     rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
     events: new Phaser.Events.EventEmitter(),
-    selectedAccount: accounts[0], // defaulting the first country / currency to selected here and in the UI
   }
 }
 
@@ -146,7 +142,7 @@ export function runCurrencyFluctuations(state: DomainState) {
     let change = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier - currency.exchangeRate;
     let scaledChange = (-3*(Math.log(currency.exchangeRate) * Math.LOG10E) + 6)/2 * (Math.abs(change)/change);
     currency.trend = change > 0 ? "up" : "down";
-    console.log("Changing fx", currency, change, scaledChange);
+    // console.log("Changing fx", currency, change, scaledChange);
     currency.exchangeRate += scaledChange;
     if (currency.exchangeRate < MIN_CURRENCY_EXCHANGE_RATE) {
       currency.exchangeRate = MIN_CURRENCY_EXCHANGE_RATE;
@@ -248,8 +244,4 @@ export function runRandomNationEvents(state: DomainState) {
       setActiveEventOnNation(event, chosenNation, state);
     }
   }
-}
-
-export function setTradeAmount(state: DomainState, tradeAmount: number) {
-  state.tradeAmount = tradeAmount;
 }

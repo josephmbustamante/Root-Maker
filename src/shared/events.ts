@@ -1,4 +1,5 @@
 
 export enum GameEvents {
-  selectedAccountChanged = "domain.selectedAccountChanged",
+  selectedAccountChanged = "game.selectedAccountChanged",
+  tradeAmountChanged = "game.tradeAmountChanged",
 }

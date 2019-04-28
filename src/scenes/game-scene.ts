@@ -1,4 +1,5 @@
 import * as Domain from 'src/domain';
+import * as TradingDomain from 'src/domain/trading';
 import * as _ from 'lodash';
 import * as ExchangeInterface from '../components/exchange-interface';
 import * as Styles from 'src/shared/styles';
@@ -6,6 +7,7 @@ import { addHorizontalScreenLine } from 'src/components/line';
 import { addRectangle } from 'src/components/rectangle';
 import * as CultInterface from '../components/cult-interface';
 import * as Ticker from 'src/components/ticker';
+import { GameEvents } from 'src/shared/events';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -16,6 +18,9 @@ const sceneConfig: Phaser.Scenes.Settings.Config = {
 export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
   tickerState: Ticker.TickerState;
+
+  public tradeAmount: number = 1;
+  public selectedAccount: TradingDomain.Account;
 
   username: string;
 
@@ -28,6 +33,16 @@ export class GameScene extends Phaser.Scene {
 
   public init(data: { username: string }) {
     this.username = data.username || '';
+
+    this.events.on(GameEvents.tradeAmountChanged, (amount) => {
+      console.log('tradeAmountChanged', amount)
+      this.tradeAmount = amount;
+    });
+
+    this.events.on(GameEvents.selectedAccountChanged, ({ account }) => {
+      console.log('selectedAccountChanged', account)
+      this.selectedAccount = account;
+    });
   }
 
   public create() {

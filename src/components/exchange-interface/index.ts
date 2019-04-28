@@ -16,9 +16,14 @@ interface CurrencyDisplayRow {
 };
 
 export type CurrencyDisplay = CurrencyDisplayRow[];
+interface GameScene extends Phaser.Scene {
+  selectedAccount: TradingDomain.Account;
+  tradeAmount: number;
+}
 
-export const createExchangeInterface = (scene: Phaser.Scene, domainState: TradingDomain.DomainState) => {
+export const createExchangeInterface = (scene: GameScene, domainState: TradingDomain.DomainState) => {
   const exchangeContainer = scene.add.container(0, 0);
+  scene.events.emit(GameEvents.selectedAccountChanged, { account: domainState.tradeAccounts[0] });
 
   createInfoInterface(scene, exchangeContainer, domainState);
   createTradeInterface(scene, exchangeContainer, domainState);
@@ -27,11 +32,11 @@ export const createExchangeInterface = (scene: Phaser.Scene, domainState: Tradin
   return exchangeContainer;
 };
 
-const getInfoColumnWidth = (scene: Phaser.Scene) => {
+const getInfoColumnWidth = (scene: GameScene) => {
   return Shared.getGameWidth(scene) * 0.7;
 };
 
-const getBuyColumnWidth = (scene: Phaser.Scene) => {
+const getBuyColumnWidth = (scene: GameScene) => {
   return Shared.getGameWidth(scene) * 0.075;
 };
 
@@ -56,7 +61,7 @@ const sectionHeaderY = 100;
 const headerColumnY = 160;
 const firstLineItemY = 200;
 
-function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down') {
+function createTrend(scene: GameScene, offsetY: number, trend: 'up' | 'down') {
   if (trend === 'up') {
     return scene.add.image(trendX, trendBaseY + offsetY, 'trend-up')
   } else if (trend === 'down') {
@@ -68,7 +73,7 @@ const getCurrentRootValueText = (account: TradingDomain.Account, nation: Trading
   return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
 };
 
-const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   container.add(addRectangle(scene,
     Styles.tradePage.currencyList.x,
     Styles.tradePage.currencyList.y,
@@ -130,32 +135,29 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
   });
 
   scene.events.on(GameEvents.selectedAccountChanged, (event) => {
-    console.log('selectedAccountChanged', event)
 
     rowClickHandlers.forEach((handler) => {
       handler.alpha = basicallyHidden;
     });
-    domainState.selectedAccount = event.account;
-    // rowClickHandler.alpha = 0.5
+
     event.rowClickHandler.alpha = 0.5;
   });
 
 };
 
-const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createRootInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.listItemStyle);
   const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
 
   domainState.events.on(DomainEvents.accountBalanceChanged, (account: TradingDomain.Account) => {
     if (account.name === domainState.rootAccount.name) {
-      console.log('updating root', account.name, account.balance)
       rootValueText.setText(domainState.rootAccount.balance.toFixed(2));
     }
   });
 };
 
-const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
 
@@ -180,20 +182,20 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
   const buyInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
     const amount = Number.parseFloat(text);
     if (!Number.isNaN(amount)) {
-      TradingDomain.setTradeAmount(domainState, amount);
+      scene.events.emit(GameEvents.tradeAmountChanged, amount);
     }
   }, undefined, true);
   buyContainer.add([
     spendAmountText,
     ...buyInputBox,
   ]);
-  const currencyText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, `CURRENCY: ${domainState.selectedAccount.currency.name}`, Styles.listItemStyle);
+  const currencyText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, `CURRENCY: ${scene.selectedAccount.currency.name}`, Styles.listItemStyle);
 
   const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
   const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
     const amount = Number.parseFloat(text);
     if (!Number.isNaN(amount)) {
-      TradingDomain.setTradeAmount(domainState, amount);
+      scene.events.emit(GameEvents.tradeAmountChanged, amount);
     }
   }, undefined, true);
   sellContainer.add([
@@ -202,21 +204,18 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
   ]);
 
   const buy = () => {
-    console.log('buy', domainState.selectedAccount)
-    if (domainState.selectedAccount) {
-      TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState)
+    if (scene.selectedAccount) {
+      TradingDomain.recordTrade(domainState.rootAccount, scene.selectedAccount, scene.tradeAmount, scene.selectedAccount.currency.exchangeRate, domainState)
     }
   };
   const sell = () => {
-    console.log('sell', domainState.selectedAccount)
-    if (domainState.selectedAccount) {
-      const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
-      TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+    if (scene.selectedAccount) {
+      const exchangeRate = domainState.rootAccount.currency.exchangeRate / scene.selectedAccount.currency.exchangeRate;
+      TradingDomain.recordTrade(scene.selectedAccount, domainState.rootAccount, scene.tradeAmount, exchangeRate, domainState);
     }
   }
 
   scene.events.on(GameEvents.selectedAccountChanged, (event) => {
-    console.log('selectedAccountChanged', event)
     currencyText.text = `CURRENCY: ${event.account.currency.name}`;
   });
 

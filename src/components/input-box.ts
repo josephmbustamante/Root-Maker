@@ -16,14 +16,12 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
   const textField = scene.add.text(x + 5, y + Styles.offset / 2, '', { color: Styles.textColor });
 
   scene.input.on('pointerup', (pointer, currentlyOver: any[]) => {
-    console.log('pointer is up!', pointer, currentlyOver);
     textFieldState.isEditable = _.some(currentlyOver, (gameObject) => gameObject === inputBox || gameObject === textField);
     if (textFieldState.isEditable) {
       cursor.setVisible(true);
     } else {
       cursor.setVisible(false);
     }
-    console.log(textFieldState.isEditable)
   });
 
   const maxCharacterLength = maxLength || Number.MAX_SAFE_INTEGER;
@@ -31,7 +29,6 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
   // keySpace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
   // keyBackspace = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.BACKSPACE);
   scene.input.keyboard.on('keydown', (event) => {
-    console.log(event.key, event.keyCode);
     if (!textFieldState.isEditable) {
       return;
     }

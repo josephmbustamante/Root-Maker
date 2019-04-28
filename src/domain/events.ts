@@ -7,7 +7,6 @@ export enum DomainEvents {
   exchangeRatesChanged = "domain.exchangeRatesChanged",
   nationEventOccurred = "domain.nationEventOccurred",
   nationEventEnded = "domain.nationEventEnded",
-  selectedAccountChanged = "domain.selectedAccountChanged",
 
   // Cult
   // TODO
