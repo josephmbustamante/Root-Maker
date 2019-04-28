@@ -110,7 +110,7 @@ export type TradingInitData = {
   rootCurrencyStartingAmount: number,
   nations: TradingInitNationalCurrency[]
 }
-export function initTradingDomainState(initData: TradingInitData): TradingDomainState {
+export function initTradingDomainState(initData: TradingInitData, events: Phaser.Events.EventEmitter): TradingDomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
@@ -126,6 +126,7 @@ export function initTradingDomainState(initData: TradingInitData): TradingDomain
   let rootCurrency: Currency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: "up" };
 
   return {
+    events,
     tradeAmount: 1,
     nations: nations,
     tradeCurrencies: currencies,
@@ -133,7 +134,6 @@ export function initTradingDomainState(initData: TradingInitData): TradingDomain
     tradeLedger: { trades: [] },
     rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
-    events: new Phaser.Events.EventEmitter(),
     selectedAccount: null,
   }
 }
