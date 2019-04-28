@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as ExchangeInterface from '../components/exchange-interface';
 import * as Styles from 'src/shared/styles';
 import { addHorizontalScreenLine } from 'src/components/line';
+import { addRectangle } from 'src/components/rectangle';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -42,21 +43,21 @@ export class GameScene extends Phaser.Scene {
     // logo.setScale(0.3, 0.3); // necessary for the svg style
     addHorizontalScreenLine(this, 50);
     const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
-    this.add.rectangle(usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex).setOrigin(0,0);
+    addRectangle(this, usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
 
-    const box = this.add.rectangle(Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex).setOrigin(0,0);
+    const box = addRectangle(this, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
     const availableRootText = this.add.text(625, 70, 'AVAILABLE ROOT', Styles.textStyle);
 
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
 
-    this.add.rectangle(
+    addRectangle(this,
       Styles.tradePage.currencyList.x,
       Styles.tradePage.currencyList.y,
       Styles.tradePage.currencyList.width,
       Styles.tradePage.currencyList.height,
       Styles.foregroundColorHex,
-    ).setOrigin(0, 0);
+    );
 
     ExchangeInterface.createExchangeInterface(this, this.currencyDisplay, this.domainState);
   }
