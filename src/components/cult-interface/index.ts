@@ -1,5 +1,7 @@
 import * as Domain from 'src/domain';
+import * as Styles from 'src/shared/styles';
 import * as Shared from 'src/shared';
+import { addRectangle } from '../rectangle';
 
 export const createCultInterface = (scene: Phaser.Scene) => {
   const cultContainer = scene.add.container(0, 0);
@@ -19,27 +21,34 @@ const cult = {
   donationsPerSecond: 74,
 }
 
-const infoRowStyle = { fontSize: '16px', color: '#888888' };
+const infoRowStyle = Styles.listItemStyle;
 
-const infoRowTextX = 50;
+const infoRowTextX = 20;
 const infoRowValueX = 450;
 
-const infoRowStartY = 100;
-const infoRowHeight = 50;
+const infoRowStartY = Styles.cultPage.followerList.y + Styles.offset;
 
 const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+  container.add(addRectangle(scene,
+    Styles.cultPage.followerList.x,
+    Styles.cultPage.followerList.y,
+    Styles.cultPage.followerList.width,
+    Styles.cultPage.followerList.height,
+    Styles.foregroundColorHex,
+  ));
+
   container.add([
     scene.add.text(infoRowTextX, infoRowStartY, 'Followers', infoRowStyle),
     scene.add.text(infoRowValueX, infoRowStartY, `${cult.followers}`, infoRowStyle),
 
-    scene.add.text(infoRowTextX, infoRowStartY + (infoRowHeight * 1), 'Capacity', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (infoRowHeight * 1), `${cult.capacity}`, infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 1), 'Capacity', infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${cult.capacity}`, infoRowStyle),
 
-    scene.add.text(infoRowTextX, infoRowStartY + (infoRowHeight * 2), 'New Followers per Second', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (infoRowHeight * 2), `${cult.followersPerSecond}`, infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Followers per Second', infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${cult.followersPerSecond}`, infoRowStyle),
 
-    scene.add.text(infoRowTextX, infoRowStartY + (infoRowHeight * 3), 'Donations per Second', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (infoRowHeight * 3), `${cult.donationsPerSecond}`, infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Second', infoRowStyle),
+    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${cult.donationsPerSecond}`, infoRowStyle),
   ]);
 };
 
@@ -55,11 +64,11 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
     scene.add.text(optionsRowTextX, optionsRowStartY, 'Build Promotional Website', optionsTextStyle),
     scene.add.text(optionsRowButtonX, optionsRowStartY, 'R 1,000,000', optionsTextStyle),
 
-    scene.add.text(optionsRowTextX, optionsRowStartY + infoRowHeight * 1, 'Construct Church', optionsTextStyle),
-    scene.add.text(optionsRowButtonX, optionsRowStartY + infoRowHeight * 1, 'R 3,000,000', optionsTextStyle),
+    scene.add.text(optionsRowTextX, optionsRowStartY + Styles.lineItemHeight * 1, 'Construct Church', optionsTextStyle),
+    scene.add.text(optionsRowButtonX, optionsRowStartY + Styles.lineItemHeight * 1, 'R 3,000,000', optionsTextStyle),
 
-    scene.add.text(optionsRowTextX, optionsRowStartY + infoRowHeight * 2, 'Build Complex', optionsTextStyle),
-    scene.add.text(optionsRowButtonX, optionsRowStartY + infoRowHeight * 2, 'R 15,000,000', optionsTextStyle),
+    scene.add.text(optionsRowTextX, optionsRowStartY + Styles.lineItemHeight * 2, 'Build Complex', optionsTextStyle),
+    scene.add.text(optionsRowButtonX, optionsRowStartY + Styles.lineItemHeight * 2, 'R 15,000,000', optionsTextStyle),
   ]);
 
 };

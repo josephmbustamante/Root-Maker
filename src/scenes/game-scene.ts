@@ -55,7 +55,7 @@ export class GameScene extends Phaser.Scene {
     const logo = this.add.image(Styles.offset * 2, Styles.offset, 'logo').setOrigin(0, 0);
     // logo.setScale(0.3, 0.3); // necessary for the svg style
     addHorizontalScreenLine(this, 50);
-    const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
+    const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.listItemStyle);
     addRectangle(this, usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
 
     addHorizontalScreenLine(this, 100);

@@ -10,7 +10,7 @@ export const textColorHex = 0xCDCBC2;
 export const detailDarkColorHex = 0x817C6A;
 export const detailLightColorHex = 0xF2E9CC;
 
-export const textStyle = { fontSize: '14px', color: foregroundColor};
+export const listItemStyle = { fontSize: '14px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
 
 export const offset = 10;
@@ -37,7 +37,22 @@ export const tradePage = {
   inputWidth: 143,
   inputHeight: 39,
 }
+
+export const cultPage = {
+  followerList: {
+    width: 580,
+    height: 534,
+    x: offset,
+    y: 150,
+    itemColor: textColor,
+    headerColor: backgroundColor,
+    headerHeight: 45,
+    listItemX: offset * 2,
+    listItemY: 195,
+  },
+}
 export const tabY = 110;
+export const lineItemHeight = 30;
 
 export const tickerWidth = 1004;
 export const tickerHeight = 50;
