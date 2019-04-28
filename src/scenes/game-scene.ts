@@ -25,7 +25,7 @@ export class GameScene extends Phaser.Scene {
 
   username: string;
 
-  domainTickTime = 5000; // milliseconds
+  domainTickTime = 1000; // milliseconds
   timeSinceLastTick = 0;
 
   constructor() {

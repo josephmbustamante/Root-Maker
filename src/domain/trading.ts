@@ -23,6 +23,7 @@ export type NationEvent = {
   fluxMultiplier: number,
   duration: number,
   triggeredTime: number,
+  kind: "positive" | "negative",
 }
 export type Transaction = {
   amount: number,
@@ -93,10 +94,10 @@ export function recordTrade(source: Account, destination: Account, sourceAmount:
   }
 }
 
-const MIN_STARTING_EXCHANGE_RATE = 0.25;
-const MAX_STARTING_EXCHANGE_RATE = 4;
-const MIN_CURRENCY_EXCHANGE_RATE = 0.1;
-const MAX_CURRENCY_EXCHANGE_RATE = 999;
+const MIN_STARTING_EXCHANGE_RATE = 5;
+const MAX_STARTING_EXCHANGE_RATE = 40;
+const MIN_CURRENCY_EXCHANGE_RATE = 1;
+const MAX_CURRENCY_EXCHANGE_RATE = 99;
 
 function randomDecimalBetween(min: number, max: number): number {
   return Math.random() * (max - min) + min;
@@ -139,10 +140,15 @@ export function runCurrencyFluctuations(state: DomainState) {
     let currency = nation.currency;
     let fluxMultiplier = nation.activeEvents.reduce((i, event) => i * event.fluxMultiplier, 1);
     let baseMultiplier = nation.activeEvents.reduce((i, event) => i * event.baseMultiplier, 1);
-    let change = currency.exchangeRate * randomDecimalBetween(0.85 * fluxMultiplier, 1.15 * fluxMultiplier) * baseMultiplier - currency.exchangeRate;
-    let scaledChange = (-3*(Math.log(currency.exchangeRate) * Math.LOG10E) + 6)/2 * (Math.abs(change)/change);
-    currency.trend = change > 0 ? "up" : "down";
-    // console.log("Changing fx", currency, change, scaledChange);
+    let change = currency.exchangeRate * (randomDecimalBetween(0.98 * fluxMultiplier, 1.02 * fluxMultiplier)) * baseMultiplier - currency.exchangeRate;
+    let exrMidpoint = (MAX_CURRENCY_EXCHANGE_RATE - MIN_CURRENCY_EXCHANGE_RATE) / 2;
+    let changeScale = (
+      Math.abs(currency.exchangeRate - exrMidpoint) < 2
+      || (change < 0 && currency.exchangeRate > exrMidpoint)
+      || (change > 0 && currency.exchangeRate < exrMidpoint)
+    ) ? 1 : ((exrMidpoint / 30.0) / Math.abs(currency.exchangeRate - exrMidpoint));
+    let scaledChange = change * changeScale;
+    currency.trend = scaledChange > 0 ? "up" : "down";
     currency.exchangeRate += scaledChange;
     if (currency.exchangeRate < MIN_CURRENCY_EXCHANGE_RATE) {
       currency.exchangeRate = MIN_CURRENCY_EXCHANGE_RATE;
@@ -154,8 +160,9 @@ export function runCurrencyFluctuations(state: DomainState) {
   state.events.emit(DomainEvents.exchangeRatesChanged);
 }
 
-type NationEventTypeNames = "War" | "Good day" | "Great month" | "Famine";
+type NationEventTypeNames = "War" | "Forging friendships" | "Good day" | "Bad day" | "Great month" | "Terrible month" | "Famine" | "High productivity" | "Bad year" | "Outstanding year";
 type NationEventType = {
+  kind: "positive" | "negative",
   name: NationEventTypeNames,
   eventStartHeadline: string,
   eventEndHeadline: string,
@@ -165,39 +172,97 @@ type NationEventType = {
 }
 const nationEventTypes: NationEventType[] = [
   {
+    kind: "negative",
     name: "War",
     eventStartHeadline: "has gone to war!",
     eventEndHeadline: "is no longer at war",
     baseMultiplier: {min: 1.01, max: 1.1},
     fluxMultiplier: {min: 1.0, max: 1.1},
-    duration: {min: 30, max: 300}
+    duration: {min: 60, max: 120}
   },
   {
+    kind: "positive",
+    name: "Forging friendships",
+    eventStartHeadline: "is forging strong friendships",
+    eventEndHeadline: "appears normal",
+    baseMultiplier: {min: 0.90, max: 0.99},
+    fluxMultiplier: {min: 0.2, max: 0.4},
+    duration: {min: 60, max: 120}
+  },
+  {
+    kind: "negative",
     name: "Famine",
     eventStartHeadline: "is experiencing a famine",
     eventEndHeadline: "has sufficient food and water",
     baseMultiplier: {min: 1.01, max: 1.1},
     fluxMultiplier: {min: 1.0, max: 1.1},
-    duration: {min: 30, max: 300}
+    duration: {min: 30, max: 60}
   },
   {
+    kind: "positive",
+    name: "High productivity",
+    eventStartHeadline: "is hugely productive right now",
+    eventEndHeadline: "is resting from their productivity push",
+    baseMultiplier: {min: 0.99, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 1.2},
+    duration: {min: 30, max: 60}
+  },
+  {
+    kind: "positive",
     name: "Good day",
     eventStartHeadline: "is having a particularly good time",
     eventEndHeadline: "is feeling average",
     baseMultiplier: {min: 0.9, max: 0.99},
     fluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 30, max: 300}
+    duration: {min: 10, max: 20}
   },
   {
+    kind: "negative",
+    name: "Bad day",
+    eventStartHeadline: "sure looks like they're having a bad day",
+    eventEndHeadline: "is ok",
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 10, max: 20}
+  },
+  {
+    kind: "positive",
     name: "Great month",
     eventStartHeadline: "is enjoying success this month",
     eventEndHeadline: "seems fine",
     baseMultiplier: {min: 0.9, max: 0.99},
     fluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 30, max: 300}
+    duration: {min: 20, max: 40}
+  },
+  {
+    kind: "negative",
+    name: "Terrible month",
+    eventStartHeadline: "looks like they're struggling this month",
+    eventEndHeadline: "looks like they're doing better",
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 20, max: 40}
+  },
+  {
+    kind: "positive",
+    name: "Outstanding year",
+    eventStartHeadline: "is outstanding this year",
+    eventEndHeadline: "up to the usual",
+    baseMultiplier: {min: 0.9, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+  {
+    kind: "negative",
+    name: "Bad year",
+    eventStartHeadline: "isn't having a very good year",
+    eventEndHeadline: "isn't doing too bad",
+    baseMultiplier: {min: 1.01, max: 1.1},
+    fluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
   },
 ]
-const RANDOM_EVENT_THRESHOLD = 0.8;
+const RANDOM_EVENT_THRESHOLD = 0.9;
 function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
@@ -231,7 +296,7 @@ export function runRandomNationEvents(state: DomainState) {
     console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
     let chosenNation = state.nations[randomIntegerBetween(0, state.nations.length)];
-    if (chosenNation.activeEvents.length == 0) {
+    if (chosenNation.activeEvents.length == 0 || (chosenNation.activeEvents.length == 1 && chosenNation.activeEvents[0].kind == eventType.kind)) {
       let event: NationEvent = {
         baseMultiplier: randomDecimalBetween(eventType.baseMultiplier.min, eventType.baseMultiplier.max),
         fluxMultiplier: randomDecimalBetween(eventType.fluxMultiplier.min, eventType.fluxMultiplier.max),
@@ -240,6 +305,7 @@ export function runRandomNationEvents(state: DomainState) {
         eventEndHeadline: eventType.eventEndHeadline,
         duration: randomIntegerBetween(eventType.duration.min, eventType.duration.max),
         triggeredTime: Date.now(),
+        kind: eventType.kind,
       };
       setActiveEventOnNation(event, chosenNation, state);
     }
