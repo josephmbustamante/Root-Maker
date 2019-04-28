@@ -1,6 +1,8 @@
 import * as Domain from 'src/domain';
 import * as _ from 'lodash';
 import * as ExchangeInterface from '../components/exchange-interface';
+import * as Styles from 'src/shared/styles';
+import { addHorizontalScreenLine } from 'src/components/line';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -33,9 +35,22 @@ export class GameScene extends Phaser.Scene {
 
     this.currencyDisplay = [];
 
-    ExchangeInterface.createExchangeInterface(this, this.currencyDisplay, this.domainState);
 
     this.createNewsTicker(50, this.game.scale.height - 50);
+
+    addHorizontalScreenLine(this, 50);
+    addHorizontalScreenLine(this, 100);
+    addHorizontalScreenLine(this, 700);
+
+    this.add.rectangle(
+      Styles.tradePage.currencyList.x,
+      Styles.tradePage.currencyList.y,
+      Styles.tradePage.currencyList.width,
+      Styles.tradePage.currencyList.height,
+      Styles.foregroundColorHex,
+    ).setOrigin(0, 0);
+
+    ExchangeInterface.createExchangeInterface(this, this.currencyDisplay, this.domainState);
   }
 
   public update(time, delta) {
@@ -79,7 +94,7 @@ export class GameScene extends Phaser.Scene {
     const buildStory = this.readyToDisplayNextStory && (this.storyQueue.length > 0);
     if (buildStory) {
       const text = this.storyQueue.shift();
-      this.storyDisplays.push({ textObject: this.add.text(window.innerWidth, y, text ), text, posX: window.innerWidth });
+      this.storyDisplays.push({ textObject: this.add.text(window.innerWidth, y, text), text, posX: window.innerWidth });
       this.readyToDisplayNextStory = false;
     }
     this.storyDisplays.forEach((story) => {
@@ -98,7 +113,7 @@ export class GameScene extends Phaser.Scene {
     const padding = 100;
     // console.log('piece1', );
     // console.log('piece2', )
-    if (this.storyDisplays.length === 0 || _.last(this.storyDisplays).textObject.displayWidth + padding <  window.innerWidth - _.last(this.storyDisplays).posX) {
+    if (this.storyDisplays.length === 0 || _.last(this.storyDisplays).textObject.displayWidth + padding < window.innerWidth - _.last(this.storyDisplays).posX) {
       this.readyToDisplayNextStory = true;
     }
   }

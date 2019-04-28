@@ -1,3 +1,4 @@
+import * as Styles from 'src/shared/styles';
 import * as Domain from 'src/domain';
 import * as Shared from 'src/shared';
 
@@ -30,8 +31,8 @@ const infoHeaderStyle = { fontSize: '32px', color: '#4444FF' };
 const buyHeaderStyle = { fontSize: '32px', color: '#44FF44' };
 const sellHeaderStyle = { fontSize: '32px', color: '#FF4444' };
 
-const columnHeaderStyle = { fontSize: '16px', color: '#FFFFFF' };
-const currencyStyle = { fontSize: '14px', color: '#888888' };
+const columnHeaderStyle = { fontSize: '16px', color: Styles.tradePage.currencyList.headerColor };
+const currencyStyle = { fontSize: '14px', color: Styles.tradePage.currencyList.itemColor };
 const selectedStyle = { fontSize: '14px', color: '#FF4444' };
 
 const countryX = 50;
