@@ -45,9 +45,6 @@ export class GameScene extends Phaser.Scene {
     const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
     addRectangle(this, usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
 
-    const box = addRectangle(this, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
-    const availableRootText = this.add.text(625, 70, 'AVAILABLE ROOT', Styles.textStyle);
-
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
 

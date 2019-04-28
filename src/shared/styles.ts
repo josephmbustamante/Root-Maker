@@ -11,6 +11,7 @@ export const detailDarkColorHex = 0x817C6A;
 export const detailLightColorHex = 0xF2E9CC;
 
 export const textStyle = { fontSize: '14px', color: foregroundColor};
+export const availableRoot = { fontSize: '16px', color: '#89F663' };
 
 export const offset = 10;
 

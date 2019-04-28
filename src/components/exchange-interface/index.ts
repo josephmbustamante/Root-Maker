@@ -1,6 +1,7 @@
 import * as Styles from 'src/shared/styles';
 import * as Domain from 'src/domain';
 import * as Shared from 'src/shared';
+import { addRectangle } from '../rectangle';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -140,8 +141,11 @@ const createSellInterface = (scene: Phaser.Scene) => {
 };
 
 const createRootInterface = (scene: Phaser.Scene, domainState: Domain.DomainState) => {
-  const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
-  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 20, scene.game.scale.height - 150, domainState.rootAccount.balance.toFixed(2), columnHeaderStyle);
+
+  const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
+  const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.textStyle);
+  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
+  // const rootInfoText = scene.add.text(rootInfoX, scene.game.scale.height - 150, 'Root:', columnHeaderStyle);
 
   domainState.events.on(Domain.DomainEvents.accountBalanceChanged, (account: Domain.Account) => {
     if (account.name === domainState.rootAccount.name) {
