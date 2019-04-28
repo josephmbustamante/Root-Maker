@@ -107,15 +107,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     rowClickHandlers.push(rowClickHandler);
 
     rowClickHandler.on('pointerup', () => {
-      rowClickHandlers.forEach((handler) => {
-        handler.alpha = basicallyHidden;
-      });
-      domainState.selectedAccount = account;
-      rowClickHandler.alpha = 0.5
-    });
-    rowClickHandler.on('pointerdownoutside', () => {
-      domainState.selectedAccount = null;
-      rowClickHandler.alpha = basicallyHidden;
+      domainState.events.emit(DomainEvents.selectedAccountChanged, { account, rowClickHandler })
     });
 
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
@@ -134,6 +126,17 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
       trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
       container.add(trend);
     });
+  });
+
+  domainState.events.on(DomainEvents.selectedAccountChanged, (event) => {
+    console.log('selectedAccountChanged', event)
+
+    rowClickHandlers.forEach((handler) => {
+      handler.alpha = basicallyHidden;
+    });
+    domainState.selectedAccount = event.account;
+    // rowClickHandler.alpha = 0.5
+    event.rowClickHandler.alpha = 0.5;
   });
 
 };
@@ -183,6 +186,7 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     spendAmountText,
     ...buyInputBox,
   ]);
+  const currencyText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, `CURRENCY: ${domainState.selectedAccount.currency.name}`, Styles.listItemStyle);
 
   const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
   const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
@@ -209,6 +213,11 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
       TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
     }
   }
+
+  domainState.events.on(DomainEvents.selectedAccountChanged, (event) => {
+    console.log('selectedAccountChanged', event)
+    currencyText.text = `CURRENCY: ${event.account.currency.name}`;
+  });
 
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
