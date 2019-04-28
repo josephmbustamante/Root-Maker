@@ -16,7 +16,7 @@ interface CurrencyDisplayRow {
 
 export type CurrencyDisplay = CurrencyDisplayRow[];
 
-export const createExchangeInterface = (scene: Phaser.Scene, domainState: TradingDomain.DomainState) => {
+export const createExchangeInterface = (scene: Phaser.Scene, domainState: TradingDomain.TradingDomainState) => {
   const exchangeContainer = scene.add.container(0, 0);
 
   createInfoInterface(scene, exchangeContainer, domainState);
@@ -34,12 +34,7 @@ const getBuyColumnWidth = (scene: Phaser.Scene) => {
   return Shared.getGameWidth(scene) * 0.075;
 };
 
-const infoHeaderStyle = { fontSize: '32px', color: '#4444FF' };
-const buyHeaderStyle = { fontSize: '32px', color: '#44FF44' };
-const sellHeaderStyle = { fontSize: '32px', color: '#FF4444' };
-
 const columnHeaderStyle = { fontSize: '16px', color: Styles.tradePage.currencyList.headerColor };
-const selectedStyle = { fontSize: '14px', color: '#FF4444' };
 
 const countryX = 20;
 const currencyX = 200;
@@ -49,9 +44,6 @@ const trendBaseY = 207;
 const amountOwnedX = 450;
 const rootValueX = 610;
 
-const rootInfoX = 50;
-
-const sectionHeaderY = 100;
 const headerColumnY = 160;
 const firstLineItemY = 200;
 
@@ -67,7 +59,7 @@ const getCurrentRootValueText = (account: TradingDomain.Account, nation: Trading
   return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
 };
 
-const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   container.add(addRectangle(scene,
     Styles.tradePage.currencyList.x,
     Styles.tradePage.currencyList.y,
@@ -75,9 +67,6 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     Styles.tradePage.currencyList.height,
     Styles.foregroundColorHex,
   ));
-
-  const x = countryX;
-  const currencyDisplay: CurrencyDisplay = [];
 
   container.add([
     scene.add.text(countryX, headerColumnY, 'COUNTRY', columnHeaderStyle),
@@ -135,7 +124,7 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
 
 };
 
-const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.listItemStyle);
   const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
@@ -148,7 +137,7 @@ const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
   });
 };
 
-const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
+const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
 
