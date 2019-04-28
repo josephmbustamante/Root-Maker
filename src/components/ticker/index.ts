@@ -17,6 +17,7 @@ export interface TickerState {
 }
 
 const tickerY = 710;
+const tickerStoryY = 725;
 const tickerHeight = 50;
 
 export const createNewsTicker = (scene: Phaser.Scene, domainState: DomainState) => {
@@ -50,14 +51,14 @@ export const updateStories = (scene: Phaser.Scene, tickerState: TickerState) => 
 
   if (shouldBuildStory) {
     const text = tickerState.storyQueue.shift();
-    tickerState.storyDisplays.push({ textObject: scene.add.text(gameWidth, tickerY, text), text, posX: gameWidth });
+    tickerState.storyDisplays.push({ textObject: scene.add.text(gameWidth, tickerStoryY, text), text, posX: gameWidth });
     readyToDisplayNextStory = false;
   }
 
   tickerState.storyDisplays.forEach((story) => {
     story.textObject.destroy();
     story.posX -= 2;
-    story.textObject = scene.add.text(story.posX, tickerY, story.text);
+    story.textObject = scene.add.text(story.posX, tickerStoryY, story.text);
   });
 
   tickerState.storyDisplays = tickerState.storyDisplays.filter((story) => {
