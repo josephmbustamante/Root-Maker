@@ -18,13 +18,13 @@ export class MainMenuScene extends Phaser.Scene {
 
   public create() {
     const logoX = 300;
-    const usernameTextX = 400;
-    const usernameFieldX = 500;
+    const usernameTextX = 375;
+    const usernameFieldX = 475;
     const loginX = 450;
 
     const logoY = 200;
-    const usernameY = 500;
-    const loginY = 550;
+    const usernameY = 400;
+    const loginY = 500;
 
     this.add.image(logoX, logoY, 'logo-svg').setOrigin(0, 0);
 
