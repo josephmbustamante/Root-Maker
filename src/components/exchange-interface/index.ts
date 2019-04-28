@@ -70,7 +70,7 @@ function createTrend(scene: GameScene, offsetY: number, trend: 'up' | 'down') {
 }
 
 const getCurrentRootValueText = (account: TradingDomain.Account, nation: TradingDomain.Nation) => {
-  return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
+  return Shared.formatNumberForDisplay(account.balance / nation.currency.exchangeRate);
 };
 
 const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
@@ -102,8 +102,8 @@ const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Con
     const country = scene.add.text(countryX, y, nation.name, Styles.listItemStyle);
     const currency = scene.add.text(currencyX, y, nation.currency.name, Styles.listItemStyle);
     let trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
-    const amountOwned = scene.add.text(amountOwnedX, y, account.balance.toFixed(2), Styles.listItemStyle);
-    const exchangeRate = scene.add.text(exchangeRateX, y, nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
+    const amountOwned = scene.add.text(amountOwnedX, y, Shared.formatNumberForDisplay(account.balance), Styles.listItemStyle);
+    const exchangeRate = scene.add.text(exchangeRateX, y, Shared.formatNumberForDisplay(nation.currency.exchangeRate), Styles.listItemStyle);
     const rootValue = scene.add.text(rootValueX, y, getCurrentRootValueText(account, nation), Styles.listItemStyle);
     const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width - 2, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 0.5).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
     if (index > 0) {
@@ -119,12 +119,12 @@ const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Con
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue, rowClickHandler]);
 
     domainState.events.on(DomainEvents.accountBalanceChanged, () => {
-      amountOwned.setText(account.balance.toFixed(2));
+      amountOwned.setText(Shared.formatNumberForDisplay(account.balance));
       rootValue.setText(getCurrentRootValueText(account, nation));
     });
 
     domainState.events.on(DomainEvents.exchangeRatesChanged, () => {
-      exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
+      exchangeRate.setText(Shared.formatNumberForDisplay(nation.currency.exchangeRate));
       rootValue.setText(getCurrentRootValueText(account, nation));
       if (trend) {
         trend.destroy();
@@ -148,11 +148,11 @@ const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Con
 const createRootInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.listItemStyle);
-  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
+  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, Shared.formatNumberForDisplay(domainState.rootAccount.balance), Styles.availableRoot);
 
   domainState.events.on(DomainEvents.accountBalanceChanged, (account: TradingDomain.Account) => {
     if (account.name === domainState.rootAccount.name) {
-      rootValueText.setText(domainState.rootAccount.balance.toFixed(2));
+      rootValueText.setText(Shared.formatNumberForDisplay(domainState.rootAccount.balance));
     }
   });
 };
@@ -191,6 +191,9 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   ]);
   const currencyText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, `CURRENCY: ${scene.selectedAccount.currency.name}`, Styles.listItemStyle);
 
+  const returnAmount = scene.tradeAmount * scene.selectedAccount.currency.exchangeRate;
+  const returnAmountText = scene.add.text(currencyText.x + currencyText.width + Styles.offset, 260, Shared.formatNumberForDisplay(returnAmount), Styles.listItemStyle);
+
   const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
   const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
     const amount = Number.parseFloat(text);
@@ -217,6 +220,15 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
 
   scene.events.on(GameEvents.selectedAccountChanged, (event) => {
     currencyText.text = `CURRENCY: ${event.account.currency.name}`;
+    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
+  });
+
+  scene.events.on(GameEvents.tradeAmountChanged, (event) => {
+    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
+  });
+
+  domainState.events.on(DomainEvents.exchangeRatesChanged, (event) => {
+    returnAmountText.text = Shared.formatNumberForDisplay(scene.tradeAmount * scene.selectedAccount.currency.exchangeRate)
   });
 
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));

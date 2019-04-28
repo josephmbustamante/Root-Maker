@@ -19,7 +19,7 @@ export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
   tickerState: Ticker.TickerState;
 
-  public tradeAmount: number = 1;
+  public tradeAmount: number = 0;
   public selectedAccount: TradingDomain.Account;
 
   username: string;
