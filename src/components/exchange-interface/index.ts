@@ -99,8 +99,11 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     const amountOwned = scene.add.text(amountOwnedX, y, account.balance.toFixed(2), Styles.listItemStyle);
     const exchangeRate = scene.add.text(exchangeRateX, y, nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
     const rootValue = scene.add.text(rootValueX, y, getCurrentRootValueText(account, nation), Styles.listItemStyle);
-    const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width - 2, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 1).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
-    rowClickHandler.alpha = basicallyHidden;
+    const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width - 2, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 0.5).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
+    if (index > 0) {
+      // defaulting the first country / currency to selected here and in the trading state
+      rowClickHandler.alpha = basicallyHidden;
+    }
     rowClickHandlers.push(rowClickHandler);
 
     rowClickHandler.on('pointerup', () => {
