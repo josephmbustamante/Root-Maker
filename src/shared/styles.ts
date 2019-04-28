@@ -14,6 +14,9 @@ export const buttonTextColorHex = 0x4E4626;
 
 export const listItemStyle = { fontSize: '14px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
+export const buttonLabelStyle = { fontSize: '14px', color: foregroundColor };
+
+export const foregroundStyle = { color: foregroundColor };
 
 export const selectedTab = { fontSize: '16px', color: backgroundColor, backgroundColor: buttonTextColor };
 export const unselectedTab = { fontSize: '16px', color: buttonTextColor, backgroundColor: backgroundColor };
@@ -26,7 +29,6 @@ export const inputBoxWidth = 150;
 
 export const tradePage = {
   currencyList: {
-
     width: 707,
     height: 534,
     x: offset,
@@ -62,6 +64,24 @@ export const cultPage = {
     listItemX: offset * 2,
     listItemY: 195,
   },
+  options: {
+    labelStyle: buttonLabelStyle,
+    buttonOffsetHeight: 75,
+    buttonX: 850,
+    labelX: 600, // Styles.cultPage.followerList.width + Styles.offset * 2
+  },
+  happiness: {
+    x: 600,
+    labelY: 525,
+    meterY: 550,
+    meterWidth: 415,
+    meterHeight: 50,
+  },
+  donation: {
+    labelX: 600,
+    inputX: 850,
+    y: 650,
+  }
 }
 export const tabY = 117;
 export const lineItemHeight = 30;

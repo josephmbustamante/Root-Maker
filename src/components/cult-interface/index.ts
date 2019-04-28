@@ -2,6 +2,7 @@ import * as Domain from 'src/domain';
 import * as Styles from 'src/shared/styles';
 import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
+import { createButton } from '../button';
 
 export const createCultInterface = (scene: Phaser.Scene) => {
   const cultContainer = scene.add.container(0, 0);
@@ -52,47 +53,36 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
   ]);
 };
 
-const optionsTextStyle = { fontSize: '16px', color: '#FFFFFF' };
-
-const optionsRowTextX = Styles.cultPage.followerList.width + Styles.offset * 2;
-const optionsRowButtonX = 850;
+const optionsRowTextX = Styles.cultPage.options.labelX;
+const optionsRowButtonX = Styles.cultPage.options.buttonX;
 
 const optionsRowStartY = Styles.cultPage.followerList.y + Styles.offset;
+const buttonOffsetHeight = Styles.cultPage.options.buttonOffsetHeight;
 
 const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
   container.add([
-    scene.add.text(optionsRowTextX, optionsRowStartY, 'Build Promotional Website', optionsTextStyle),
-    scene.add.text(optionsRowButtonX, optionsRowStartY, 'R 1,000,000', optionsTextStyle),
+    scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY, 'Build Promotional Website', Styles.cultPage.options.labelStyle),
+    ...createButton(scene, optionsRowButtonX, optionsRowStartY, '1,000,000', () => { }),
 
-    scene.add.text(optionsRowTextX, optionsRowStartY + Styles.lineItemHeight * 1, 'Construct Church', optionsTextStyle),
-    scene.add.text(optionsRowButtonX, optionsRowStartY + Styles.lineItemHeight * 1, 'R 3,000,000', optionsTextStyle),
+    scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY + buttonOffsetHeight * 1, 'Construct Church', Styles.cultPage.options.labelStyle),
+    ...createButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => { }),
 
-    scene.add.text(optionsRowTextX, optionsRowStartY + Styles.lineItemHeight * 2, 'Build Complex', optionsTextStyle),
-    scene.add.text(optionsRowButtonX, optionsRowStartY + Styles.lineItemHeight * 2, 'R 15,000,000', optionsTextStyle),
+    scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY + buttonOffsetHeight * 2, 'Build Complex', Styles.cultPage.options.labelStyle),
+    ...createButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => { }),
   ]);
 
 };
-
-const cultHappinessX = 550;
-
-const cultHappinessTextY = 450;
-const cultHappinessMeterY = 500;
 
 const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
   container.add([
-    scene.add.text(cultHappinessX, cultHappinessTextY, 'Follower Happiness'),
-    scene.add.rectangle(cultHappinessX, cultHappinessMeterY, 400, 50, 0x888888).setOrigin(0, 0),
+    scene.add.text(Styles.cultPage.happiness.x, Styles.cultPage.happiness.labelY, 'Follower Happiness', Styles.cultPage.options.labelStyle),
+    ...addRectangle(scene, Styles.cultPage.happiness.x, Styles.cultPage.happiness.meterY, Styles.cultPage.happiness.meterWidth, Styles.cultPage.happiness.meterHeight, Styles.foregroundColorHex),
   ]);
 };
 
-const donationInputTextX = 550;
-const donationInputButtonX = 850;
-
-const donationInputY = 650;
-
 const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
   container.add([
-    scene.add.text(donationInputTextX, donationInputY, 'Suggested Weekly Donation'),
-    scene.add.text(donationInputButtonX, donationInputY, 'R 2,000'),
+    scene.add.text(Styles.cultPage.donation.labelX, Styles.cultPage.donation.y, 'Suggested Weekly Donation', Styles.cultPage.options.labelStyle),
+    scene.add.text(Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, '2,000', Styles.listItemStyle),
   ]);
 };
