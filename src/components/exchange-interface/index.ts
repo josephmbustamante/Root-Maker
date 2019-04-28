@@ -85,6 +85,8 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     scene.add.text(exchangeRateX, headerColumnY, 'EXC. RATE', columnHeaderStyle),
     scene.add.text(rootValueX, headerColumnY, 'ROOT VALUE', columnHeaderStyle),
   ]);
+  const rowClickHandlers = [];
+  const basicallyHidden = 0.000000000001;
 
   domainState.nations.forEach((nation, index) => {
     const account = domainState.tradeAccounts.find((account) => account.currency.name === nation.currency.name);
@@ -96,18 +98,28 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     const amountOwned = scene.add.text(amountOwnedX, y, account.balance.toFixed(2), Styles.listItemStyle);
     const exchangeRate = scene.add.text(exchangeRateX, y, nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
     const rootValue = scene.add.text(rootValueX, y, getCurrentRootValueText(account, nation), Styles.listItemStyle);
-    const rowClickHandler = scene.add.rectangle(Styles.offset, y, Styles.tradePage.currencyList.width, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 0).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
+    const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 1).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
+    rowClickHandler.alpha = basicallyHidden;
+    rowClickHandlers.push(rowClickHandler);
 
-    rowClickHandler.on('pointerdown', () => {
-      console.log('pointerdown', account)
-      rowClickHandler.setAlpha(0.5);
-      domainState.selectedAccount = account;
-    });
     rowClickHandler.on('pointerup', () => {
-      console.log('pointerdown', account)
-      rowClickHandler.setAlpha(0);
-      domainState.selectedAccount = null;
+      rowClickHandlers.forEach((handler) => {
+        handler.alpha = basicallyHidden;
+      });
+      domainState.selectedAccount = account;
+      console.log('pointerdown', domainState.selectedAccount)
+      rowClickHandler.alpha = 0.5
     });
+    rowClickHandler.on('pointerdownoutside', () => {
+      domainState.selectedAccount = null;
+      console.log('pointerdown', domainState.selectedAccount)
+      rowClickHandler.alpha = basicallyHidden;
+    });
+    // rowClickHandler.on('pointerup', () => {
+    //   domainState.selectedAccount = null;
+    //   console.log('pointer', domainState.selectedAccount)
+    //   rowClickHandler.setAlpha(0);
+    // });
 
     container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
 
@@ -200,11 +212,13 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
   });
 
   const buy = () => {
+    console.log('buy', domainState.selectedAccount)
     if (domainState.selectedAccount) {
       TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState)
     }
   };
   const sell = () => {
+    console.log('sell', domainState.selectedAccount)
     if (domainState.selectedAccount) {
       const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
       TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
