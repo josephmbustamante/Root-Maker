@@ -20,7 +20,7 @@ export const createExchangeInterface = (scene: Phaser.Scene, domainState: Tradin
   createInfoInterface(scene, exchangeContainer, domainState);
   createRootInterface(scene, exchangeContainer, domainState);
 
-  return exchangeContainer
+  return exchangeContainer;
 };
 
 const getInfoColumnWidth = (scene: Phaser.Scene) => {
