@@ -1,4 +1,7 @@
+import * as Styles from 'src/shared/styles';
+import * as Shared from 'src/shared';
 import { MainMenuButton } from 'src/components/main-menu-button';
+import { createInputBox } from 'src/components/input-box';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -6,20 +9,30 @@ const sceneConfig: Phaser.Scenes.Settings.Config = {
   key: 'MainMenu',
 };
 
-/**
- * The initial scene that starts, shows the splash screens, and loads the necessary assets.
- */
 export class MainMenuScene extends Phaser.Scene {
+  private username: string = '';
+
   constructor() {
     super(sceneConfig);
   }
 
   public create() {
-    this.add.text(100, 50, 'Currency Trader', { fill: '#FFFFFF' }).setFontSize(24);
-    new MainMenuButton(this, 100, 150, 'Start Game', () => {
-      this.scene.start('Game');
+    const logoX = 300;
+    const usernameTextX = 375;
+    const usernameFieldX = 475;
+    const loginX = 450;
+
+    const logoY = 200;
+    const usernameY = 400;
+    const loginY = 500;
+
+    this.add.image(logoX, logoY, 'logo-svg').setOrigin(0, 0);
+
+    this.add.text(usernameTextX, usernameY + 5, 'Username:');
+    createInputBox(this, usernameFieldX, usernameY, (text: string) => this.username = text, 12);
+
+    new MainMenuButton(this, loginX, loginY, 'LOGIN', () => {
+      this.scene.start('Game', { username: this.username });
     });
-    new MainMenuButton(this, 100, 200, 'Settings', () => console.log('settings button clicked'));
-    new MainMenuButton(this, 100, 250, 'Help', () => console.log('help button clicked'));
   }
 }

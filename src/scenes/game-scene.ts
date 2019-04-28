@@ -17,11 +17,17 @@ export class GameScene extends Phaser.Scene {
   domainState: Domain.DomainState;
   tickerState: Ticker.TickerState;
 
+  username: string;
+
   domainTickTime = 5000; // milliseconds
   timeSinceLastTick = 0;
 
   constructor() {
     super(sceneConfig);
+  }
+
+  public init(data: { username: string }) {
+    this.username = data.username || '';
   }
 
   public create() {
@@ -52,11 +58,12 @@ export class GameScene extends Phaser.Scene {
 
 
 
-    const logo = this.add.image(Styles.offset * 2, Styles.offset, 'logo').setOrigin(0, 0);
+    const logo = this.add.image(Styles.offset * 2, Styles.offset, 'logo-png').setOrigin(0, 0);
     // logo.setScale(0.3, 0.3); // necessary for the svg style
     addHorizontalScreenLine(this, 50);
     const usernameText = this.add.text(Styles.offset, 70, 'USERNAME', Styles.textStyle);
     addRectangle(this, usernameText.x + usernameText.width + (Styles.offset * 2), 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
+    this.add.text(usernameText.x + usernameText.width + (Styles.offset * 3), 60 + Styles.offset / 2, this.username, { color: Styles.textColor });
 
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
