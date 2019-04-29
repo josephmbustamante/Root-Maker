@@ -31,10 +31,10 @@ export const createNewsTicker = (scene: Phaser.Scene, domainState: DomainState) 
 
   addRectangle(scene, Styles.offset, tickerY, gameWidth - Styles.offset * 2, tickerHeight, Styles.foregroundColorHex);
 
-  domainState.trading.events.on(DomainEvents.nationEventOccurred, (nation, headline) => {
+  domainState.events.on(DomainEvents.nationEventOccurred, (nation, headline) => {
     tickerState.storyQueue.push(`${nation.name} ${headline}`);
   });
-  domainState.trading.events.on(DomainEvents.nationEventEnded, (nation, headline) => {
+  domainState.events.on(DomainEvents.nationEventEnded, (nation, headline) => {
     tickerState.storyQueue.push(`${nation.name} ${headline}`);
   });
 

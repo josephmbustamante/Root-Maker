@@ -51,16 +51,14 @@ export class GameScene extends Phaser.Scene {
 
   public create() {
     this.domainState = Domain.initDomainState({
-      trading: {
-        rootCurrencyName: 'root',
-        rootCurrencyStartingAmount: 100,
-        nations: [
-          { currency: 'DULLER', nation: 'ANDROMEDA' },
-          { currency: 'WHEN', nation: 'CORENNIA' },
-          { currency: 'PRAWN', nation: 'GREAT BURTON' },
-          { currency: 'PESTO', nation: 'MEDIAN' },
-        ],
-      },
+      rootCurrencyName: 'root',
+      rootCurrencyStartingAmount: 100,
+      nations: [
+        { currency: 'Duller', nation: 'Andromeda' },
+        { currency: 'When', nation: 'Corennia' },
+        { currency: 'Prawn', nation: 'Great Burton' },
+        { currency: 'Pesto', nation: 'Median' },
+      ],
     });
 
     this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
@@ -96,8 +94,8 @@ export class GameScene extends Phaser.Scene {
     addHorizontalScreenLine(this, 100);
     addHorizontalScreenLine(this, 700);
 
-    const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState.trading);
-    const cultContainer = CultInterface.createCultInterface(this).setVisible(false);
+    const exchangeContainer = ExchangeInterface.createExchangeInterface(this, this.domainState);
+    const cultContainer = CultInterface.createCultInterface(this, this.domainState).setVisible(false);
 
     this.tickerState = Ticker.createNewsTicker(this, this.domainState);
   }
