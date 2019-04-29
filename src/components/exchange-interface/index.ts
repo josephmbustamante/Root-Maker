@@ -164,12 +164,15 @@ function getSellAmountText (scene: GameScene) {
 const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
+  const influenceContainer = scene.add.container(0, 0);
 
   const buyTab = scene.add.text(Styles.tradePage.tradeInterface.x, Styles.tradePage.tradeInterface.exchangeTabY, 'BUY', Styles.selectedTab);
   buyTab.setInteractive({ useHandCursor: true });
   buyTab.on('pointerup', () => {
     sellTab.setStyle(Styles.unselectedTab);
+    influenceTab.setStyle(Styles.unselectedTab);
     buyTab.setStyle(Styles.selectedTab);
+    influenceContainer.setVisible(false);
     sellContainer.setVisible(false);
     buyContainer.setVisible(true);
   });
@@ -177,9 +180,21 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   const sellTab = scene.add.text(buyTab.x + buyTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'SELL', Styles.unselectedTab);
   sellTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
     buyTab.setStyle(Styles.unselectedTab);
+    influenceTab.setStyle(Styles.unselectedTab);
     sellTab.setStyle(Styles.selectedTab);
+    influenceContainer.setVisible(false);
     buyContainer.setVisible(false);
     sellContainer.setVisible(true);
+  });
+
+  const influenceTab = scene.add.text(sellTab.x + sellTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'INFLUENCE', Styles.unselectedTab);
+  influenceTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    influenceTab.setStyle(Styles.selectedTab);
+    buyTab.setStyle(Styles.unselectedTab);
+    sellTab.setStyle(Styles.unselectedTab);
+    influenceContainer.setVisible(true);
+    buyContainer.setVisible(false);
+    sellContainer.setVisible(false);
   });
 
   const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BUY AMOUNT', Styles.listItemStyle);
@@ -246,10 +261,36 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
 
+  let influenceY = 210;
+  const influenceButtonWidth = 100;
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.startRumorAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.startRumor(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.bribePoliticianAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.bribePolitician(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.rigElectionAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.rigElection(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
+  // const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+  //   const amount = Number.parseFloat(text);
+  //   if (!Number.isNaN(amount)) {
+  //     scene.events.emit(GameEvents.sellAmountChanged, amount);
+  //   }
+  // }, undefined, true);
+
   sellContainer.setVisible(false);
+  influenceContainer.setVisible(false);
 
   container.add(buyContainer);
   container.add(buyTab);
   container.add(sellContainer);
   container.add(sellTab);
+  container.add(influenceContainer);
+  container.add(influenceTab);
 };

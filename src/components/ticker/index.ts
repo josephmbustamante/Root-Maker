@@ -35,7 +35,9 @@ export const createNewsTicker = (scene: Phaser.Scene, domainState: DomainState) 
     tickerState.storyQueue.push(`${nation.name} ${headline}`);
   });
   domainState.events.on(DomainEvents.nationEventEnded, (nation, headline) => {
-    tickerState.storyQueue.push(`${nation.name} ${headline}`);
+    if (headline) {
+      tickerState.storyQueue.push(`${nation.name} ${headline}`);
+    }
   });
 
   // Use this to make sure the mask doesn't cover the border of the ticker

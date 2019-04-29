@@ -1,8 +1,29 @@
 import * as Phaser from 'phaser';
 import { DomainEvents } from './events';
+import { formatNumberForDisplay } from 'src/shared';
 
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
+}
+type Range = {
+  min: number;
+  max: number;
+}
+export type InfluenceEventType = {
+  name: InfluenceEventTypeNames,
+  successRate: number,
+  successHeadlines: string[],
+  failureHeadlines: string[],
+  successBaseMultiplier: Range,
+  successFluxMultiplier: Range,
+  failureBaseMultiplier: Range,
+  failureFluxMultiplier: Range,
+  duration: Range,
+}
+export type InfluenceAction = {
+  name: string,
+  cost: number,
+  eventType: InfluenceEventType,
 }
 export type Currency = {
   name: string,
@@ -16,9 +37,9 @@ export type Nation = {
   historicalEvents: NationEvent[],
 }
 export type NationEvent = {
-  name: NationEventTypeNames,
+  name: NationEventTypeNames | InfluenceEventTypeNames,
   eventStartHeadline: string,
-  eventEndHeadline: string,
+  eventEndHeadline?: string,
   baseMultiplier: number,
   fluxMultiplier: number,
   duration: number,
@@ -179,9 +200,9 @@ type NationEventType = {
   name: NationEventTypeNames,
   eventStartHeadline: string,
   eventEndHeadline: string,
-  baseMultiplier: { min: number, max: number },
-  fluxMultiplier: { min: number, max: number },
-  duration: {min: number, max: number },
+  baseMultiplier: Range,
+  fluxMultiplier: Range,
+  duration: Range,
 }
 const nationEventTypes: NationEventType[] = [
   {
@@ -280,6 +301,7 @@ function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
 function setActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
+  console.log('setActiveEventOnNation', event, nation)
   nation.activeEvents.push(event);
   state.events.emit(DomainEvents.nationEventOccurred, nation, event.eventStartHeadline);
 }
@@ -325,7 +347,139 @@ export function runRandomNationEvents(state: TradingDomainState) {
   }
 }
 
+const randomArrayElement = <T>(arr: T[]): T => {
+  return arr[randomIntegerBetween(0, arr.length)];
+}
+
 export const addRevenueToRootAcount = (state: TradingDomainState, revenueAmount: number) => {
   state.rootAccount.balance += revenueAmount;
   state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
 };
+
+
+export const startRumorAction: InfluenceAction = {
+  cost: 1000,
+  name: "START RUMOR",
+  eventType: {
+    name: "Start Rumor",
+    successRate: 0.90,
+    successHeadlines: [
+      "has reported good market behavior",
+    ],
+    failureHeadlines: [
+      "was caught lying about national income",
+    ],
+    successBaseMultiplier: {min: 0.95, max: 0.99},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.01, max: 1.05},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+export const bribePoliticianAction: InfluenceAction = {
+  cost: 10000,
+  name: "BRIBE POLITICIAN",
+  eventType: {
+    name: "Bribe",
+    successRate: 0.75,
+    successHeadlines: [
+      "is doing inexplicably well today",
+    ],
+    failureHeadlines: [
+      "is suffering from a bribery scandal",
+    ],
+    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.03, max: 1.13},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+export const rigElectionAction: InfluenceAction = {
+  cost: 100000,
+  name: "RIG ELECTION",
+  eventType: {
+    name: "Rig Election",
+    successRate: 0.5,
+    successHeadlines: [
+      "had an unforseen upset at the polls today",
+    ],
+    failureHeadlines: [
+      "uncovered evidence that the last election was rigged",
+    ],
+    successBaseMultiplier: {min: 0.8, max: 0.90},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.10, max: 1.2},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+type InfluenceEventTypeNames = "Start Rumor" | "Bribe" | "Rig Election";
+export const influenceActions: InfluenceAction[] = [
+  startRumorAction,
+  bribePoliticianAction,
+  rigElectionAction,
+];
+
+export function getNationFromAccount(state: TradingDomainState, account: Account) {
+  return state.nations.find((nation) => nation.currency.name === account.currency.name);
+}
+
+export function startRumor(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, startRumorAction);
+}
+
+export function bribePolitician(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, bribePoliticianAction);
+}
+
+export function rigElection(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, rigElectionAction);
+}
+
+export function setActiveNationEventFromAction(state: TradingDomainState, account: Account, action: InfluenceAction) {
+  if (state.rootAccount.balance < action.cost) {
+    console.log(`Unable to perform influence because account balance (${formatNumberForDisplay(state.rootAccount.balance)}) is less than the action cost (${formatNumberForDisplay(action.cost)})`);
+    return;
+  }
+
+  const nation = getNationFromAccount(state, account);
+  if (!nation) {
+    throw new Error('unable to find nation from account');
+  }
+
+  addRevenueToRootAcount(state, -action.cost);
+
+  const event = createNationEventFromInfluenceAction(action);
+
+  setActiveEventOnNation(event, nation, state);
+}
+
+function createNationEventFromInfluenceAction(action: InfluenceAction): NationEvent {
+  const success = Math.random() < action.eventType.successRate;
+
+  if (success) {
+    return {
+      name: action.eventType.name,
+      duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
+      triggeredTime: Date.now(),
+      baseMultiplier: randomDecimalBetween(action.eventType.successBaseMultiplier.min, action.eventType.successBaseMultiplier.max),
+      fluxMultiplier: randomDecimalBetween(action.eventType.successFluxMultiplier.min, action.eventType.successFluxMultiplier.max),
+      eventStartHeadline: randomArrayElement(action.eventType.successHeadlines),
+      kind: "positive",
+    };
+  } else {
+    return {
+      name: action.eventType.name,
+      duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
+      triggeredTime: Date.now(),
+      baseMultiplier: randomDecimalBetween(action.eventType.failureBaseMultiplier.min, action.eventType.failureBaseMultiplier.max),
+      fluxMultiplier: randomDecimalBetween(action.eventType.failureFluxMultiplier.min, action.eventType.failureFluxMultiplier.max),
+      eventStartHeadline: randomArrayElement(action.eventType.failureHeadlines),
+      kind: "negative",
+    };
+  }
+}

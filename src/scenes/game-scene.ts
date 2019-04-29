@@ -61,9 +61,9 @@ export class GameScene extends Phaser.Scene {
       ],
     });
 
-    this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
-    this.music.play();
-    this.sound.pauseOnBlur = false;
+    // this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
+    // this.music.play();
+    // this.sound.pauseOnBlur = false;
 
     const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
