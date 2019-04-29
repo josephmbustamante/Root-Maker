@@ -177,12 +177,15 @@ function getSellAmountText (scene: GameScene) {
 const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.DomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
+  const influenceContainer = scene.add.container(0, 0);
 
   const buyTab = scene.add.text(Styles.tradePage.tradeInterface.x, Styles.tradePage.tradeInterface.exchangeTabY, 'BUY', Styles.selectedTab);
   buyTab.setInteractive({ useHandCursor: true });
   buyTab.on('pointerup', () => {
     sellTab.setStyle(Styles.unselectedTab);
+    influenceTab.setStyle(Styles.unselectedTab);
     buyTab.setStyle(Styles.selectedTab);
+    influenceContainer.setVisible(false);
     sellContainer.setVisible(false);
     buyContainer.setVisible(true);
   });
@@ -190,9 +193,21 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   const sellTab = scene.add.text(buyTab.x + buyTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'SELL', Styles.unselectedTab);
   sellTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
     buyTab.setStyle(Styles.unselectedTab);
+    influenceTab.setStyle(Styles.unselectedTab);
     sellTab.setStyle(Styles.selectedTab);
+    influenceContainer.setVisible(false);
     buyContainer.setVisible(false);
     sellContainer.setVisible(true);
+  });
+
+  const influenceTab = scene.add.text(sellTab.x + sellTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'INFLUENCE', Styles.unselectedTab);
+  sellTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+    influenceTab.setStyle(Styles.selectedTab);
+    buyTab.setStyle(Styles.unselectedTab);
+    sellTab.setStyle(Styles.unselectedTab);
+    influenceContainer.setVisible(true);
+    buyContainer.setVisible(false);
+    sellContainer.setVisible(false);
   });
 
   const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BUY AMOUNT', Styles.listItemStyle);

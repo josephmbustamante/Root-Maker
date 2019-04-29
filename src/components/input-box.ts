@@ -48,7 +48,7 @@ export const createInputBox = (scene: Phaser.Scene, x: number, y: number, callba
     }
     else if (textField.text.length < maxCharacterLength && validKey)
     {
-      textField.text += event.key;
+      textField.text += `${event.key}`.toUpperCase();
       cursor.setX(textField.x + textField.width + 3);
       callback(textField.text);
     }
