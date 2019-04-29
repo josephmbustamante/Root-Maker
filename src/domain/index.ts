@@ -25,6 +25,11 @@ const registerDomainEventHandlers = (domainState: DomainState) => {
   domainState.events.on(DomainEvents.cultRevenueGenerated, (revenue) => {
     TradingDomain.addRevenueToRootAcount(domainState, revenue);
   });
+
+  domainState.events.on(DomainEvents.suggestedDonationChanged, (revenue) => {
+    const newHappiness = CultDomain.calculateNewHappinessLevel(domainState);
+    CultDomain.changeHappiness(domainState, newHappiness);
+  });
 };
 
 export const handleTick = (domainState: DomainState) => {
