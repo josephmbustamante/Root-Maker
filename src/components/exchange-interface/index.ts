@@ -264,19 +264,19 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
 
   let influenceY = 210;
-  const influenceButtonWidth = 100;
+  const influenceButtonWidth = 125;
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.startRumorAction.name, Styles.listItemStyle));
-  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.startRumor(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.startRumorAction), influenceButtonWidth));
   influenceY += 50;
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.bribePoliticianAction.name, Styles.listItemStyle));
-  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.bribePolitician(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.bribePoliticianAction), influenceButtonWidth));
   influenceY += 50;
 
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.rigElectionAction.name, Styles.listItemStyle));
-  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.rigElection(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.rigElectionAction), influenceButtonWidth));
   influenceY += 50;
 
   // const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
