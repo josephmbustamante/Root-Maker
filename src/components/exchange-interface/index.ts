@@ -261,8 +261,22 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
 
-  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BRIBE POLICITIAN', Styles.listItemStyle));
-  influenceContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 210, 'BUY', () => TradingDomain.bribePolicitian(domainState, scene.selectedAccount), 100));
+  let influenceY = 210;
+  const influenceButtonWidth = 100;
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.startRumorAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.startRumor(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.bribePoliticianAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.bribePolitician(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
+
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.rigElectionAction.name, Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.rigElection(domainState, scene.selectedAccount), influenceButtonWidth));
+  influenceY += 50;
+
   // const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
   //   const amount = Number.parseFloat(text);
   //   if (!Number.isNaN(amount)) {

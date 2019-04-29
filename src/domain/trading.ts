@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser';
 import { DomainEvents } from './events';
+import { formatNumberForDisplay } from 'src/shared';
 
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
@@ -287,6 +288,7 @@ function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
 function setActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
+  console.log('setActiveEventOnNation', event, nation)
   nation.activeEvents.push(event);
   state.events.emit(DomainEvents.nationEventOccurred, nation, event.eventStartHeadline);
 }
@@ -342,7 +344,27 @@ export const addRevenueToRootAcount = (state: TradingDomainState, revenueAmount:
 };
 
 
-const bribePolicitianAction: InfluenceAction = {
+export const startRumorAction: InfluenceAction = {
+  cost: 1000,
+  name: "START RUMOR",
+  eventType: {
+    name: "Start Rumor",
+    successRate: 0.90,
+    successHeadlines: [
+      "could be doing better",
+    ],
+    failureHeadlines: [
+      "is moving forward",
+    ],
+    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.03, max: 1.13},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+export const bribePoliticianAction: InfluenceAction = {
   cost: 10000,
   name: "BRIBE POLITICIAN",
   eventType: {
@@ -362,26 +384,71 @@ const bribePolicitianAction: InfluenceAction = {
   },
 };
 
-type InfluenceEventTypeNames = "Bribe";
-const influenceActions: InfluenceAction[] = [
-  bribePolicitianAction,
+export const rigElectionAction: InfluenceAction = {
+  cost: 100000,
+  name: "RIG ELECTION",
+  eventType: {
+    name: "Rig Election",
+    successRate: 0.5,
+    successHeadlines: [
+      "had an unforseen upset at the polls today",
+    ],
+    failureHeadlines: [
+      "uncovered evidence that the last election was rigged",
+    ],
+    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.10, max: 1.2},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+type InfluenceEventTypeNames = "Start Rumor" | "Bribe" | "Rig Election";
+export const influenceActions: InfluenceAction[] = [
+  startRumorAction,
+  bribePoliticianAction,
 ];
 
 export function getNationFromAccount(state: TradingDomainState, account: Account) {
   return state.nations.find((nation) => nation.currency.name === account.currency.name);
 }
 
-export function bribePolicitian(state: TradingDomainState, account: Account) {
+export function startRumor(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, startRumorAction);
+}
+
+export function bribePolitician(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, bribePoliticianAction);
+}
+
+export function rigElection(state: TradingDomainState, account: Account) {
+  setActiveNationEventFromAction(state, account, rigElectionAction);
+}
+
+export function setActiveNationEventFromAction(state: TradingDomainState, account: Account, action: InfluenceAction) {
+  if (state.rootAccount.balance < action.cost) {
+    console.log(`Unable to perform influence because account balance (${formatNumberForDisplay(state.rootAccount.balance)}) is less than the action cost (${formatNumberForDisplay(action.cost)})`);
+    return;
+  }
+
   const nation = getNationFromAccount(state, account);
   if (!nation) {
     throw new Error('unable to find nation from account');
   }
-  const action = bribePolicitianAction;
+
+  addRevenueToRootAcount(state, -action.cost);
+
+  const event = createNationEventFromInfluenceAction(action);
+
+  setActiveEventOnNation(event, nation, state);
+}
+
+function createNationEventFromInfluenceAction(action: InfluenceAction): NationEvent {
   const success = Math.random() < action.eventType.successRate;
-  let event: NationEvent;
 
   if (success) {
-    event = {
+    return {
       name: action.eventType.name,
       duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
       triggeredTime: Date.now(),
@@ -391,7 +458,7 @@ export function bribePolicitian(state: TradingDomainState, account: Account) {
       kind: "positive",
     };
   } else {
-    event = {
+    return {
       name: action.eventType.name,
       duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
       triggeredTime: Date.now(),
@@ -401,5 +468,4 @@ export function bribePolicitian(state: TradingDomainState, account: Account) {
       kind: "negative",
     };
   }
-  setActiveEventOnNation(event, nation, state);
 }
