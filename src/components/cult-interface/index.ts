@@ -3,6 +3,7 @@ import * as Styles from 'src/shared/styles';
 import { addRectangle } from 'src/components/rectangle';
 import { createButton } from 'src/components/button';
 import { DomainEvents } from 'src/domain';
+import { createInputBox } from '../input-box';
 
 export const createCultInterface = (scene: Phaser.Scene, domainState: CultDomain.CultDomainState) => {
   const cultContainer = scene.add.container(0, 0);
@@ -10,7 +11,7 @@ export const createCultInterface = (scene: Phaser.Scene, domainState: CultDomain
   createCultInfo(scene, cultContainer, domainState);
   createCultOptions(scene, cultContainer);
   createCultHappinessMeter(scene, cultContainer, domainState);
-  createCultSuggestedDonationInput(scene, cultContainer);
+  createCultSuggestedDonationInput(scene, cultContainer, domainState);
 
   return cultContainer;
 };
@@ -48,6 +49,10 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
     donationsPerTickValue.text = (domainState.followers * domainState.suggestedDonation).toFixed(2);
   });
 
+  domainState.events.on(DomainEvents.cultCapacityChanged, () => {
+    capacityValue.text = domainState.capacity.toString();
+  });
+
   container.add([followersValue, capacityValue, followersPerTickValue, donationsPerTickValue]);
 };
 
@@ -78,9 +83,17 @@ const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObj
   ]);
 };
 
-const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container) => {
+const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
+  const inputBox = createInputBox(scene, Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, (text: string) => {
+    const inputtedNumber = Number.parseFloat(text);
+    const actualSuggestedDonation = inputtedNumber <= domainState.maxSuggestedDonation ? inputtedNumber : domainState.maxSuggestedDonation;
+
+    CultDomain.changeSuggestedDonation(domainState, actualSuggestedDonation);
+  }, 12, true);
+    // scene.add.text(Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, '2,000', Styles.listItemStyle),
+
   container.add([
+    ...inputBox,
     scene.add.text(Styles.cultPage.donation.labelX, Styles.cultPage.donation.y, 'Suggested Weekly Donation', Styles.cultPage.options.labelStyle),
-    scene.add.text(Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, '2,000', Styles.listItemStyle),
   ]);
 };
