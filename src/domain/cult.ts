@@ -19,7 +19,7 @@ export const initCultDomainState = (input: CultInitData, events: Phaser.Events.E
     followers: 1,
     capacity: 100,
     followersPerTick: 0.1,
-    suggestedDonation: 5,
+    suggestedDonation: 0,
   };
 };
 
@@ -52,7 +52,10 @@ export const generateRevenueFromCult = (domainState: CultDomainState) => {
 };
 
 export const addFollowersToCult = (domainState: CultDomainState) => {
-  domainState.followers += domainState.followersPerTick;
+  if (domainState.followers < domainState.capacity) {
+    const potentialNewFollowerCount = domainState.followers + domainState.followersPerTick;
 
-  domainState.events.emit(DomainEvents.followerCountChanged);
+    domainState.followers = potentialNewFollowerCount > domainState.capacity ? domainState.capacity : potentialNewFollowerCount;
+    domainState.events.emit(DomainEvents.followerCountChanged);
+  }
 };

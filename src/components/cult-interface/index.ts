@@ -77,8 +77,7 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
 };
 
 const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
-  const innerMeterWidth = Styles.cultPage.happiness.meterWidth - Styles.offset;
-  const currentHappinessMeter = scene.add.rectangle(Styles.cultPage.happiness.x + Styles.offset * 0.5, Styles.cultPage.happiness.meterY + Styles.offset * 0.5, innerMeterWidth, Styles.cultPage.happiness.meterHeight - Styles.offset, 0xFF0000).setOrigin(0, 0);
+  const currentHappinessMeter = scene.add.rectangle(Styles.cultPage.happiness.x + Styles.offset * 0.5, Styles.cultPage.happiness.meterY + Styles.offset * 0.5, 1, Styles.cultPage.happiness.meterHeight - Styles.offset, 0xFF0000).setOrigin(0, 0);
   setHappinessMeterWidth(currentHappinessMeter, domainState);
 
   domainState.events.on(DomainEvents.cultHappinessChanged, () => {
@@ -106,6 +105,7 @@ const setHappinessMeterWidth = (meter: Phaser.GameObjects.Rectangle, domainState
 const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   const inputBox = createInputBox(scene, Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, (text: string) => {
     const inputtedNumber = Number.parseFloat(text);
+    // Don't change anything when the user backspaces all the way or enters 0
     if (inputtedNumber >= 1) {
       CultDomain.changeSuggestedDonation(domainState, inputtedNumber);
     }
@@ -116,6 +116,6 @@ const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser
 
   container.add([
     ...inputBox,
-    scene.add.text(Styles.cultPage.donation.labelX, Styles.cultPage.donation.y, 'Suggested Weekly Donation', Styles.cultPage.options.labelStyle),
+    scene.add.text(Styles.cultPage.donation.labelX, Styles.cultPage.donation.y + 5, '"Recommended" Weekly Donation', Styles.cultPage.options.labelStyle),
   ]);
 };
