@@ -13,4 +13,5 @@ export enum DomainEvents {
   cultRevenueGenerated = 'domain.cultRevenueGenerated',
   suggestedDonationChanged = 'domain.suggestedDonationChanged',
   cultCapacityChanged = 'domain.cultCapacityChanged',
+  cultHappinessChanged = 'domain.cultHappinessChanged',
 }

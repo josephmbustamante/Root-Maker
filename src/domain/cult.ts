@@ -7,7 +7,6 @@ export type CultDomainState = {
   events: Phaser.Events.EventEmitter,
   happiness: number;
   suggestedDonation: number;
-  maxSuggestedDonation: number;
   followers: number;
   capacity: number;
   followersPerTick: number;
@@ -21,8 +20,17 @@ export const initCultDomainState = (input: CultInitData, events: Phaser.Events.E
     capacity: 100,
     followersPerTick: 0.1,
     suggestedDonation: 5,
-    maxSuggestedDonation: 100,
   };
+};
+
+export const calculateNewHappinessLevel = (domainState: CultDomainState) => {
+  return domainState.suggestedDonation > 100 ? 0 : 100 - domainState.suggestedDonation;
+};
+
+export const changeHappiness = (domainState: CultDomainState, newHappiness: number) => {
+  domainState.happiness = newHappiness;
+
+  domainState.events.emit(DomainEvents.cultHappinessChanged);
 };
 
 export const changeSuggestedDonation = (domainState: CultDomainState, newDonationAmount: number) => {

@@ -77,20 +77,34 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
 };
 
 const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
+  const innerMeterWidth = Styles.cultPage.happiness.meterWidth - Styles.offset;
+  const currentHappinessMeter = scene.add.rectangle(Styles.cultPage.happiness.x + Styles.offset * 0.5, Styles.cultPage.happiness.meterY + Styles.offset * 0.5, innerMeterWidth, Styles.cultPage.happiness.meterHeight - Styles.offset, 0xFF0000).setOrigin(0, 0);
+
+  domainState.events.on(DomainEvents.cultHappinessChanged, () => {
+    currentHappinessMeter.width = innerMeterWidth * domainState.happiness * 0.01;
+    currentHappinessMeter.fillColor = domainState.happiness > 60
+      ? 0x00FF00
+      : domainState.happiness > 30
+        ? 0xFFF000
+        : 0xFF0000;
+  });
+
   container.add([
     scene.add.text(Styles.cultPage.happiness.x, Styles.cultPage.happiness.labelY, 'Follower Happiness', Styles.cultPage.options.labelStyle),
     ...addRectangle(scene, Styles.cultPage.happiness.x, Styles.cultPage.happiness.meterY, Styles.cultPage.happiness.meterWidth, Styles.cultPage.happiness.meterHeight, Styles.foregroundColorHex),
+    currentHappinessMeter,
   ]);
 };
 
 const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   const inputBox = createInputBox(scene, Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, (text: string) => {
     const inputtedNumber = Number.parseFloat(text);
-    const actualSuggestedDonation = inputtedNumber <= domainState.maxSuggestedDonation ? inputtedNumber : domainState.maxSuggestedDonation;
 
-    CultDomain.changeSuggestedDonation(domainState, actualSuggestedDonation);
+    CultDomain.changeSuggestedDonation(domainState, inputtedNumber);
   }, 12, true);
-    // scene.add.text(Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, '2,000', Styles.listItemStyle),
+
+  // TODO: Ew. This sucks. We should return an object or something easier to work with.
+  (inputBox[6] as Phaser.GameObjects.Text).text = domainState.suggestedDonation.toString();
 
   container.add([
     ...inputBox,
