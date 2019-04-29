@@ -33,7 +33,7 @@ export class MainMenuScene extends Phaser.Scene {
     createInputBox(this, usernameFieldX, usernameY, (text: string) => this.username = text, 12);
 
     const onClick = () => {
-      this.scene.start('Game', { username: this.username });
+      this.scene.start('Story', { username: this.username });
     };
     createButton(this, loginX, loginY, 'LOGIN', onClick, loginButtonWidth)
   }
