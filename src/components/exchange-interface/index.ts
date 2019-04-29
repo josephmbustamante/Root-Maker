@@ -188,6 +188,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   });
 
   const influenceTab = scene.add.text(sellTab.x + sellTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'INFLUENCE', Styles.unselectedTab);
+  influenceTab.setVisible(false);
   influenceTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
     influenceTab.setStyle(Styles.selectedTab);
     buyTab.setStyle(Styles.unselectedTab);
@@ -196,6 +197,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
     buyContainer.setVisible(false);
     sellContainer.setVisible(false);
   });
+  domainState.events.on(DomainEvents.influenceCapabilityUnlocked, () => influenceTab.setVisible(true));
 
   const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BUY AMOUNT', Styles.listItemStyle);
   const buyInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {

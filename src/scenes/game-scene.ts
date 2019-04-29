@@ -1,5 +1,6 @@
 import * as Domain from 'src/domain';
 import * as TradingDomain from 'src/domain/trading';
+import { DomainEvents } from 'src/domain/events';
 import * as _ from 'lodash';
 import * as ExchangeInterface from '../components/exchange-interface';
 import * as Styles from 'src/shared/styles';
@@ -61,9 +62,10 @@ export class GameScene extends Phaser.Scene {
       ],
     });
 
-    // this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
-    // this.music.play();
-    // this.sound.pauseOnBlur = false;
+
+    this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
+    this.music.play();
+    this.sound.pauseOnBlur = false;
 
     const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
@@ -75,11 +77,15 @@ export class GameScene extends Phaser.Scene {
     });
 
     const cultTab = this.add.text(exchangeTab.x + exchangeTab.width + Styles.offset * 2, Styles.tabY, 'CULT', Styles.unselectedTab);
+    cultTab.setVisible(false);
     cultTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
       exchangeTab.setStyle(Styles.unselectedTab);
       cultTab.setStyle(Styles.selectedTab);
       exchangeContainer.setVisible(false);
       cultContainer.setVisible(true);
+    });
+    this.domainState.events.on(DomainEvents.cultCapabilityUnlocked, () => {
+      cultTab.setVisible(true);
     });
 
 
