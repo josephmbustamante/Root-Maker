@@ -201,7 +201,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   });
 
   const influenceTab = scene.add.text(sellTab.x + sellTab.width + Styles.offset * 2, Styles.tradePage.tradeInterface.exchangeTabY, 'INFLUENCE', Styles.unselectedTab);
-  sellTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
+  influenceTab.setInteractive({ useHandCursor: true }).on('pointerup', () => {
     influenceTab.setStyle(Styles.selectedTab);
     buyTab.setStyle(Styles.unselectedTab);
     sellTab.setStyle(Styles.unselectedTab);
@@ -274,10 +274,21 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
 
+  influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BRIBE POLICITIAN', Styles.listItemStyle));
+  influenceContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
+  // const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+  //   const amount = Number.parseFloat(text);
+  //   if (!Number.isNaN(amount)) {
+  //     scene.events.emit(GameEvents.sellAmountChanged, amount);
+  //   }
+  // }, undefined, true);
+
   sellContainer.setVisible(false);
 
   container.add(buyContainer);
   container.add(buyTab);
   container.add(sellContainer);
   container.add(sellTab);
+  container.add(influenceContainer);
+  container.add(influenceTab);
 };
