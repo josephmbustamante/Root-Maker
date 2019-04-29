@@ -79,14 +79,10 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
 const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   const innerMeterWidth = Styles.cultPage.happiness.meterWidth - Styles.offset;
   const currentHappinessMeter = scene.add.rectangle(Styles.cultPage.happiness.x + Styles.offset * 0.5, Styles.cultPage.happiness.meterY + Styles.offset * 0.5, innerMeterWidth, Styles.cultPage.happiness.meterHeight - Styles.offset, 0xFF0000).setOrigin(0, 0);
+  setHappinessMeterWidth(currentHappinessMeter, domainState);
 
   domainState.events.on(DomainEvents.cultHappinessChanged, () => {
-    currentHappinessMeter.width = innerMeterWidth * domainState.happiness * 0.01;
-    currentHappinessMeter.fillColor = domainState.happiness > 60
-      ? 0x00FF00
-      : domainState.happiness > 30
-        ? 0xFFF000
-        : 0xFF0000;
+    setHappinessMeterWidth(currentHappinessMeter, domainState);
   });
 
   container.add([
@@ -96,11 +92,23 @@ const createCultHappinessMeter = (scene: Phaser.Scene, container: Phaser.GameObj
   ]);
 };
 
+const setHappinessMeterWidth = (meter: Phaser.GameObjects.Rectangle, domainState: CultDomain.CultDomainState) => {
+  const innerMeterWidth = Styles.cultPage.happiness.meterWidth - Styles.offset;
+
+  meter.width = innerMeterWidth * domainState.happiness * 0.01 || 1; // Always have some bar showing
+  meter.fillColor = domainState.happiness > 60
+    ? 0x00FF00
+    : domainState.happiness > 30
+      ? 0xFFF000
+      : 0xFF0000;
+};
+
 const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: CultDomain.CultDomainState) => {
   const inputBox = createInputBox(scene, Styles.cultPage.donation.inputX, Styles.cultPage.donation.y, (text: string) => {
     const inputtedNumber = Number.parseFloat(text);
-
-    CultDomain.changeSuggestedDonation(domainState, inputtedNumber);
+    if (inputtedNumber >= 1) {
+      CultDomain.changeSuggestedDonation(domainState, inputtedNumber);
+    }
   }, 12, true);
 
   // TODO: Ew. This sucks. We should return an object or something easier to work with.
