@@ -351,14 +351,14 @@ export const startRumorAction: InfluenceAction = {
     name: "Start Rumor",
     successRate: 0.90,
     successHeadlines: [
-      "could be doing better",
+      "has reported good market behavior",
     ],
     failureHeadlines: [
-      "is moving forward",
+      "was caught lying about national income",
     ],
-    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successBaseMultiplier: {min: 0.95, max: 0.99},
     successFluxMultiplier: {min: 0.7, max: 0.8},
-    failureBaseMultiplier: {min: 1.03, max: 1.13},
+    failureBaseMultiplier: {min: 1.01, max: 1.05},
     failureFluxMultiplier: {min: 0.7, max: 0.8},
     duration: {min: 80, max: 160}
   },
@@ -396,7 +396,7 @@ export const rigElectionAction: InfluenceAction = {
     failureHeadlines: [
       "uncovered evidence that the last election was rigged",
     ],
-    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successBaseMultiplier: {min: 0.8, max: 0.90},
     successFluxMultiplier: {min: 0.7, max: 0.8},
     failureBaseMultiplier: {min: 1.10, max: 1.2},
     failureFluxMultiplier: {min: 0.7, max: 0.8},
@@ -408,6 +408,7 @@ type InfluenceEventTypeNames = "Start Rumor" | "Bribe" | "Rig Election";
 export const influenceActions: InfluenceAction[] = [
   startRumorAction,
   bribePoliticianAction,
+  rigElectionAction,
 ];
 
 export function getNationFromAccount(state: TradingDomainState, account: Account) {
