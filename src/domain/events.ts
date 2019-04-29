@@ -17,4 +17,8 @@ export enum DomainEvents {
   cultCapacityChanged = 'domain.cultCapacityChanged',
   cultHappinessChanged = 'domain.cultHappinessChanged',
   followersPerTickChanged = 'domain.followersPerTickChanged',
+  spentRootOnCultThings = 'domain.spentRootOnCultThings',
+  cultWebsiteBuilt = 'domain.cultWebsiteBuilt',
+  cultChurchBuilt = 'domain.cultChurchBuilt',
+  cultComplexBuilt = 'domain.cultComplexBuilt',
 }

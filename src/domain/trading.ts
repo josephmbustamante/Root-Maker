@@ -494,3 +494,8 @@ function createNationEventFromInfluenceAction(action: InfluenceAction): NationEv
     };
   }
 }
+
+export const debitFromRootAcount = (state: TradingDomainState, revenueAmount: number) => {
+  state.rootAccount.balance -= revenueAmount;
+  state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
+};

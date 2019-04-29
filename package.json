@@ -1,12 +1,13 @@
 {
-  "name": "sample-phaser3-typescript-project",
+  "name": "root-maker",
   "version": "0.1",
-  "description": "A sample project using Phaser 3 and TypeScript",
+  "description": "Welcome to Root Maker ©, the world’s greatest currency exchange software.",
   "main": "src/main.ts",
-  "author": "Joe Bustamante",
+  "author": "Joe Bustamante, Jason Porritt, Dan Kelch, Kyle Harris, and Andy Peterson",
   "license": "MIT",
   "private": false,
   "scripts": {
+    "build-release": "webpack && zip -r release dist",
     "build": "webpack",
     "dev": "webpack-dev-server"
   },

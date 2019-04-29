@@ -38,6 +38,10 @@ const registerDomainEventHandlers = (domainState: DomainState) => {
     TradingDomain.addRevenueToRootAcount(domainState, revenue);
   });
 
+  domainState.events.on(DomainEvents.spentRootOnCultThings, (amount) => {
+    TradingDomain.debitFromRootAcount(domainState, amount);
+  });
+
   domainState.events.on(DomainEvents.suggestedDonationChanged, (revenue) => {
     const newHappiness = CultDomain.calculateNewHappinessLevel(domainState);
     CultDomain.changeHappiness(domainState, newHappiness);
