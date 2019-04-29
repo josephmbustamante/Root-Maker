@@ -237,8 +237,8 @@ const nationEventTypes: NationEventType[] = [
     name: "High productivity",
     eventStartHeadline: "is hugely productive right now",
     eventEndHeadline: "is resting from their productivity push",
-    baseMultiplier: {min: 0.99, max: 0.99},
-    fluxMultiplier: {min: 0.7, max: 1.2},
+    baseMultiplier: {min: 0.9, max: 0.99},
+    fluxMultiplier: {min: 0.7, max: 0.8},
     duration: {min: 30, max: 60}
   },
   {
@@ -256,7 +256,7 @@ const nationEventTypes: NationEventType[] = [
     eventStartHeadline: "sure looks like they're having a bad day",
     eventEndHeadline: "is ok",
     baseMultiplier: {min: 1.01, max: 1.1},
-    fluxMultiplier: {min: 0.7, max: 0.8},
+    fluxMultiplier: {min: 1.01, max: 1.05},
     duration: {min: 10, max: 20}
   },
   {
@@ -274,7 +274,7 @@ const nationEventTypes: NationEventType[] = [
     eventStartHeadline: "looks like they're struggling this month",
     eventEndHeadline: "looks like they're doing better",
     baseMultiplier: {min: 1.01, max: 1.1},
-    fluxMultiplier: {min: 0.7, max: 0.8},
+    fluxMultiplier: {min: 1.01, max: 1.05},
     duration: {min: 20, max: 40}
   },
   {
@@ -292,7 +292,7 @@ const nationEventTypes: NationEventType[] = [
     eventStartHeadline: "isn't having a very good year",
     eventEndHeadline: "isn't doing too bad",
     baseMultiplier: {min: 1.01, max: 1.1},
-    fluxMultiplier: {min: 0.7, max: 0.8},
+    fluxMultiplier: {min: 1.01, max: 1.05},
     duration: {min: 80, max: 160}
   },
 ]
@@ -331,7 +331,7 @@ export function runRandomNationEvents(state: TradingDomainState) {
     console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
     let chosenNation = state.nations[randomIntegerBetween(0, state.nations.length)];
-    if (chosenNation.activeEvents.length == 0 || (chosenNation.activeEvents.length == 1 && chosenNation.activeEvents[0].kind == eventType.kind)) {
+    if (chosenNation.activeEvents.length == 0 || (chosenNation.activeEvents.length == 1 && chosenNation.activeEvents[0].name != eventType.name)) {
       let event: NationEvent = {
         baseMultiplier: randomDecimalBetween(eventType.baseMultiplier.min, eventType.baseMultiplier.max),
         fluxMultiplier: randomDecimalBetween(eventType.fluxMultiplier.min, eventType.fluxMultiplier.max),
