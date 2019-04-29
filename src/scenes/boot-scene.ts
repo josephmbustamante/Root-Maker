@@ -69,5 +69,6 @@ export class BootScene extends Phaser.Scene {
     this.load.image('trend-down', 'assets/trend-down.svg');
     this.load.image('logo-png', 'assets/logo.png');
     this.load.image('logo-svg', 'assets/logo.svg');
+    this.load.audio('root-maker-music-1', 'assets/root-maker-music-1.mp3');
   }
 }

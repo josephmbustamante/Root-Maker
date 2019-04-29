@@ -27,6 +27,7 @@ export class GameScene extends Phaser.Scene {
 
   domainTickTime = 1000; // milliseconds
   timeSinceLastTick = 0;
+  music: any;
 
   constructor() {
     super(sceneConfig);
@@ -59,6 +60,9 @@ export class GameScene extends Phaser.Scene {
         { currency: 'Pesto', nation: 'Median' },
       ],
     });
+
+    this.music = this.sound.add('root-maker-music-1', { loop: true });
+    this.music.play();
 
     const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
