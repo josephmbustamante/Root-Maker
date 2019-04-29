@@ -103,9 +103,9 @@ const setHappinessMeterWidth = (meter: Phaser.GameObjects.Rectangle, domainState
   const innerMeterWidth = Styles.cultPage.happiness.meterWidth - Styles.offset;
 
   meter.width = innerMeterWidth * domainState.happiness * 0.01 || 1; // Always have some bar showing
-  meter.fillColor = domainState.happiness > 60
+  meter.fillColor = domainState.happiness > 70
     ? 0x00FF00
-    : domainState.happiness > 30
+    : domainState.happiness > 40
       ? 0xFFF000
       : 0xFF0000;
 };

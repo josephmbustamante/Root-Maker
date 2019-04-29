@@ -73,10 +73,8 @@ export const generateRevenueFromCult = (domainState: CultDomainState) => {
 };
 
 export const addFollowersToCult = (domainState: CultDomainState) => {
-  if (domainState.followers < domainState.capacity) {
-    const potentialNewFollowerCount = domainState.followers + domainState.actualNewFollowersPerTick;
+  const newFollowerCount = domainState.followers + domainState.actualNewFollowersPerTick;
 
-    domainState.followers = _.clamp(potentialNewFollowerCount, 0, domainState.capacity);
-    domainState.events.emit(DomainEvents.followerCountChanged);
-  }
+  domainState.followers = _.clamp(newFollowerCount, 0, domainState.capacity);
+  domainState.events.emit(DomainEvents.followerCountChanged);
 };
