@@ -36,8 +36,8 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
   container.add([
     scene.add.text(infoRowTextX, infoRowStartY, 'Followers', infoRowStyle),
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 1), 'Capacity', infoRowStyle),
-    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Followers per Tick', infoRowStyle),
-    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Tick', infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Follower Rate', infoRowStyle),
+    scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donation Rate', infoRowStyle),
   ])
 
   const followersValue = scene.add.text(infoRowValueX, infoRowStartY, domainState.followers.toFixed(2), infoRowStyle);
