@@ -38,14 +38,14 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Tick', infoRowStyle),
   ])
 
-  const followersValue = scene.add.text(infoRowValueX, infoRowStartY, `${Math.floor(domainState.followers)}`, infoRowStyle);
+  const followersValue = scene.add.text(infoRowValueX, infoRowStartY, domainState.followers.toFixed(2), infoRowStyle);
   const capacityValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle);
-  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${domainState.followersPerTick}`, infoRowStyle);
-  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${domainState.followers * domainState.suggestedDonation}`, infoRowStyle);
+  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), domainState.followersPerTick.toFixed(2), infoRowStyle);
+  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), (domainState.followers * domainState.suggestedDonation).toFixed(2), infoRowStyle);
 
   domainState.events.on(DomainEvents.followerCountChanged, () => {
-    followersValue.text = `${domainState.followers}`;
-    donationsPerTickValue.text = `${domainState.followers * domainState.suggestedDonation}`;
+    followersValue.text = domainState.followers.toFixed(2);
+    donationsPerTickValue.text = (domainState.followers * domainState.suggestedDonation).toFixed(2);
   });
 
   container.add([followersValue, capacityValue, followersPerTickValue, donationsPerTickValue]);
