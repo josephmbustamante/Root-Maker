@@ -28,7 +28,7 @@ export class StoryScene extends Phaser.Scene {
 
   create() {
     this.storyTextElements = this.storyText.map((textLine, index) => {
-      return this.add.text(25, 100 + (50 * index), '', this.storyFontStyle);
+      return this.add.text(25, 100 + (30 * index), '', this.storyFontStyle);
     });
 
     createButton(this, 800, 600, 'BEGIN', () => {
@@ -72,8 +72,10 @@ export class StoryScene extends Phaser.Scene {
     'You have just been hired as a currency trader. Congratulations!',
     'Currency is now your life.',
     '',
-    'Welcome to Root Maker ©, the greatest currency exchange software ever created.',
-    'Root Maker © will guide you to unprecedented success in your new career.',
+    'Welcome to Root Maker©, the greatest currency exchange software ever created.',
+    'Root Maker© will guide you to unprecedented success in your new career.',
+    'The software rewards high performers.',
+    'If you are successful, Root Maker© will allow you to do things you never thought possible.',
     '',
     'Remember: money is the root of all good things, and Root is the best type of money there is.',
     '',
