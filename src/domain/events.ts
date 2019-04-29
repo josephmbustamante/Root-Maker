@@ -14,4 +14,5 @@ export enum DomainEvents {
   suggestedDonationChanged = 'domain.suggestedDonationChanged',
   cultCapacityChanged = 'domain.cultCapacityChanged',
   cultHappinessChanged = 'domain.cultHappinessChanged',
+  followersPerTickChanged = 'domain.followersPerTickChanged',
 }

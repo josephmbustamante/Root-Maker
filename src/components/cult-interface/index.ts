@@ -41,8 +41,8 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
 
   const followersValue = scene.add.text(infoRowValueX, infoRowStartY, domainState.followers.toFixed(2), infoRowStyle);
   const capacityValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle);
-  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), domainState.followersPerTick.toFixed(2), infoRowStyle);
-  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), (domainState.followers * domainState.suggestedDonation).toFixed(2), infoRowStyle);
+  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), domainState.actualNewFollowersPerTick.toFixed(2), infoRowStyle);
+  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), (CultDomain.calculateDonationPerTick(domainState)).toFixed(2), infoRowStyle);
 
   domainState.events.on(DomainEvents.followerCountChanged, () => {
     followersValue.text = domainState.followers.toFixed(2);
@@ -51,6 +51,14 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
 
   domainState.events.on(DomainEvents.cultCapacityChanged, () => {
     capacityValue.text = domainState.capacity.toString();
+  });
+
+  domainState.events.on(DomainEvents.followersPerTickChanged, () => {
+    followersPerTickValue.text = domainState.actualNewFollowersPerTick.toFixed(2);
+  });
+
+  domainState.events.on(DomainEvents.suggestedDonationChanged, () => {
+    donationsPerTickValue.text = (CultDomain.calculateDonationPerTick(domainState)).toFixed(2);
   });
 
   container.add([followersValue, capacityValue, followersPerTickValue, donationsPerTickValue]);
