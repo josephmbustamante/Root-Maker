@@ -7,8 +7,10 @@ export enum DomainEvents {
   exchangeRatesChanged = 'domain.exchangeRatesChanged',
   nationEventOccurred = 'domain.nationEventOccurred',
   nationEventEnded = 'domain.nationEventEnded',
+  influenceCapabilityUnlocked = 'domain.influenceCapabilityUnlocked',
 
   // Cult
+  cultCapabilityUnlocked = 'domain.cultCapabilityUnlocked',
   followerCountChanged = 'domain.followerCountChanged',
   cultRevenueGenerated = 'domain.cultRevenueGenerated',
 }

@@ -54,6 +54,7 @@ export type TradingDomainState = {
   rootCurrency: Currency,
   rootAccount: Account,
   events: Phaser.Events.EventEmitter,
+  totalPortfolioValue: number
 }
 
 export function createAccount(name: string, startingBalance: number, currency: Currency, isRoot: boolean): Account {
@@ -70,13 +71,17 @@ export function createAccount(name: string, startingBalance: number, currency: C
   return newAccount;
 }
 
+function applyTransactionToAccount(account: Account, amount: number, transactionType: "Credit" | "Debit", state: TradingDomainState) {
+  account.ledger.push({amount: amount, transactionType: "Debit"});
+  account.balance += transactionType == "Credit" ? amount : -1 * amount;
+}
+
 export function recordTrade(source: Account, destination: Account, sourceAmount: number, sourceToDestinationExchangeRate: number, state: TradingDomainState) {
   if (source.balance >= sourceAmount) {
-    source.ledger.push({amount: sourceAmount, transactionType: "Debit"});
-    source.balance -= sourceAmount;
     let destinationAmount = sourceAmount * sourceToDestinationExchangeRate;
-    destination.ledger.push({amount: destinationAmount, transactionType: "Credit"});
-    destination.balance += destinationAmount;
+    applyTransactionToAccount(source, sourceAmount, "Debit", state);
+    applyTransactionToAccount(destination, destinationAmount, "Credit", state);
+
     let newTrade = {
       sourceAmount: sourceAmount,
       sourceCurrency: source.currency,
@@ -132,7 +137,14 @@ export function initTradingDomainState(initData: TradingInitData, events: Phaser
     tradeLedger: { trades: [] },
     rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
+    totalPortfolioValue: initData.rootCurrencyStartingAmount,
   }
+}
+
+function recalculateTradingPortfolioValue(state: TradingDomainState) {
+  state.totalPortfolioValue = state.rootAccount.balance + state.tradeAccounts.reduce((val, account) => {
+    return val + (account.balance / account.currency.exchangeRate)
+  }, 0);
 }
 
 export function runCurrencyFluctuations(state: TradingDomainState) {
@@ -158,6 +170,7 @@ export function runCurrencyFluctuations(state: TradingDomainState) {
     }
   });
   state.events.emit(DomainEvents.exchangeRatesChanged);
+  recalculateTradingPortfolioValue(state);
 }
 
 type NationEventTypeNames = "War" | "Forging friendships" | "Good day" | "Bad day" | "Great month" | "Terrible month" | "Famine" | "High productivity" | "Bad year" | "Outstanding year";
