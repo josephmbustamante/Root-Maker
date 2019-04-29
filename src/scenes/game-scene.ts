@@ -30,12 +30,18 @@ export class GameScene extends Phaser.Scene {
   timeSinceLastTick = 0;
   music: Phaser.Sound.BaseSound;
 
+  startingCurrencyAmount = 100;
+
   constructor() {
     super(sceneConfig);
   }
 
   public init(data: { username: string }) {
     this.username = data.username || '';
+
+    if (this.username.match(/ROOT\.\d+/)) {
+      this.startingCurrencyAmount = Number.parseInt(this.username.replace(/\D/g,'')) || this.startingCurrencyAmount;
+    }
 
     this.events.on(GameEvents.buyAmountChanged, (amount) => {
       this.buyAmount = amount;
@@ -53,7 +59,7 @@ export class GameScene extends Phaser.Scene {
   public create() {
     this.domainState = Domain.initDomainState({
       rootCurrencyName: 'root',
-      rootCurrencyStartingAmount: 100,
+      rootCurrencyStartingAmount: this.startingCurrencyAmount,
       nations: [
         { currency: 'Duller', nation: 'Andromeda' },
         { currency: 'When', nation: 'Corennia' },
