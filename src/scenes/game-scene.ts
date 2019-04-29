@@ -27,7 +27,7 @@ export class GameScene extends Phaser.Scene {
 
   domainTickTime = 1000; // milliseconds
   timeSinceLastTick = 0;
-  music: any;
+  music: Phaser.Sound.BaseSound;
 
   constructor() {
     super(sceneConfig);
@@ -63,8 +63,9 @@ export class GameScene extends Phaser.Scene {
       },
     });
 
-    this.music = this.sound.add('root-maker-music-1', { loop: true });
+    this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
     this.music.play();
+    this.sound.pauseOnBlur = false;
 
     const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });
