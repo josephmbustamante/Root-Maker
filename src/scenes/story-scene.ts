@@ -8,7 +8,12 @@ const sceneConfig: Phaser.Scenes.Settings.Config = {
 };
 
 export class StoryScene extends Phaser.Scene {
-  loadingFontStyle = { fontSize: '24px', color: Styles.textColor };
+  storyFontStyle = { fontSize: '16px', color: Styles.foregroundColor };
+  storyTextElements: Phaser.GameObjects.Text[];
+  currentLineIndex = 0;
+  currentCharacterIndex = 0;
+  framesSinceLastCharacter = 0;
+
   username: string = '';
 
   constructor() {
@@ -20,8 +25,52 @@ export class StoryScene extends Phaser.Scene {
   }
 
   create() {
-    createButton(this, 800, 600, 'START GAME', () => {
+    this.storyTextElements = this.storyText.map((textLine, index) => {
+      return this.add.text(25, 100 + (50 * index), '', this.storyFontStyle);
+    });
+
+    createButton(this, 800, 600, 'BEGIN', () => {
       this.scene.start('Game', { username: this.username });
     });
   }
+
+  update() {
+    // Set an amount of frames necessary to add a new character.
+    // Gives the effect of slower typing.
+    if (this.framesSinceLastCharacter < 4) {
+      this.framesSinceLastCharacter++;
+      return;
+    }
+
+    const previousLine = this.storyTextElements[this.currentLineIndex];
+
+    if (previousLine) {
+      // See if we finished with the previous line, and if so, move on to the next.
+      if (this.currentCharacterIndex >= this.storyText[this.currentLineIndex].length) {
+        this.currentLineIndex++;
+        this.currentCharacterIndex = 0;
+      }
+
+      const currentLine = this.storyTextElements[this.currentLineIndex];
+
+      if (currentLine) {
+        const nextCharacter = this.storyText[this.currentLineIndex].charAt(this.currentCharacterIndex);
+
+        currentLine.setText(currentLine.text + nextCharacter);
+        this.currentCharacterIndex++;
+      }
+    }
+  }
+
+  storyText = [
+    'You have just been hired as a currency trader. Congratulations!',
+    'Currency is now your life.',
+    '',
+    'Welcome to Root Maker ©, the greatest currency exchange software ever created.',
+    'Root Maker © will guide you to unprecedented success in your new career.',
+    '',
+    'Remember: money is the root of all good things, and Root is the best type of money there is.',
+    '',
+    'Click the button below to begin.',
+  ];
 }
