@@ -55,10 +55,10 @@ export class GameScene extends Phaser.Scene {
         rootCurrencyName: 'root',
         rootCurrencyStartingAmount: 100,
         nations: [
-          { currency: 'Duller', nation: 'Andromeda' },
-          { currency: 'When', nation: 'Corennia' },
-          { currency: 'Prawn', nation: 'Great Burton' },
-          { currency: 'Pesto', nation: 'Median' },
+          { currency: 'DULLER', nation: 'ANDROMEDA' },
+          { currency: 'WHEN', nation: 'CORENNIA' },
+          { currency: 'PRAWN', nation: 'GREAT BURTON' },
+          { currency: 'PESTO', nation: 'MEDIAN' },
         ],
       },
     });

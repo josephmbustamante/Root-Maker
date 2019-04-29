@@ -29,7 +29,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.add.image(logoX, logoY, 'logo-svg').setOrigin(0, 0);
 
-    this.add.text(usernameTextX, usernameY + 5, 'Username:');
+    this.add.text(usernameTextX, usernameY + 5, 'USERNAME:');
     createInputBox(this, usernameFieldX, usernameY, (text: string) => this.username = text, 12);
 
     const onClick = () => {
