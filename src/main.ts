@@ -1,13 +1,14 @@
 import * as Phaser from 'phaser';
 import Scenes from './scenes';
+import * as Styles from 'src/shared/styles';
 
 const gameConfig: GameConfig = {
-  title: 'Sample',
+  title: 'Currency Trader',
 
   type: Phaser.AUTO,
 
-  width: window.innerWidth,
-  height: window.innerHeight,
+  width: Styles.width,
+  height: Styles.height,
 
   scene: Scenes,
 
@@ -19,7 +20,7 @@ const gameConfig: GameConfig = {
   },
 
   parent: 'game',
-  backgroundColor: '#000000',
+  backgroundColor: Styles.backgroundColor,
 };
 
 export const game = new Phaser.Game(gameConfig);
