@@ -301,7 +301,7 @@ function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
 function setActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
-  console.log('setActiveEventOnNation', event, nation)
+  // console.log('setActiveEventOnNation', event, nation)
   nation.activeEvents.push(event);
   state.events.emit(DomainEvents.nationEventOccurred, nation, event.eventStartHeadline);
 }
@@ -319,7 +319,7 @@ export function checkForExpiringNationEvents(state: TradingDomainState) {
   state.nations.forEach(nation => {
     nation.activeEvents.forEach(event => {
       if (event.triggeredTime + event.duration*1000 <= now) {
-        console.log("Expiring an event!!!", now, event);
+        // console.log("Expiring an event!!!", now, event);
         endActiveEventOnNation(event, nation, state)
       }
     });
@@ -328,7 +328,7 @@ export function checkForExpiringNationEvents(state: TradingDomainState) {
 
 export function runRandomNationEvents(state: TradingDomainState) {
   if (Math.random() > RANDOM_EVENT_THRESHOLD) {
-    console.log("A RANDOM EVENT OCCURRED!!!");
+    // console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
     let chosenNation = state.nations[randomIntegerBetween(0, state.nations.length)];
     if (chosenNation.activeEvents.length == 0 || (chosenNation.activeEvents.length == 1 && chosenNation.activeEvents[0].kind == eventType.kind)) {
@@ -442,7 +442,7 @@ export function rigElection(state: TradingDomainState, account: Account) {
 
 export function setActiveNationEventFromAction(state: TradingDomainState, account: Account, action: InfluenceAction) {
   if (state.rootAccount.balance < action.cost) {
-    console.log(`Unable to perform influence because account balance (${formatNumberForDisplay(state.rootAccount.balance)}) is less than the action cost (${formatNumberForDisplay(action.cost)})`);
+    // console.log(`Unable to perform influence because account balance (${formatNumberForDisplay(state.rootAccount.balance)}) is less than the action cost (${formatNumberForDisplay(action.cost)})`);
     return;
   }
 
