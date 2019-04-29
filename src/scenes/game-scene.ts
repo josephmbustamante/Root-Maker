@@ -28,14 +28,16 @@ export class GameScene extends Phaser.Scene {
 
   domainTickTime = 1000; // milliseconds
   timeSinceLastTick = 0;
-  music: Phaser.Sound.BaseSound;
+
+  backgroundMusic: Phaser.Sound.BaseSound;
 
   constructor() {
     super(sceneConfig);
   }
 
-  public init(data: { username: string }) {
+  public init(data: { username: string, backgroundMusic: Phaser.Sound.BaseSound }) {
     this.username = data.username || '';
+    this.backgroundMusic = data.backgroundMusic;
 
     this.events.on(GameEvents.buyAmountChanged, (amount) => {
       this.buyAmount = amount;
@@ -61,11 +63,6 @@ export class GameScene extends Phaser.Scene {
         { currency: 'Pesto', nation: 'Median' },
       ],
     });
-
-
-    this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
-    this.music.play();
-    this.sound.pauseOnBlur = false;
 
     const exchangeTab = this.add.text(Styles.offset, Styles.tabY, 'EXCHANGE', Styles.selectedTab);
     exchangeTab.setInteractive({ useHandCursor: true });

@@ -16,6 +16,8 @@ export class StoryScene extends Phaser.Scene {
 
   username: string = '';
 
+  music: Phaser.Sound.BaseSound;
+
   constructor() {
     super(sceneConfig);
   }
@@ -30,8 +32,12 @@ export class StoryScene extends Phaser.Scene {
     });
 
     createButton(this, 800, 600, 'BEGIN', () => {
-      this.scene.start('Game', { username: this.username });
+      this.scene.start('Game', { username: this.username, backgroundMusic: this.music });
     });
+
+    this.music = this.sound.add('root-maker-music-1', { loop: true, volume: 1 });
+    this.music.play();
+    this.sound.pauseOnBlur = false;
   }
 
   update() {
