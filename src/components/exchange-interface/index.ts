@@ -5,6 +5,7 @@ import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
 import { createButton } from '../button';
 import { createInputBox } from '../input-box';
+import { GameEvents } from 'src/shared/events';
 
 interface CurrencyDisplayRow {
   country: Phaser.GameObjects.Text;
@@ -15,9 +16,15 @@ interface CurrencyDisplayRow {
 };
 
 export type CurrencyDisplay = CurrencyDisplayRow[];
+interface GameScene extends Phaser.Scene {
+  selectedAccount: TradingDomain.Account;
+  buyAmount: number;
+  sellAmount: number;
+}
 
-export const createExchangeInterface = (scene: Phaser.Scene, domainState: TradingDomain.TradingDomainState) => {
+export const createExchangeInterface = (scene: GameScene, domainState: TradingDomain.TradingDomainState) => {
   const exchangeContainer = scene.add.container(0, 0);
+  scene.events.emit(GameEvents.selectedAccountChanged, { account: domainState.tradeAccounts[0] });
 
   createInfoInterface(scene, exchangeContainer, domainState);
   createTradeInterface(scene, exchangeContainer, domainState);
@@ -26,11 +33,11 @@ export const createExchangeInterface = (scene: Phaser.Scene, domainState: Tradin
   return exchangeContainer;
 };
 
-const getInfoColumnWidth = (scene: Phaser.Scene) => {
+const getInfoColumnWidth = (scene: GameScene) => {
   return Shared.getGameWidth(scene) * 0.7;
 };
 
-const getBuyColumnWidth = (scene: Phaser.Scene) => {
+const getBuyColumnWidth = (scene: GameScene) => {
   return Shared.getGameWidth(scene) * 0.075;
 };
 
@@ -47,7 +54,7 @@ const rootValueX = 610;
 const headerColumnY = 160;
 const firstLineItemY = 200;
 
-function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down') {
+function createTrend(scene: GameScene, offsetY: number, trend: 'up' | 'down') {
   if (trend === 'up') {
     return scene.add.image(trendX, trendBaseY + offsetY, 'trend-up')
   } else if (trend === 'down') {
@@ -56,10 +63,10 @@ function createTrend(scene: Phaser.Scene, offsetY: number, trend: 'up' | 'down')
 }
 
 const getCurrentRootValueText = (account: TradingDomain.Account, nation: TradingDomain.Nation) => {
-  return Number(account.balance / nation.currency.exchangeRate).toFixed(2);
+  return Shared.formatNumberForDisplay(account.balance / nation.currency.exchangeRate);
 };
 
-const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
+const createInfoInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   container.add(addRectangle(scene,
     Styles.tradePage.currencyList.x,
     Styles.tradePage.currencyList.y,
@@ -85,34 +92,29 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     const country = scene.add.text(countryX, y, nation.name, Styles.listItemStyle);
     const currency = scene.add.text(currencyX, y, nation.currency.name, Styles.listItemStyle);
     let trend = createTrend(scene, Styles.lineItemHeight * index, nation.currency.trend);
-    const amountOwned = scene.add.text(amountOwnedX, y, account.balance.toFixed(2), Styles.listItemStyle);
-    const exchangeRate = scene.add.text(exchangeRateX, y, nation.currency.exchangeRate.toFixed(2), Styles.listItemStyle);
+    const amountOwned = scene.add.text(amountOwnedX, y, Shared.formatNumberForDisplay(account.balance), Styles.listItemStyle);
+    const exchangeRate = scene.add.text(exchangeRateX, y, Shared.formatNumberForDisplay(nation.currency.exchangeRate), Styles.listItemStyle);
     const rootValue = scene.add.text(rootValueX, y, getCurrentRootValueText(account, nation), Styles.listItemStyle);
-    const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width - 2, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 1).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
-    rowClickHandler.alpha = basicallyHidden;
+    const rowClickHandler = scene.add.rectangle(Styles.offset + 1, y - 7, Styles.tradePage.currencyList.width - 2, Styles.lineItemHeight, Styles.tradePage.selectedLineItemHex, 0.5).setInteractive({ useHandCursor: true }).setOrigin(0, 0);
+    if (index > 0) {
+      // defaulting the first country / currency to selected here and in the trading state
+      rowClickHandler.alpha = basicallyHidden;
+    }
     rowClickHandlers.push(rowClickHandler);
 
     rowClickHandler.on('pointerup', () => {
-      rowClickHandlers.forEach((handler) => {
-        handler.alpha = basicallyHidden;
-      });
-      domainState.selectedAccount = account;
-      rowClickHandler.alpha = 0.5
-    });
-    rowClickHandler.on('pointerdownoutside', () => {
-      domainState.selectedAccount = null;
-      rowClickHandler.alpha = basicallyHidden;
+      scene.events.emit(GameEvents.selectedAccountChanged, { account, rowClickHandler })
     });
 
-    container.add([country, currency, trend, amountOwned, exchangeRate, rootValue]);
+    container.add([country, currency, trend, amountOwned, exchangeRate, rootValue, rowClickHandler]);
 
     domainState.events.on(DomainEvents.accountBalanceChanged, () => {
-      amountOwned.setText(account.balance.toFixed(2));
+      amountOwned.setText(Shared.formatNumberForDisplay(account.balance));
       rootValue.setText(getCurrentRootValueText(account, nation));
     });
 
     domainState.events.on(DomainEvents.exchangeRatesChanged, () => {
-      exchangeRate.setText(nation.currency.exchangeRate.toFixed(2));
+      exchangeRate.setText(Shared.formatNumberForDisplay(nation.currency.exchangeRate));
       rootValue.setText(getCurrentRootValueText(account, nation));
       if (trend) {
         trend.destroy();
@@ -122,22 +124,44 @@ const createInfoInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.
     });
   });
 
+  scene.events.on(GameEvents.selectedAccountChanged, (event) => {
+
+    rowClickHandlers.forEach((handler) => {
+      handler.alpha = basicallyHidden;
+    });
+
+    event.rowClickHandler.alpha = 0.5;
+  });
+
 };
 
-const createRootInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
+const createRootInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   const box = addRectangle(scene, Styles.width - Styles.offset - Styles.tradePage.usernameWidth, 60, Styles.tradePage.usernameWidth, Styles.tradePage.usernameHeight, Styles.foregroundColorHex);
   const rootInfoText = scene.add.text(625, 70, 'AVAILABLE ROOT', Styles.listItemStyle);
-  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, domainState.rootAccount.balance.toLocaleString(), Styles.availableRoot);
+  const rootValueText = scene.add.text(rootInfoText.x + rootInfoText.width + 30, rootInfoText.y - 3, Shared.formatNumberForDisplay(domainState.rootAccount.balance), Styles.availableRoot);
 
   domainState.events.on(DomainEvents.accountBalanceChanged, (account: TradingDomain.Account) => {
     if (account.name === domainState.rootAccount.name) {
-      console.log('updating root', account.name, account.balance)
-      rootValueText.setText(domainState.rootAccount.balance.toFixed(2));
+      rootValueText.setText(Shared.formatNumberForDisplay(domainState.rootAccount.balance));
     }
   });
 };
 
-const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
+function getBuyAmountText (scene: GameScene) {
+  const currencyAmount = Shared.formatNumberForDisplay(scene.buyAmount * scene.selectedAccount.currency.exchangeRate);
+  const currencyType = scene.selectedAccount.currency.name;
+  const rootAmount = Shared.formatNumberForDisplay(scene.buyAmount);
+  return `BUY ${currencyAmount} ${currencyType} FOR ${rootAmount} ROOT`
+};
+
+function getSellAmountText (scene: GameScene) {
+  const currencyAmount = Shared.formatNumberForDisplay(scene.sellAmount);
+  const currencyType = scene.selectedAccount.currency.name;
+  const rootAmount = Shared.formatNumberForDisplay(scene.sellAmount / scene.selectedAccount.currency.exchangeRate);
+  return `SELL ${currencyAmount} ${currencyType} FOR ${rootAmount} ROOT`
+};
+
+const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Container, domainState: TradingDomain.TradingDomainState) => {
   const buyContainer = scene.add.container(0, 0);
   const sellContainer = scene.add.container(0, 0);
 
@@ -158,31 +182,66 @@ const createTradeInterface = (scene: Phaser.Scene, container: Phaser.GameObjects
     sellContainer.setVisible(true);
   });
 
-  const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'TRADE AMOUNT', Styles.listItemStyle);
-  const inputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
-    const amount = Number.parseInt(text);
-    if (Number.isInteger(amount)) {
-      TradingDomain.setTradeAmount(domainState, amount);
+  const spendAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BUY AMOUNT', Styles.listItemStyle);
+  const buyInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+    const amount = Number.parseFloat(text);
+    if (!Number.isNaN(amount)) {
+      scene.events.emit(GameEvents.buyAmountChanged, amount);
     }
-  });
+  }, undefined, true);
+  const buyAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getBuyAmountText(scene), Styles.tradeAmountText);
+
   buyContainer.add([
     spendAmountText,
-    ...inputBox,
+    ...buyInputBox,
+    buyAmountText,
+  ]);
+
+  const sellAmountLabel = scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'SELL AMOUNT', Styles.listItemStyle);
+  const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
+    const amount = Number.parseFloat(text);
+    if (!Number.isNaN(amount)) {
+      scene.events.emit(GameEvents.sellAmountChanged, amount);
+    }
+  }, undefined, true);
+
+  const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getSellAmountText(scene), Styles.tradeAmountText);
+
+  sellContainer.add([
+    sellAmountLabel,
+    ...sellInputBox,
+    sellAmountText,
   ]);
 
   const buy = () => {
-    console.log('buy', domainState.selectedAccount)
-    if (domainState.selectedAccount) {
-      TradingDomain.recordTrade(domainState.rootAccount, domainState.selectedAccount, domainState.tradeAmount, domainState.selectedAccount.currency.exchangeRate, domainState)
+    if (scene.selectedAccount) {
+      TradingDomain.recordTrade(domainState.rootAccount, scene.selectedAccount, scene.buyAmount, scene.selectedAccount.currency.exchangeRate, domainState)
     }
   };
   const sell = () => {
-    console.log('sell', domainState.selectedAccount)
-    if (domainState.selectedAccount) {
-      const exchangeRate = domainState.rootAccount.currency.exchangeRate / domainState.selectedAccount.currency.exchangeRate;
-      TradingDomain.recordTrade(domainState.selectedAccount, domainState.rootAccount, domainState.tradeAmount, exchangeRate, domainState);
+    if (scene.selectedAccount) {
+      const exchangeRate = domainState.rootAccount.currency.exchangeRate / scene.selectedAccount.currency.exchangeRate;
+      TradingDomain.recordTrade(scene.selectedAccount, domainState.rootAccount, scene.sellAmount, exchangeRate, domainState);
     }
   }
+
+  scene.events.on(GameEvents.selectedAccountChanged, (event) => {
+    buyAmountText.text = getBuyAmountText(scene);
+    sellAmountText.text = getSellAmountText(scene);
+  });
+
+  scene.events.on(GameEvents.buyAmountChanged, (event) => {
+    buyAmountText.text = getBuyAmountText(scene);
+  });
+
+  scene.events.on(GameEvents.sellAmountChanged, (event) => {
+    sellAmountText.text = getSellAmountText(scene);
+  });
+
+  domainState.events.on(DomainEvents.exchangeRatesChanged, (event) => {
+    buyAmountText.text = getBuyAmountText(scene);
+    sellAmountText.text = getSellAmountText(scene);
+  });
 
   buyContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));

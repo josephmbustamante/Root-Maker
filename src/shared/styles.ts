@@ -13,6 +13,7 @@ export const detailLightColorHex = 0xF2E9CC;
 export const buttonTextColorHex = 0x4E4626;
 
 export const listItemStyle = { fontSize: '14px', color: textColor };
+export const tradeAmountText = { fontSize: '12px', color: textColor };
 export const availableRoot = { fontSize: '16px', color: '#89F663' };
 export const buttonLabelStyle = { fontSize: '14px', color: foregroundColor };
 
