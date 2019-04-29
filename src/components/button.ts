@@ -95,3 +95,9 @@ export const createButton = (scene: Phaser.Scene, x: number, y: number, text: st
     mouseHandlerBox,
   ];
 };
+
+export const hideOrShowButton = (elements:  (Phaser.GameObjects.Text | Phaser.GameObjects.Rectangle | Phaser.GameObjects.Line)[], visible: boolean) => {
+  elements.forEach((element) => {
+    element.setVisible(visible);
+  });
+}

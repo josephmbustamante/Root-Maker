@@ -110,7 +110,7 @@ export class GameScene extends Phaser.Scene {
     this.timeSinceLastTick += delta;
 
     if (this.timeSinceLastTick >= this.domainTickTime) {
-      console.log('tick!');
+      // console.log('tick!');
       this.timeSinceLastTick = 0;
 
       Domain.handleTick(this.domainState);

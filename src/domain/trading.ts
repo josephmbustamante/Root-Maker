@@ -301,7 +301,6 @@ function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
 function setActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
-  console.log('setActiveEventOnNation', event, nation)
   nation.activeEvents.push(event);
   state.events.emit(DomainEvents.nationEventOccurred, nation, event.eventStartHeadline);
 }
@@ -319,7 +318,7 @@ export function checkForExpiringNationEvents(state: TradingDomainState) {
   state.nations.forEach(nation => {
     nation.activeEvents.forEach(event => {
       if (event.triggeredTime + event.duration*1000 <= now) {
-        console.log("Expiring an event!!!", now, event);
+        // console.log("Expiring an event!!!", now, event);
         endActiveEventOnNation(event, nation, state)
       }
     });
@@ -328,7 +327,7 @@ export function checkForExpiringNationEvents(state: TradingDomainState) {
 
 export function runRandomNationEvents(state: TradingDomainState) {
   if (Math.random() > RANDOM_EVENT_THRESHOLD) {
-    console.log("A RANDOM EVENT OCCURRED!!!");
+    // console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
     let chosenNation = state.nations[randomIntegerBetween(0, state.nations.length)];
     if (chosenNation.activeEvents.length == 0 || (chosenNation.activeEvents.length == 1 && chosenNation.activeEvents[0].kind == eventType.kind)) {
@@ -373,7 +372,7 @@ export const startRumorAction: InfluenceAction = {
     successFluxMultiplier: {min: 0.7, max: 0.8},
     failureBaseMultiplier: {min: 1.01, max: 1.05},
     failureFluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 80, max: 160}
+    duration: {min: 20, max: 45}
   },
 };
 
@@ -393,7 +392,7 @@ export const bribePoliticianAction: InfluenceAction = {
     successFluxMultiplier: {min: 0.7, max: 0.8},
     failureBaseMultiplier: {min: 1.03, max: 1.13},
     failureFluxMultiplier: {min: 0.7, max: 0.8},
-    duration: {min: 80, max: 160}
+    duration: {min: 45, max: 90}
   },
 };
 
@@ -424,25 +423,32 @@ export const influenceActions: InfluenceAction[] = [
   rigElectionAction,
 ];
 
+export function isInfluenceActionAvailableForAccount(state: TradingDomainState, account: Account, action: InfluenceAction) {
+  if (state.rootAccount.balance < action.cost) {
+    return false;
+  }
+
+  const nation = getNationFromAccount(state, account);
+  if (!nation) {
+    return false;
+  }
+
+  const event = createNationEventFromInfluenceAction(action);
+
+  const existingEvent = nation.activeEvents.find((activeEvent) => activeEvent.name === event.name);
+  if (existingEvent) {
+    return false;
+  }
+
+  return true;
+}
+
 export function getNationFromAccount(state: TradingDomainState, account: Account) {
   return state.nations.find((nation) => nation.currency.name === account.currency.name);
 }
 
-export function startRumor(state: TradingDomainState, account: Account) {
-  setActiveNationEventFromAction(state, account, startRumorAction);
-}
-
-export function bribePolitician(state: TradingDomainState, account: Account) {
-  setActiveNationEventFromAction(state, account, bribePoliticianAction);
-}
-
-export function rigElection(state: TradingDomainState, account: Account) {
-  setActiveNationEventFromAction(state, account, rigElectionAction);
-}
-
 export function setActiveNationEventFromAction(state: TradingDomainState, account: Account, action: InfluenceAction) {
   if (state.rootAccount.balance < action.cost) {
-    console.log(`Unable to perform influence because account balance (${formatNumberForDisplay(state.rootAccount.balance)}) is less than the action cost (${formatNumberForDisplay(action.cost)})`);
     return;
   }
 
@@ -451,9 +457,14 @@ export function setActiveNationEventFromAction(state: TradingDomainState, accoun
     throw new Error('unable to find nation from account');
   }
 
-  addRevenueToRootAcount(state, -action.cost);
-
   const event = createNationEventFromInfluenceAction(action);
+
+  const existingEvent = nation.activeEvents.find((activeEvent) => activeEvent.name === event.name);
+  if (existingEvent) {
+    return;
+  }
+
+  addRevenueToRootAcount(state, -action.cost);
 
   setActiveEventOnNation(event, nation, state);
 }
@@ -483,3 +494,8 @@ function createNationEventFromInfluenceAction(action: InfluenceAction): NationEv
     };
   }
 }
+
+export const debitFromRootAcount = (state: TradingDomainState, revenueAmount: number) => {
+  state.rootAccount.balance -= revenueAmount;
+  state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
+};

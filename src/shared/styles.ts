@@ -28,6 +28,9 @@ export const width = 1024;
 export const height = 768;
 export const inputBoxWidth = 150;
 
+
+export const basicallyHidden = 0.000000000001; // setting alpha to 0 on some elements prevents us from showing them again
+
 export const tradePage = {
   currencyList: {
     width: 707,
