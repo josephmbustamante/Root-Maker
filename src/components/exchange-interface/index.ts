@@ -262,7 +262,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   sellContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'SELL', sell, 100));
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, 210, 'BRIBE POLICITIAN', Styles.listItemStyle));
-  influenceContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 300, 'BUY', buy, 100));
+  influenceContainer.add(createButton(scene, Styles.width - 100 - Styles.offset, 210, 'BUY', () => TradingDomain.bribePolicitian(domainState, scene.selectedAccount), 100));
   // const sellInputBox = createInputBox(scene, Styles.tradePage.tradeInterface.inputBoxX, 195, (text) => {
   //   const amount = Number.parseFloat(text);
   //   if (!Number.isNaN(amount)) {
@@ -271,6 +271,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   // }, undefined, true);
 
   sellContainer.setVisible(false);
+  influenceContainer.setVisible(false);
 
   container.add(buyContainer);
   container.add(buyTab);

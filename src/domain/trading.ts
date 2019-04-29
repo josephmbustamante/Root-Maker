@@ -4,6 +4,26 @@ import { DomainEvents } from './events';
 export enum DomainErrors {
   tradeFailed_InsufficientFunds = "Insufficient Funds"
 }
+type Range = {
+  min: number;
+  max: number;
+}
+export type InfluenceEventType = {
+  name: InfluenceEventTypeNames,
+  successRate: number,
+  successHeadlines: string[],
+  failureHeadlines: string[],
+  successBaseMultiplier: Range,
+  successFluxMultiplier: Range,
+  failureBaseMultiplier: Range,
+  failureFluxMultiplier: Range,
+  duration: Range,
+}
+export type InfluenceAction = {
+  name: string,
+  cost: number,
+  eventType: InfluenceEventType,
+}
 export type Currency = {
   name: string,
   exchangeRate: number,
@@ -16,9 +36,9 @@ export type Nation = {
   historicalEvents: NationEvent[],
 }
 export type NationEvent = {
-  name: NationEventTypeNames,
+  name: NationEventTypeNames | InfluenceEventTypeNames,
   eventStartHeadline: string,
-  eventEndHeadline: string,
+  eventEndHeadline?: string,
   baseMultiplier: number,
   fluxMultiplier: number,
   duration: number,
@@ -166,9 +186,9 @@ type NationEventType = {
   name: NationEventTypeNames,
   eventStartHeadline: string,
   eventEndHeadline: string,
-  baseMultiplier: { min: number, max: number },
-  fluxMultiplier: { min: number, max: number },
-  duration: {min: number, max: number },
+  baseMultiplier: Range,
+  fluxMultiplier: Range,
+  duration: Range,
 }
 const nationEventTypes: NationEventType[] = [
   {
@@ -312,7 +332,74 @@ export function runRandomNationEvents(state: TradingDomainState) {
   }
 }
 
+const randomArrayElement = <T>(arr: T[]): T => {
+  return arr[randomIntegerBetween(0, arr.length)];
+}
+
 export const addRevenueToRootAcount = (state: TradingDomainState, revenueAmount: number) => {
   state.rootAccount.balance += revenueAmount;
   state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
 };
+
+
+const bribePolicitianAction: InfluenceAction = {
+  cost: 10000,
+  name: "BRIBE POLITICIAN",
+  eventType: {
+    name: "Bribe",
+    successRate: 0.75,
+    successHeadlines: [
+      "is doing inexplicably well today",
+    ],
+    failureHeadlines: [
+      "is suffering from a bribery scandal",
+    ],
+    successBaseMultiplier: {min: 0.9, max: 0.99},
+    successFluxMultiplier: {min: 0.7, max: 0.8},
+    failureBaseMultiplier: {min: 1.03, max: 1.13},
+    failureFluxMultiplier: {min: 0.7, max: 0.8},
+    duration: {min: 80, max: 160}
+  },
+};
+
+type InfluenceEventTypeNames = "Bribe";
+const influenceActions: InfluenceAction[] = [
+  bribePolicitianAction,
+];
+
+export function getNationFromAccount(state: TradingDomainState, account: Account) {
+  return state.nations.find((nation) => nation.currency.name === account.currency.name);
+}
+
+export function bribePolicitian(state: TradingDomainState, account: Account) {
+  const nation = getNationFromAccount(state, account);
+  if (!nation) {
+    throw new Error('unable to find nation from account');
+  }
+  const action = bribePolicitianAction;
+  const success = Math.random() < action.eventType.successRate;
+  let event: NationEvent;
+
+  if (success) {
+    event = {
+      name: action.eventType.name,
+      duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
+      triggeredTime: Date.now(),
+      baseMultiplier: randomDecimalBetween(action.eventType.successBaseMultiplier.min, action.eventType.successBaseMultiplier.max),
+      fluxMultiplier: randomDecimalBetween(action.eventType.successFluxMultiplier.min, action.eventType.successFluxMultiplier.max),
+      eventStartHeadline: randomArrayElement(action.eventType.successHeadlines),
+      kind: "positive",
+    };
+  } else {
+    event = {
+      name: action.eventType.name,
+      duration: randomIntegerBetween(action.eventType.duration.min, action.eventType.duration.max),
+      triggeredTime: Date.now(),
+      baseMultiplier: randomDecimalBetween(action.eventType.failureBaseMultiplier.min, action.eventType.failureBaseMultiplier.max),
+      fluxMultiplier: randomDecimalBetween(action.eventType.failureFluxMultiplier.min, action.eventType.failureFluxMultiplier.max),
+      eventStartHeadline: randomArrayElement(action.eventType.failureHeadlines),
+      kind: "negative",
+    };
+  }
+  setActiveEventOnNation(event, nation, state);
+}
