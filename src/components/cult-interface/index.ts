@@ -2,6 +2,7 @@ import * as CultDomain from 'src/domain/cult';
 import * as Styles from 'src/shared/styles';
 import { addRectangle } from 'src/components/rectangle';
 import { createButton } from 'src/components/button';
+import { DomainEvents } from 'src/domain';
 
 export const createCultInterface = (scene: Phaser.Scene, domainState: CultDomain.CultDomainState) => {
   const cultContainer = scene.add.container(0, 0);
@@ -32,17 +33,22 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
 
   container.add([
     scene.add.text(infoRowTextX, infoRowStartY, 'Followers', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY, `${domainState.followers}`, infoRowStyle),
-
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 1), 'Capacity', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle),
-
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 2), 'New Followers per Tick', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${domainState.followersPerTick}`, infoRowStyle),
-
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donations per Tick', infoRowStyle),
-    scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${domainState.followers * domainState.suggestedDonation}`, infoRowStyle),
-  ]);
+  ])
+
+  const followersValue = scene.add.text(infoRowValueX, infoRowStartY, `${Math.floor(domainState.followers)}`, infoRowStyle);
+  const capacityValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle);
+  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), `${domainState.followersPerTick}`, infoRowStyle);
+  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), `${domainState.followers * domainState.suggestedDonation}`, infoRowStyle);
+
+  domainState.events.on(DomainEvents.followerCountChanged, () => {
+    followersValue.text = `${domainState.followers}`;
+    donationsPerTickValue.text = `${domainState.followers * domainState.suggestedDonation}`;
+  });
+
+  container.add([followersValue, capacityValue, followersPerTickValue, donationsPerTickValue]);
 };
 
 const optionsRowTextX = Styles.cultPage.options.labelX;

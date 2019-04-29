@@ -16,9 +16,9 @@ export const initCultDomainState = (input: CultInitData, events: Phaser.Events.E
   return {
     events,
     happiness: 100,
-    followers: 10,
+    followers: 1,
     capacity: 100,
-    followersPerTick: 1,
+    followersPerTick: 0.1,
     suggestedDonation: 5,
   };
 };
@@ -34,4 +34,5 @@ export const generateRevenueFromCult = (domainState: CultDomainState) => {
 
 export const addFollowersToCult = (domainState: CultDomainState) => {
   domainState.followers += domainState.followersPerTick;
+  domainState.events.emit(DomainEvents.followerCountChanged);
 };
