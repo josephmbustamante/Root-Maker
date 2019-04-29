@@ -1,28 +1,39 @@
 import * as TradingDomain from './trading';
+import * as CultDomain from './cult';
+import { DomainEvents } from './events';
 
-export { DomainEvents } from './events';
+export { DomainEvents };
 
-export type DomainState = {
-  trading: TradingDomain.DomainState;
-};
+export type DomainState = { events: Phaser.Events.EventEmitter } & TradingDomain.TradingDomainState & CultDomain.CultDomainState;
 
-interface InitDomainInput {
-  trading: TradingDomain.TradingInitData;
-};
-
+type InitDomainInput = TradingDomain.TradingInitData & CultDomain.CultInitData;
 
 export const initDomainState = (input: InitDomainInput): DomainState => {
-  return {
-    trading: TradingDomain.initTradingDomainState(input.trading),
+  const domainEventEmitter = new Phaser.Events.EventEmitter();
+
+  const domainState = {
+    ...TradingDomain.initTradingDomainState(input, domainEventEmitter),
+    ...CultDomain.initCultDomainState(input, domainEventEmitter),
   };
+
+  registerDomainEventHandlers(domainState);
+
+  return domainState;
+};
+
+const registerDomainEventHandlers = (domainState: DomainState) => {
+  domainState.events.on(DomainEvents.cultRevenueGenerated, (revenue) => {
+    TradingDomain.addRevenueToRootAcount(domainState, revenue);
+  });
 };
 
 export const handleTick = (domainState: DomainState) => {
   // Trading Domain Events
-  TradingDomain.runCurrencyFluctuations(domainState.trading);
-  TradingDomain.runRandomNationEvents(domainState.trading);
-  TradingDomain.checkForExpiringNationEvents(domainState.trading);
+  TradingDomain.runCurrencyFluctuations(domainState);
+  TradingDomain.runRandomNationEvents(domainState);
+  TradingDomain.checkForExpiringNationEvents(domainState);
 
   // Cult Domain Events
-  // TODO
+  CultDomain.addFollowersToCult(domainState);
+  CultDomain.generateRevenueFromCult(domainState);
 };

@@ -46,7 +46,7 @@ export type Trade = {
   destinationAmount: number,
   exchangeRate: number
 }
-export type DomainState = {
+export type TradingDomainState = {
   tradeLedger: TradeLedger,
   nations: Nation[],
   tradeCurrencies: Currency[],
@@ -70,7 +70,7 @@ export function createAccount(name: string, startingBalance: number, currency: C
   return newAccount;
 }
 
-export function recordTrade(source: Account, destination: Account, sourceAmount: number, sourceToDestinationExchangeRate: number, state: DomainState) {
+export function recordTrade(source: Account, destination: Account, sourceAmount: number, sourceToDestinationExchangeRate: number, state: TradingDomainState) {
   if (source.balance >= sourceAmount) {
     source.ledger.push({amount: sourceAmount, transactionType: "Debit"});
     source.balance -= sourceAmount;
@@ -109,7 +109,7 @@ export type TradingInitData = {
   rootCurrencyStartingAmount: number,
   nations: TradingInitNationalCurrency[]
 }
-export function initTradingDomainState(initData: TradingInitData): DomainState {
+export function initTradingDomainState(initData: TradingInitData, events: Phaser.Events.EventEmitter): TradingDomainState {
   let nations: Nation[] = initData.nations.map(n => {
     return {
       name: n.nation,
@@ -125,17 +125,17 @@ export function initTradingDomainState(initData: TradingInitData): DomainState {
   let rootCurrency: Currency = { name: initData.rootCurrencyName, exchangeRate: 1, trend: "up" };
 
   return {
+    events,
     nations: nations,
     tradeCurrencies: currencies,
     tradeAccounts: accounts,
     tradeLedger: { trades: [] },
     rootCurrency,
     rootAccount: createAccount(initData.rootCurrencyName, initData.rootCurrencyStartingAmount, rootCurrency, true),
-    events: new Phaser.Events.EventEmitter(),
   }
 }
 
-export function runCurrencyFluctuations(state: DomainState) {
+export function runCurrencyFluctuations(state: TradingDomainState) {
   state.nations.forEach(nation => {
     let currency = nation.currency;
     let fluxMultiplier = nation.activeEvents.reduce((i, event) => i * event.fluxMultiplier, 1);
@@ -266,11 +266,11 @@ const RANDOM_EVENT_THRESHOLD = 0.9;
 function randomIntegerBetween(min: number, max: number) {
   return Math.floor(randomDecimalBetween(min, max));
 }
-function setActiveEventOnNation(event: NationEvent, nation: Nation, state: DomainState) {
+function setActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
   nation.activeEvents.push(event);
   state.events.emit(DomainEvents.nationEventOccurred, nation, event.eventStartHeadline);
 }
-function endActiveEventOnNation(event: NationEvent, nation: Nation, state: DomainState) {
+function endActiveEventOnNation(event: NationEvent, nation: Nation, state: TradingDomainState) {
   let index = nation.activeEvents.indexOf(event);
   if (index >= 0) {
     nation.activeEvents.splice(index, 1);
@@ -279,7 +279,7 @@ function endActiveEventOnNation(event: NationEvent, nation: Nation, state: Domai
   }
 }
 
-export function checkForExpiringNationEvents(state: DomainState) {
+export function checkForExpiringNationEvents(state: TradingDomainState) {
   let now = Date.now();
   state.nations.forEach(nation => {
     nation.activeEvents.forEach(event => {
@@ -291,7 +291,7 @@ export function checkForExpiringNationEvents(state: DomainState) {
   });
 }
 
-export function runRandomNationEvents(state: DomainState) {
+export function runRandomNationEvents(state: TradingDomainState) {
   if (Math.random() > RANDOM_EVENT_THRESHOLD) {
     console.log("A RANDOM EVENT OCCURRED!!!");
     let eventType = nationEventTypes[randomIntegerBetween(0, nationEventTypes.length)];
@@ -311,3 +311,8 @@ export function runRandomNationEvents(state: DomainState) {
     }
   }
 }
+
+export const addRevenueToRootAcount = (state: TradingDomainState, revenueAmount: number) => {
+  state.rootAccount.balance += revenueAmount;
+  state.events.emit(DomainEvents.accountBalanceChanged, state.rootAccount);
+};
