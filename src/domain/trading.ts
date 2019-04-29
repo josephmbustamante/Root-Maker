@@ -423,6 +423,26 @@ export const influenceActions: InfluenceAction[] = [
   rigElectionAction,
 ];
 
+export function isInfluenceActionAvailableForAccount(state: TradingDomainState, account: Account, action: InfluenceAction) {
+  if (state.rootAccount.balance < action.cost) {
+    return false;
+  }
+
+  const nation = getNationFromAccount(state, account);
+  if (!nation) {
+    return false;
+  }
+
+  const event = createNationEventFromInfluenceAction(action);
+
+  const existingEvent = nation.activeEvents.find((activeEvent) => activeEvent.name === event.name);
+  if (existingEvent) {
+    return false;
+  }
+
+  return true;
+}
+
 export function getNationFromAccount(state: TradingDomainState, account: Account) {
   return state.nations.find((nation) => nation.currency.name === account.currency.name);
 }
