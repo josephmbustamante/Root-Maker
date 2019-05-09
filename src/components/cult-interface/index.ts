@@ -1,6 +1,7 @@
 import * as CultDomain from 'src/domain/cult';
 import * as Domain from 'src/domain';
 import * as Styles from 'src/shared/styles';
+import * as Shared from 'src/shared';
 import { addRectangle } from 'src/components/rectangle';
 import { createButton } from 'src/components/button';
 import { DomainEvents } from 'src/domain';
@@ -40,26 +41,26 @@ const createCultInfo = (scene: Phaser.Scene, container: Phaser.GameObjects.Conta
     scene.add.text(infoRowTextX, infoRowStartY + (Styles.lineItemHeight * 3), 'Donation Rate', infoRowStyle),
   ])
 
-  const followersValue = scene.add.text(infoRowValueX, infoRowStartY, domainState.followers.toFixed(2), infoRowStyle);
-  const capacityValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), `${domainState.capacity}`, infoRowStyle);
-  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), domainState.actualNewFollowersPerTick.toFixed(2), infoRowStyle);
-  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), (CultDomain.calculateDonationPerTick(domainState)).toFixed(2), infoRowStyle);
+  const followersValue = scene.add.text(infoRowValueX, infoRowStartY, Shared.formatNumberForDisplay(domainState.followers), infoRowStyle);
+  const capacityValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 1), Shared.formatNumberForDisplay(domainState.capacity), infoRowStyle);
+  const followersPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 2), Shared.formatNumberForDisplay(domainState.actualNewFollowersPerTick), infoRowStyle);
+  const donationsPerTickValue = scene.add.text(infoRowValueX, infoRowStartY + (Styles.lineItemHeight * 3), Shared.formatNumberForDisplay(CultDomain.calculateDonationPerTick(domainState)), infoRowStyle);
 
   domainState.events.on(DomainEvents.followerCountChanged, () => {
-    followersValue.text = domainState.followers.toFixed(2);
-    donationsPerTickValue.text = (domainState.followers * domainState.suggestedDonation).toFixed(2);
+    followersValue.text = Shared.formatNumberForDisplay(domainState.followers);
+    donationsPerTickValue.text = Shared.formatNumberForDisplay(domainState.followers * domainState.suggestedDonation);
   });
 
   domainState.events.on(DomainEvents.cultCapacityChanged, () => {
-    capacityValue.text = domainState.capacity.toString();
+    capacityValue.text = Shared.formatNumberForDisplay(domainState.capacity);
   });
 
   domainState.events.on(DomainEvents.followersPerTickChanged, () => {
-    followersPerTickValue.text = domainState.actualNewFollowersPerTick.toFixed(2);
+    followersPerTickValue.text = Shared.formatNumberForDisplay(domainState.actualNewFollowersPerTick);
   });
 
   domainState.events.on(DomainEvents.suggestedDonationChanged, () => {
-    donationsPerTickValue.text = (CultDomain.calculateDonationPerTick(domainState)).toFixed(2);
+    donationsPerTickValue.text = Shared.formatNumberForDisplay(CultDomain.calculateDonationPerTick(domainState));
   });
 
   container.add([followersValue, capacityValue, followersPerTickValue, donationsPerTickValue]);
@@ -127,7 +128,7 @@ const createCultSuggestedDonationInput = (scene: Phaser.Scene, container: Phaser
   }, 12, true);
 
   // TODO: Ew. This sucks. We should return an object or something easier to work with.
-  (inputBox[6] as Phaser.GameObjects.Text).text = domainState.suggestedDonation.toString();
+  (inputBox[6] as Phaser.GameObjects.Text).text = Shared.formatNumberForDisplay(domainState.suggestedDonation);
 
   container.add([
     ...inputBox,
