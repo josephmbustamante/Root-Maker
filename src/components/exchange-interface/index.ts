@@ -206,7 +206,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
     if (!Number.isNaN(amount)) {
       scene.events.emit(GameEvents.buyAmountChanged, amount);
     }
-  }, undefined, true);
+  }, 20, true);
   const buyAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getBuyAmountText(scene), Styles.tradeAmountText);
 
   buyContainer.add([
@@ -221,7 +221,7 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
     if (!Number.isNaN(amount)) {
       scene.events.emit(GameEvents.sellAmountChanged, amount);
     }
-  }, undefined, true);
+  }, 20, true);
 
   const sellAmountText = scene.add.text(Styles.tradePage.tradeInterface.x, 260, getSellAmountText(scene), Styles.tradeAmountText);
 
