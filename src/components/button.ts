@@ -3,6 +3,26 @@ import * as Styles from 'src/shared/styles';
 export const buttonTextHoverStyle = { fontSize: '14px', color: Styles.detailLightColor };
 export const buttonTextRestStyle = { fontSize: '14px', color: Styles.buttonTextColor };
 
+export const createConditionalButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, w?: number, h?: number) => {
+  const button = createButton(scene, x, y, text, w, h);
+
+  const handleButtonReadinessChanged = (isReady: boolean) => {
+    if (isReady) {
+      button.setButtonAsActive();
+      button.addButtonFeedbackListeners();
+      button.setOnClick(onClick);
+    } else {
+      button.setButtonAsInactive();
+      button.removeButtonFeedbackListeners();
+    }
+  };
+
+  return {
+    ...button,
+    handleButtonReadinessChanged,
+  };
+};
+
 export const createRepeatableButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, w?: number, h?: number) => {
   const button = createButton(scene, x, y, text, w, h);
   button.setOnClick(onClick);
