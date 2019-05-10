@@ -5,6 +5,7 @@ export const detailDarkColor = '#817C6A';
 export const detailLightColor = '#F2E9CC';
 export const buttonTextColor = '#4E4626';
 
+export const buttonInactiveColorHex = 0xB4AB8D;
 export const backgroundColorHex = 0xA29771;
 export const foregroundColorHex = 0x2B261C;
 export const textColorHex = 0xCDCBC2;

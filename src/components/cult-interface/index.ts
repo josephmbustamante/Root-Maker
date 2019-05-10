@@ -3,7 +3,7 @@ import * as Domain from 'src/domain';
 import * as Styles from 'src/shared/styles';
 import * as Shared from 'src/shared';
 import { addRectangle } from 'src/components/rectangle';
-import { createButton } from 'src/components/button';
+import { createOneTimeButton } from 'src/components/button';
 import { DomainEvents } from 'src/domain';
 import { createInputBox } from '../input-box';
 
@@ -73,21 +73,21 @@ const optionsRowStartY = Styles.cultPage.followerList.y + Styles.offset;
 const buttonOffsetHeight = Styles.cultPage.options.buttonOffsetHeight;
 
 const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: Domain.DomainState) => {
-  let buildWebsiteButton = createButton(scene, optionsRowButtonX, optionsRowStartY, '1,000,000', () => { CultDomain.buildWebsite(domainState) });
-  let buildChurchButton = createButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => { CultDomain.buildChurch(domainState) });
-  let buildComplexButton = createButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => { CultDomain.buildComplex(domainState) });
+  let buildWebsiteButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY, '1,000,000', () => { CultDomain.buildWebsite(domainState) });
+  let buildChurchButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => { CultDomain.buildChurch(domainState) });
+  let buildComplexButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => { CultDomain.buildComplex(domainState) });
 
-  domainState.events.on(DomainEvents.cultWebsiteBuilt, () => buildWebsiteButton.forEach(e => e.setVisible(false)));
-  domainState.events.on(DomainEvents.cultChurchBuilt, () => buildChurchButton.forEach(e => e.setVisible(false)));
-  domainState.events.on(DomainEvents.cultComplexBuilt, () => buildComplexButton.forEach(e => e.setVisible(false)));
+  // domainState.events.on(DomainEvents.cultWebsiteBuilt, () => buildWebsiteButton.forEach(e => e.setVisible(false)));
+  // domainState.events.on(DomainEvents.cultChurchBuilt, () => buildChurchButton.forEach(e => e.setVisible(false)));
+  // domainState.events.on(DomainEvents.cultComplexBuilt, () => buildComplexButton.forEach(e => e.setVisible(false)));
 
   container.add([
     scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY, 'Build Promotional Website', Styles.cultPage.options.labelStyle),
-    ...buildWebsiteButton,
+    ...buildWebsiteButton.elements,
     scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY + buttonOffsetHeight * 1, 'Construct Church', Styles.cultPage.options.labelStyle),
-    ...buildChurchButton,
+    ...buildChurchButton.elements,
     scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY + buttonOffsetHeight * 2, 'Build Complex', Styles.cultPage.options.labelStyle),
-    ...buildComplexButton,
+    ...buildComplexButton.elements,
   ]);
 
 };

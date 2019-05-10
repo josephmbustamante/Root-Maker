@@ -1,5 +1,5 @@
 import * as Styles from 'src/shared/styles';
-import { createButton } from 'src/components/button';
+import { createRepeatableButton } from 'src/components/button';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
   active: false,
@@ -31,7 +31,7 @@ export class StoryScene extends Phaser.Scene {
       return this.add.text(25, 100 + (30 * index), '', this.storyFontStyle);
     });
 
-    createButton(this, 800, 600, 'BEGIN', () => {
+    createRepeatableButton(this, 800, 600, 'BEGIN', () => {
       this.scene.start('Game', { username: this.username, backgroundMusic: this.music });
     });
 

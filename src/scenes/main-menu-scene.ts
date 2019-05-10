@@ -1,6 +1,5 @@
 import * as Styles from 'src/shared/styles';
-import * as Shared from 'src/shared';
-import { createButton } from 'src/components/button';
+import { createRepeatableButton } from 'src/components/button';
 import { createInputBox } from 'src/components/input-box';
 
 const sceneConfig: Phaser.Scenes.Settings.Config = {
@@ -35,6 +34,6 @@ export class MainMenuScene extends Phaser.Scene {
     const onClick = () => {
       this.scene.start('Story', { username: this.username });
     };
-    createButton(this, loginX, loginY, 'LOGIN', onClick, loginButtonWidth)
+    createRepeatableButton(this, loginX, loginY, 'LOGIN', onClick, loginButtonWidth)
   }
 }
