@@ -120,7 +120,7 @@ export const buildChurch = (domainState: DomainState) => {
 }
 
 export const buildComplex = (domainState: DomainState) => {
-  let complexCost = 3000000;
+  let complexCost = 15000000;
   if (domainState.rootAccount.balance >= complexCost && !domainState.builtComplex) {
     domainState.events.emit(DomainEvents.spentRootOnCultThings, complexCost);
     domainState.builtComplex = true;
