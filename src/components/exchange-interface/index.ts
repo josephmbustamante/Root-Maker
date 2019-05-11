@@ -3,7 +3,7 @@ import { DomainEvents } from 'src/domain';
 import * as Shared from 'src/shared';
 import { addRectangle } from '../rectangle';
 import * as TradingDomain from 'src/domain/trading';
-import { createOneTimeButton, hideOrShowButton, createRepeatableButton, createConditionalButton } from '../button';
+import { createOneTimeButton, hideOrShowButton, createRepeatableButton } from '../button';
 import { createInputBox } from '../input-box';
 import { GameEvents } from 'src/shared/events';
 
@@ -31,14 +31,6 @@ export const createExchangeInterface = (scene: GameScene, domainState: TradingDo
   createRootInterface(scene, exchangeContainer, domainState);
 
   return exchangeContainer;
-};
-
-const getInfoColumnWidth = (scene: GameScene) => {
-  return Shared.getGameWidth(scene) * 0.7;
-};
-
-const getBuyColumnWidth = (scene: GameScene) => {
-  return Shared.getGameWidth(scene) * 0.075;
 };
 
 const columnHeaderStyle = { fontSize: '16px', color: Styles.tradePage.currencyList.headerColor };
@@ -268,18 +260,18 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
   const influenceButtonWidth = 125;
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.startRumorAction.name, Styles.listItemStyle));
-  const startRumorButton = createConditionalButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.startRumorAction), influenceButtonWidth);
+  const startRumorButton = createRepeatableButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.startRumorAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.startRumorAction), influenceButtonWidth);
   influenceContainer.add(startRumorButton.elements);
   influenceY += 50;
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.bribePoliticianAction.name, Styles.listItemStyle));
-  const bribePoliticianButton = createConditionalButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.bribePoliticianAction), influenceButtonWidth);
+  const bribePoliticianButton = createRepeatableButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.bribePoliticianAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.bribePoliticianAction), influenceButtonWidth);
   influenceContainer.add(bribePoliticianButton.elements);
   influenceY += 50;
 
 
   influenceContainer.add(scene.add.text(Styles.tradePage.tradeInterface.x, influenceY, TradingDomain.rigElectionAction.name, Styles.listItemStyle));
-  const rigElectionButton = createConditionalButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.rigElectionAction), influenceButtonWidth);
+  const rigElectionButton = createRepeatableButton(scene, Styles.width - influenceButtonWidth - Styles.offset, influenceY - 10, Shared.formatNumberForDisplay(TradingDomain.rigElectionAction.cost), () => TradingDomain.setActiveNationEventFromAction(domainState, scene.selectedAccount, TradingDomain.rigElectionAction), influenceButtonWidth);
   influenceContainer.add(rigElectionButton.elements);
   influenceY += 50;
 
@@ -288,18 +280,15 @@ const createTradeInterface = (scene: GameScene, container: Phaser.GameObjects.Co
     const bribePoliticianActionAvailable = TradingDomain.isInfluenceActionAvailableForAccount(domainState, scene.selectedAccount, TradingDomain.bribePoliticianAction);
     const rigElectionActionAvailable = TradingDomain.isInfluenceActionAvailableForAccount(domainState, scene.selectedAccount, TradingDomain.rigElectionAction);
 
-    startRumorButton.handleButtonReadinessChanged(startRumorActionAvailable);
-    bribePoliticianButton.handleButtonReadinessChanged(bribePoliticianActionAvailable);
-    rigElectionButton.handleButtonReadinessChanged(rigElectionActionAvailable);
-
-    // hideOrShowButton(startRumorButton.elements, startRumorActionAvailable);
-    // hideOrShowButton(bribePoliticianButton.elements, bribePoliticianActionAvailable);
-    // hideOrShowButton(rigElectionButton.elements, rigElectionActionAvailable);
+    startRumorActionAvailable ? startRumorButton.setButtonAsActive() : startRumorButton.setButtonAsInactive();
+    bribePoliticianActionAvailable ? bribePoliticianButton.setButtonAsActive() : bribePoliticianButton.setButtonAsInactive();
+    rigElectionActionAvailable ? rigElectionButton.setButtonAsActive() : rigElectionButton.setButtonAsInactive();
   };
 
   scene.events.on(GameEvents.selectedAccountChanged, buttonDisabled);
   domainState.events.on(DomainEvents.nationEventOccurred, buttonDisabled);
   domainState.events.on(DomainEvents.nationEventEnded, buttonDisabled);
+  buttonDisabled(); // hacky - do this to make sure you can hit buttons right at the start. This only matters if you cheated and started off with lots of money
 
   sellContainer.setVisible(false);
   influenceContainer.setVisible(false);

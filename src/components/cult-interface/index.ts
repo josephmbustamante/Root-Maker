@@ -77,10 +77,6 @@ const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Co
   let buildChurchButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => { CultDomain.buildChurch(domainState) });
   let buildComplexButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => { CultDomain.buildComplex(domainState) });
 
-  // domainState.events.on(DomainEvents.cultWebsiteBuilt, () => buildWebsiteButton.forEach(e => e.setVisible(false)));
-  // domainState.events.on(DomainEvents.cultChurchBuilt, () => buildChurchButton.forEach(e => e.setVisible(false)));
-  // domainState.events.on(DomainEvents.cultComplexBuilt, () => buildComplexButton.forEach(e => e.setVisible(false)));
-
   container.add([
     scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY, 'Build Promotional Website', Styles.cultPage.options.labelStyle),
     ...buildWebsiteButton.elements,
