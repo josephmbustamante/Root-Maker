@@ -3,26 +3,6 @@ import * as Styles from 'src/shared/styles';
 export const buttonTextHoverStyle = { fontSize: '14px', color: Styles.detailLightColor };
 export const buttonTextRestStyle = { fontSize: '14px', color: Styles.buttonTextColor };
 
-export const createConditionalButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, w?: number, h?: number) => {
-  const button = createButton(scene, x, y, text, w, h);
-
-  const handleButtonReadinessChanged = (isReady: boolean) => {
-    if (isReady) {
-      button.setButtonAsActive();
-      button.addButtonFeedbackListeners();
-      button.setOnClick(onClick);
-    } else {
-      button.setButtonAsInactive();
-      button.removeButtonFeedbackListeners();
-    }
-  };
-
-  return {
-    ...button,
-    handleButtonReadinessChanged,
-  };
-};
-
 export const createRepeatableButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, w?: number, h?: number) => {
   const button = createButton(scene, x, y, text, w, h);
   button.setOnClick(onClick);
@@ -35,7 +15,6 @@ export const createOneTimeButton = (scene: Phaser.Scene, x: number, y: number, t
   button.setOnClick(() => {
     onClick();
     button.setButtonAsInactive();
-    button.removeButtonFeedbackListeners();
     button.changeText('BOUGHT');
   });
 
@@ -58,49 +37,57 @@ const createButton = (scene: Phaser.Scene, x: number, y: number, text: string, w
   textElement.setX(((box.width - textElement.width) / 2) + box.x);
   textElement.setY(((box.height - textElement.height) / 2) + box.y);
 
+  let ready = true;
+
   const mouseHandlerBox = scene.add.rectangle(x, y, width, height, Styles.backgroundColorHex, 0).setOrigin(0, 0).setInteractive({ useHandCursor: true });
-  const addButtonFeedbackListeners = () => {
-    mouseHandlerBox.on('pointerover', () => {
+  mouseHandlerBox.on('pointerover', () => {
+    if (ready) {
       textElement.setStyle(buttonTextHoverStyle)
       box.setFillStyle(Styles.backgroundColorHex)
-    });
-    mouseHandlerBox.on('pointerout', () => {
+    }
+  });
+  mouseHandlerBox.on('pointerout', () => {
+    if (ready) {
       textElement.setStyle(buttonTextRestStyle)
       box.setFillStyle(Styles.backgroundColorHex)
-    });
-    mouseHandlerBox.on('pointerdown', () => {
+    }
+  });
+  mouseHandlerBox.on('pointerdown', () => {
+    if (ready) {
       textElement.setStyle(buttonTextHoverStyle)
       box.setFillStyle(Styles.detailDarkColorHex)
-    });
-    mouseHandlerBox.on('pointerupoutside', () => {
+    }
+  });
+  mouseHandlerBox.on('pointerup', () => {
+    if (ready) {
       textElement.setStyle(buttonTextHoverStyle);
       box.setFillStyle(Styles.backgroundColorHex)
-    });
-    mouseHandlerBox.on('pointerup', () => {
-      textElement.setStyle(buttonTextHoverStyle);
-      box.setFillStyle(Styles.backgroundColorHex)
-    });
-  }
-
-  addButtonFeedbackListeners();
+    }
+  });
 
   const removeButtonFeedbackListeners = () => {
     mouseHandlerBox.removeAllListeners();
   }
 
   const setButtonAsActive = () => {
+    ready = true;
+    mouseHandlerBox.setInteractive({ useHandCursor: true });
     textElement.setStyle(buttonTextRestStyle);
     box.setFillStyle(Styles.backgroundColorHex)
-    mouseHandlerBox.setInteractive({ useHandCursor: true });
   };
   const setButtonAsInactive = () => {
+    ready = false;
+    mouseHandlerBox.disableInteractive();
     textElement.setStyle(buttonTextHoverStyle);
     box.setFillStyle(Styles.buttonInactiveColorHex)
-    mouseHandlerBox.disableInteractive();
   };
 
   const setOnClick = (onClick: () => void) => {
-    mouseHandlerBox.on('pointerup', onClick);
+    mouseHandlerBox.on('pointerup', () => {
+      if (ready) {
+        onClick();
+      }
+    });
   };
 
   const changeText = (text: string) => {
@@ -122,9 +109,8 @@ const createButton = (scene: Phaser.Scene, x: number, y: number, text: string, w
     setButtonAsActive,
     setButtonAsInactive,
     setOnClick,
-    addButtonFeedbackListeners,
-    removeButtonFeedbackListeners,
     changeText,
+    ready,
   }
 };
 
