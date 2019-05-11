@@ -94,9 +94,13 @@ export const addFollowersToCult = (domainState: CultDomainState) => {
   domainState.events.emit(DomainEvents.followerCountChanged);
 };
 
+const websiteCost = 1000000;
+export const canBuildWebsite = (domainState: DomainState) => {
+  return domainState.rootAccount.balance >= websiteCost && !domainState.builtWebsite;
+};
+
 export const buildWebsite = (domainState: DomainState) => {
-  let websiteCost = 1000000;
-  if (domainState.rootAccount.balance >= websiteCost && !domainState.builtWebsite) {
+  if (canBuildWebsite(domainState)) {
     domainState.events.emit(DomainEvents.spentRootOnCultThings, websiteCost);
     domainState.builtWebsite = true;
     domainState.capacity = domainState.capacity * WEBSITE_CAPACITY_MULTIPLIER;
@@ -104,11 +108,20 @@ export const buildWebsite = (domainState: DomainState) => {
     calculateCurrentFollowersPerTick(domainState);
     domainState.events.emit(DomainEvents.cultWebsiteBuilt);
     domainState.events.emit(DomainEvents.cultCapacityChanged);
+
+    return true;
   }
-}
+
+  return false;
+};
+
+const churchCost = 3000000;
+export const canBuildChurch = (domainState: DomainState) => {
+  return domainState.rootAccount.balance >= churchCost && !domainState.builtChurch;
+};
+
 export const buildChurch = (domainState: DomainState) => {
-  let churchCost = 3000000;
-  if (domainState.rootAccount.balance >= churchCost && !domainState.builtChurch) {
+  if (canBuildChurch(domainState)) {
     domainState.events.emit(DomainEvents.spentRootOnCultThings, churchCost);
     domainState.builtChurch = true;
     domainState.capacity = domainState.capacity * CHURCH_CAPACITY_MULTIPLIER;
@@ -116,12 +129,20 @@ export const buildChurch = (domainState: DomainState) => {
     calculateCurrentFollowersPerTick(domainState);
     domainState.events.emit(DomainEvents.cultChurchBuilt);
     domainState.events.emit(DomainEvents.cultCapacityChanged);
+
+    return true;
   }
-}
+
+  return false;
+};
+
+const complexCost = 15000000;
+export const canBuildComplex = (domainState: DomainState) => {
+  return domainState.rootAccount.balance >= complexCost && !domainState.builtComplex;
+};
 
 export const buildComplex = (domainState: DomainState) => {
-  let complexCost = 15000000;
-  if (domainState.rootAccount.balance >= complexCost && !domainState.builtComplex) {
+  if (canBuildComplex(domainState)) {
     domainState.events.emit(DomainEvents.spentRootOnCultThings, complexCost);
     domainState.builtComplex = true;
     domainState.capacity = domainState.capacity * COMPLEX_CAPACITY_MULTIPLIER;
@@ -129,5 +150,9 @@ export const buildComplex = (domainState: DomainState) => {
     calculateCurrentFollowersPerTick(domainState);
     domainState.events.emit(DomainEvents.cultComplexBuilt);
     domainState.events.emit(DomainEvents.cultCapacityChanged);
+
+    return true;
   }
-}
+
+  return false;
+};
