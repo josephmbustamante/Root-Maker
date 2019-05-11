@@ -10,12 +10,14 @@ export const createRepeatableButton = (scene: Phaser.Scene, x: number, y: number
   return button;
 };
 
-export const createOneTimeButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => void, w?: number, h?: number) => {
+export const createOneTimeButton = (scene: Phaser.Scene, x: number, y: number, text: string, onClick: () => boolean, w?: number, h?: number) => {
   const button = createButton(scene, x, y, text, w, h);
   button.setOnClick(() => {
-    onClick();
-    button.setButtonAsInactive();
-    button.changeText('BOUGHT');
+    const success = onClick();
+    if (success) {
+      button.setButtonAsInactive();
+      button.changeText('BOUGHT');
+    }
   });
 
   return button;

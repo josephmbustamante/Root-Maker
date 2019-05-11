@@ -73,9 +73,11 @@ const optionsRowStartY = Styles.cultPage.followerList.y + Styles.offset;
 const buttonOffsetHeight = Styles.cultPage.options.buttonOffsetHeight;
 
 const createCultOptions = (scene: Phaser.Scene, container: Phaser.GameObjects.Container, domainState: Domain.DomainState) => {
-  let buildWebsiteButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY, '1,000,000', () => { CultDomain.buildWebsite(domainState) });
-  let buildChurchButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => { CultDomain.buildChurch(domainState) });
-  let buildComplexButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => { CultDomain.buildComplex(domainState) });
+  // TODO: We should refactor or find a better way to make sure that we can only do an action/click a button if we have the correct funds, and handle updating the button accordingly,
+  // rather than letting the user click with nothing happening
+  const buildWebsiteButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY, '1,000,000', () => CultDomain.buildWebsite(domainState));
+  const buildChurchButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 1, '3,000,000', () => CultDomain.buildChurch(domainState));
+  const buildComplexButton = createOneTimeButton(scene, optionsRowButtonX, optionsRowStartY + buttonOffsetHeight * 2, '15,000,000', () => CultDomain.buildComplex(domainState));
 
   container.add([
     scene.add.text(optionsRowTextX,Styles.offset + optionsRowStartY, 'Build Promotional Website', Styles.cultPage.options.labelStyle),
