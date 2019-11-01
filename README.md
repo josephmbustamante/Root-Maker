@@ -1,5 +1,5 @@
-# currency-trader
-Currency Trader - a game made for Ludum Dare 44.
+# Root Maker
+Root Maker - a game made for Ludum Dare 44.
 
 ## Instructions
 Run `yarn install` to install dependencies
