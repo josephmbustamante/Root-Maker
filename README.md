@@ -1,6 +1,8 @@
 # Root Maker
 Root Maker - a game made for Ludum Dare 44.
 
+[You can play it online here.](https://josephmbustamante.itch.io/root-maker)
+
 ## Instructions
 Run `yarn install` to install dependencies
 
